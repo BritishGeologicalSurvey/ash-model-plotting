@@ -20,7 +20,7 @@ Download and run the Miniconda3 installer for Linux, Mac or Windows from the [Co
 Create an 'environment' and install Iris and other Python packages:
 
 ```
-conda create -y -c conda-forge -n ash-model-plotting iris iris-sample-data ipython
+conda create -y -c conda-forge -n ash-model-plotting iris iris-sample-data ipython numpy matplotlib
 ```
 
 Activate the virtual environment:
