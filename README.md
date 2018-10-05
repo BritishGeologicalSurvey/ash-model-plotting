@@ -17,7 +17,7 @@ git clone https://github.com/SciTools/iris
 cd iris/requirements
 
 # Install extra dependencies
-sudo apt install libgeos-dev libproj-dev libudunits2-dev libgdal-dev
+sudo apt install libgeos-dev libproj-dev libudunits2-dev libgdal-dev python3-tk
 
 # Install gdal with compiling set up
 pip install Cython
@@ -50,6 +50,12 @@ Install IRIS
 ```
 cd ../iris
 pip install -e .
+```
+
+Install example data
+```
+cd ../iris/iris-sample-data-master
+python setup.py install
 ```
 
 The installation requirements have been stored in a Pipfile, which may be
