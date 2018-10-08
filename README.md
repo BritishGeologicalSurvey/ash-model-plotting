@@ -1,3 +1,7 @@
+# Ash Model Plotting
+
+> Code to plot and compare the results from volcanic ash dispersion model runs.
+
 ## Software
 
 The plotting scripts are based on the following Python libraries.
@@ -11,10 +15,38 @@ visualising Earth science data."
   produces publication quality figures in a variety of hardcopy formats and
   interactive environments across platforms."
 
-These (and others) can be installed as follows.
+See below for [dependency installation instructions](#dependencies).
+These must be installed and the correct Python environment configured before running scripts.
 
 
-## Installation via Conda (recommended)
+## Running
+
+Checkout the code from Git:
+
+```
+git checkout git@kwvmxgit.ad.nerc.ac.uk:volcanology/ash-model-plotting.git
+cd ash-model-plotting
+```
+
+Get instructions for plotting script:
+
+```
+python ash-model-plotting/plot_name_files.py --help
+```
+
+Plot NAME data from the command line:
+
+```
+python ash-model-plotting/plot_name_files.py /path/to/ADM_outputs/NAME Air_Conc
+```
+
+This will create a `plots` directory in the current directory.
+Plots within are stored in subdirectories for each level (altitude) in the data.
+
+
+## Dependencies
+
+### Installation via Conda (recommended)
 
 Download and run the Miniconda3 installer for Linux, Mac or Windows from the [Conda website](https://conda.io/miniconda.html).
 Create an 'environment' and install Iris and other Python packages:
@@ -38,7 +70,7 @@ Deactivate the virtual environment:
 source deactivate
 ```
 
-## Running via Docker
+### Running via Docker
 
 An alternative to a local installation is to run a Jupyter Labs session with all the Iris dependencies installed.
 This is good for interactive experimentation.
@@ -62,7 +94,7 @@ The URL and token to access the webpage are then obtained via:
 docker exec iris jupyter notebook list
 ```
 
-## Installation for development (on Ubuntu Linux)
+### Installation for development (on Ubuntu Linux)
 
 This method is only recommended if you intend to make changes to Iris itself.
 
