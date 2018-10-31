@@ -3,6 +3,7 @@
 .ipython
 .cache
 .local
+__pycache__
 iris
 iris-sample-data-master
 pyke-1.1.1

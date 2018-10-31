@@ -18,21 +18,26 @@ GeoAxes._pcolormesh_patched = Axes.pcolormesh
 logging.basicConfig(level=logging.INFO)
 
 
-def plot_name_files(source_dir, prefix):
+def plot_name_files(source_dir, prefix, output_dir):
     """
     Read the files named 'source_dir/prefix*' and generate plots. Files are
     saved with `plots` dir.
     :param source_dir: str, path to directory containing files
     :param prefix: str, common prefix of files to parse
     """
+    if not output_dir:
+        output_dir = source_dir
+    logging.info(f'Writing files to {output_dir}')
+
     for source_file in glob.glob(os.path.join(source_dir, prefix) + '*'):
-        plot_levels(source_file)
+        plot_levels(source_file, output_dir)
 
 
-def plot_levels(source_file):
+def plot_levels(source_file, output_dir):
     """
     Plot a single NAME file
     :param source_file:
+    :param output_dir:
     """
     # Load data
     cubes = iris.load(source_file)
@@ -43,7 +48,7 @@ def plot_levels(source_file):
     cube.data = np.ma.masked_less(cube.data, 1e-8)
 
     # Prepare plot directory
-    plot_dir = 'plots'
+    plot_dir = os.path.join(output_dir, 'plots')
     if not os.path.isdir(plot_dir):
         os.mkdir(plot_dir)
 
@@ -96,7 +101,11 @@ def plot_level(cube, level, idx):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Generate plots from directory of NAME data')
-    parser.add_argument('source_dir', help="Path to directory containing NAME output")
-    parser.add_argument('prefix', help="Filename prefix e.g. Air_Conc_grid_")
+    parser.add_argument(
+        'source_dir', help="Path to directory containing NAME files")
+    parser.add_argument(
+        'prefix', help="Filename prefix e.g. Air_Conc_grid_")
+    parser.add_argument(
+        '--output_dir', help="Path to directory to store plots", default=None)
     args = parser.parse_args()
-    plot_name_files(args.source_dir, args.prefix)
+    plot_name_files(args.source_dir, args.prefix, args.output_dir)
