@@ -3,6 +3,7 @@ import argparse
 import glob
 import logging
 import os
+from pathlib import Path
 
 import iris
 import iris.plot as iplt
@@ -15,7 +16,7 @@ from matplotlib.axes import Axes
 from cartopy.mpl.geoaxes import GeoAxes
 GeoAxes._pcolormesh_patched = Axes.pcolormesh
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 
 def plot_name_files(source_dir, prefix, output_dir):
@@ -27,9 +28,10 @@ def plot_name_files(source_dir, prefix, output_dir):
     """
     if not output_dir:
         output_dir = source_dir
-    logging.info(f'Writing files to {output_dir}')
+    logging.info(f'Writing files from {source_dir}/{prefix}* to {output_dir}')
 
-    for source_file in glob.glob(os.path.join(source_dir, prefix) + '*'):
+    for source_file in glob.glob(str(source_dir.absolute().joinpath(prefix + '*'))):
+        logging.debug(f'Plotting data from {source_file}')
         plot_levels(source_file, output_dir)
 
 
@@ -57,6 +59,7 @@ def plot_levels(source_file, output_dir):
     for i, level in enumerate(levels):
         # Prepare plot directory for given level
         level_name = f'{int(level.points[0]):05d}'  # Get level as text string
+        logging.debug(f'Plotting level {level_name}')
         level_plot_dir = os.path.join(plot_dir, level_name)
         if not os.path.isdir(level_plot_dir):
             os.mkdir(level_plot_dir)
@@ -78,7 +81,7 @@ def plot_level(cube, level, idx):
     """
     # Plot data
     fig = plt.figure()
-    mesh_plot = iplt.pcolormesh(cube[idx, :, :])
+    mesh_plot = iplt.pcolormesh(cube[idx, :, :], vmin=0, vmax=cube.data.max())
     ax = plt.gca()
     ax.coastlines(resolution='50m')
     ax.grid(True)
@@ -106,6 +109,8 @@ if __name__ == '__main__':
     parser.add_argument(
         'prefix', help="Filename prefix e.g. Air_Conc_grid_")
     parser.add_argument(
-        '--output_dir', help="Path to directory to store plots", default=None)
+        '--output_dir',
+        help="Path to directory to store plots (defaults to source_dir)",
+        default=None)
     args = parser.parse_args()
-    plot_name_files(args.source_dir, args.prefix, args.output_dir)
+    plot_name_files(Path(args.source_dir), args.prefix, Path(args.output_dir))

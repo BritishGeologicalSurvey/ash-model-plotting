@@ -1,5 +1,6 @@
 from os import scandir
 from pathlib import Path
+import shutil
 import subprocess
 
 import pytest
@@ -41,6 +42,14 @@ def test_plot_name_files_air_conc_file(tmpdir, script_path, data_dir):
         ['python', script_path, data_dir, 'Air_Conc', '--output_dir', tmpdir])
     output_files = [Path(entry).relative_to(plot_dir).as_posix()
                     for entry in scantree(plot_dir) if entry.is_file()]
+
+    # Copy out results for inspection
+    try:
+        shutil.rmtree('/tmp/plots')
+    except FileNotFoundError:
+        # Don't worry if it doesn't exist
+        pass
+    shutil.copytree(tmpdir.joinpath('plots'), '/tmp/plots')
 
     # Assert
     assert exit_code == 0

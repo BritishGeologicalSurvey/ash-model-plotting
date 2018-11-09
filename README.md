@@ -37,11 +37,12 @@ python ash-model-plotting/plot_name_files.py --help
 Plot NAME data from the command line:
 
 ```
-python ash-model-plotting/plot_name_files.py /path/to/ADM_outputs/NAME Air_Conc
+python ash-model-plotting/plot_name_files.py /path/to/ADM_outputs/NAME Air_Conc --output_dir ./
 ```
 
 This will create a `plots` directory in the current directory.
 Plots within are stored in subdirectories for each level (altitude) in the data.
+If the `output_dir` is not specified, plots are written to the data directory.
 
 #### Running tests
 
