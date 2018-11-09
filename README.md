@@ -43,6 +43,13 @@ python ash-model-plotting/plot_name_files.py /path/to/ADM_outputs/NAME Air_Conc
 This will create a `plots` directory in the current directory.
 Plots within are stored in subdirectories for each level (altitude) in the data.
 
+#### Running tests
+
+There are unit and integration tests to check that the code does as is expected.  Run them with:
+
+```
+pytest -vs test
+```
 
 ## Dependencies
 
