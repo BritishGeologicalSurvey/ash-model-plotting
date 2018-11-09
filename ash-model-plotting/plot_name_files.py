@@ -85,7 +85,8 @@ def plot_level(cube, level, idx):
     ax = plt.gca()
     ax.coastlines(resolution='50m')
     ax.grid(True)
-    fig.colorbar(mesh_plot, orientation='horizontal')
+    cbar = fig.colorbar(mesh_plot, orientation='horizontal')
+    cbar.set_label(f'{cube.long_name.title()} ({cube.units})')
 
     # Get and set title
     timestamp = cube.coord('time')
