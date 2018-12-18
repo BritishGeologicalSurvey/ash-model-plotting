@@ -36,7 +36,9 @@ def test_plot_name_files_air_conc_file(tmpdir, script_path, data_dir):
     plot_dir = tmpdir / 'plots'
     expected_output_files = [
         '01000/VA_Tutorial_Air_Concentration_01000_20100418030000.png',
+        '01000/VA_Tutorial_Air_Concentration_01000_20100418060000.png',
         '00500/VA_Tutorial_Air_Concentration_00500_20100418030000.png',
+        '00500/VA_Tutorial_Air_Concentration_00500_20100418060000.png',
     ]
 
     # Act

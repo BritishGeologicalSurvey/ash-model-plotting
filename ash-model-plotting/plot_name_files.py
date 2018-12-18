@@ -16,7 +16,8 @@ from matplotlib.axes import Axes
 from cartopy.mpl.geoaxes import GeoAxes
 GeoAxes._pcolormesh_patched = Axes.pcolormesh
 
-logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 def plot_name_files(source_dir, prefix, output_dir):
@@ -25,13 +26,14 @@ def plot_name_files(source_dir, prefix, output_dir):
     saved with `plots` dir.
     :param source_dir: str, path to directory containing files
     :param prefix: str, common prefix of files to parse
+    :param output_dir: str, directory for plot output
     """
     if not output_dir:
         output_dir = source_dir
-    logging.info(f'Writing files from {source_dir}/{prefix}* to {output_dir}')
+    logger.info(f'Writing files from {source_dir}/{prefix}* to {output_dir}')
 
     for source_file in glob.glob(str(source_dir.absolute().joinpath(prefix + '*'))):
-        logging.debug(f'Plotting data from {source_file}')
+        logger.debug(f'Plotting data from {source_file}')
         plot_levels(source_file, output_dir)
 
 
@@ -59,7 +61,7 @@ def plot_levels(source_file, output_dir):
     for i, level in enumerate(levels):
         # Prepare plot directory for given level
         level_name = f'{int(level.points[0]):05d}'  # Get level as text string
-        logging.debug(f'Plotting level {level_name}')
+        logger.debug(f'Plotting level {level_name}')
         level_plot_dir = os.path.join(plot_dir, level_name)
         if not os.path.isdir(level_plot_dir):
             os.mkdir(level_plot_dir)
@@ -96,7 +98,7 @@ def plot_level(cube, level, idx):
         level=int(level.points[0]),
         timestamp=timestamp.units.num2date(timestamp.points[0]).strftime('%Y%m%d%H%M%S')
     )
-    logging.info(title)
+    logger.info(title)
     ax.set_title(title)
 
     return fig, title
