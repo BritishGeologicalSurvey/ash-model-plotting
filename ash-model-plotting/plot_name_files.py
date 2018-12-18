@@ -75,7 +75,7 @@ def plot_level(cube, level, idx):
     """
     Plot a map of an individual level from a data cube
     :param cube: iris Cube with data
-    :param level: int, level value
+    :param level: iris.coord.DimCoord for given level
     :param idx: int, index for given level
     :return fig, name: Matplotlib figure with plot and str with name
     """
@@ -83,7 +83,7 @@ def plot_level(cube, level, idx):
     fig = plt.figure()
     mesh_plot = iplt.pcolormesh(cube[idx, :, :], vmin=0, vmax=cube.data.max())
     ax = plt.gca()
-    ax.coastlines(resolution='50m')
+    ax.coastlines(resolution='50m', color='grey')
     ax.grid(True)
     cbar = fig.colorbar(mesh_plot, orientation='horizontal')
     cbar.set_label(f'{cube.long_name.title()} ({cube.units})')

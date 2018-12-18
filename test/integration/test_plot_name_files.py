@@ -1,9 +1,11 @@
+import logging
 from os import scandir
 from pathlib import Path
-import shutil
 import subprocess
 
 import pytest
+
+logging.basicConfig(level=logging.DEBUG)
 
 @pytest.fixture
 def script_path():
@@ -44,12 +46,7 @@ def test_plot_name_files_air_conc_file(tmpdir, script_path, data_dir):
                     for entry in scantree(plot_dir) if entry.is_file()]
 
     # Copy out results for inspection
-    try:
-        shutil.rmtree('/tmp/plots')
-    except FileNotFoundError:
-        # Don't worry if it doesn't exist
-        pass
-    shutil.copytree(tmpdir.joinpath('plots'), '/tmp/plots')
+    logging.debug(f"Test plots in {plot_dir}")
 
     # Assert
     assert exit_code == 0
