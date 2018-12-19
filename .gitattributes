@@ -1,2 +1,4 @@
 * text eol=lf
 * text eol=lf
+# Don't change line endings for NetCDF files because it breaks them
+*.nc eol=crlf
