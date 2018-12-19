@@ -24,25 +24,44 @@ These must be installed and the correct Python environment configured before run
 Checkout the code from Git:
 
 ```
-git checkout git@kwvmxgit.ad.nerc.ac.uk:volcanology/ash-model-plotting.git
-cd ash-model-plotting
+git checkout git@kwvmxgit.ad.nerc.ac.uk:volcanology/ash_model_plotting.git
+cd ash_model_plotting
 ```
 
 Get instructions for plotting script:
 
 ```
-python ash-model-plotting/plot_name_files.py --help
+python ash_model_plotting/plot_name_files.py --help
 ```
 
 Plot NAME data from the command line:
 
 ```
-python ash-model-plotting/plot_name_files.py /path/to/ADM_outputs/NAME Air_Conc --output_dir ./
+python ash_model_plotting/plot_name_files.py /path/to/ADM_outputs/NAME Air_Conc --output_dir ./
 ```
 
 This will create a `plots` directory in the current directory.
 Plots within are stored in subdirectories for each level (altitude) in the data.
 If the `output_dir` is not specified, plots are written to the data directory.
+
+
+## Convert NAME to netCDF
+
+The `name_to_netcdf.py` script will collect all the NAME output files in a directory and convert them into a single NetCDF file.
+
+Get instructions for plotting script:
+
+```
+python ash_model_plotting/name_to_netcdf.py --help
+```
+
+Convert NAME data from the command line:
+
+```
+python ash_model_plotting/name_to_netcdf.py /path/to/ADM_outputs/NAME
+```
+
+## For Developers
 
 #### Running tests
 
@@ -60,16 +79,16 @@ Download and run the Miniconda3 installer for Linux, Mac or Windows from the [Co
 Create an 'environment' and install Iris and other Python packages:
 
 ```
-conda create -y -c conda-forge -n ash-model-plotting iris iris-sample-data ipython numpy matplotlib
+conda create -y -c conda-forge -n ash_model_plotting iris iris-sample-data ipython numpy matplotlib
 ```
 
 Activate the virtual environment:
 
 ```
-source activate ash-model-plotting
+source activate ash_model_plotting
 ```
 
-The virtual environment isolates the Python packages used by ash-model-plotting from the rest of the system.
+The virtual environment isolates the Python packages used by ash_model_plotting from the rest of the system.
 This means that they will not interfere with each other.
 
 Deactivate the virtual environment:
