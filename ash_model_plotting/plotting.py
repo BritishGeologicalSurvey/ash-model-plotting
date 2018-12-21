@@ -1,16 +1,45 @@
 """
 Plotting functions that draw and save figures from multi-dimensional cubes.
 """
+from pathlib import Path
 from iris.exceptions import CoordinateNotFoundError
 import iris.plot as iplt
 import matplotlib.pyplot as plt
-
-# TODO:
-# plot_2d_series, plot_3d_series
-# loop over altitude then loop over time
+import numpy as np
 
 
-def draw_2d_cube(cube, vmin=None, vmax=None):
+def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
+    """
+    Plot multiple figures of 2D slices from a 4D cube in output directory.
+
+    :param cube: Iris cube with 3 dimensions (time, lat, lon)
+    :param output_dir: str; directory to save figure
+    :param file_ext, file extension suffix for data format e.g. png, pdf
+    :param kwargs: dict; extra arguments to pass to plt.savefig
+    """
+    for i, altitude in enumerate(cube.coord('altitude')):
+        for j, timestamp in enumerate(cube.coord('time')):
+            fig, title = draw_2d_cube(cube[i, j, :, :], **kwargs)
+            filename = Path(output_dir).joinpath(f"{title}.{file_ext}")
+            fig.savefig(filename, **kwargs)
+
+
+def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
+    """
+    Plot multiple figures of 2D slices from a cube in output directory.
+
+    :param cube: Iris cube with 3 dimensions (time, lat, lon)
+    :param output_dir: str; directory to save figure
+    :param file_ext, file extension suffix for data format e.g. png, pdf
+    :param kwargs: dict; extra args for draw_2d_cube and plt.savefig
+    """
+    for i, timestamp in enumerate(cube.coord('time')):
+        fig, title = draw_2d_cube(cube[i, :, :], **kwargs)
+        filename = Path(output_dir).joinpath(f"{title}.{file_ext}")
+        fig.savefig(filename, **kwargs)
+
+
+def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, **kwargs):
     """
     Draw a map of a two dimensional cube.  Cube should have two spatial
     dimensions (e.g. latitude, longitude).  All other dimensions (time,
@@ -21,9 +50,16 @@ def draw_2d_cube(cube, vmin=None, vmax=None):
     :param cube: iris Cube
     :param vmin: Optional minimum value for scale
     :param vmax: Optional maximum value for scale
+    :param mask_less: float, values beneath this are masked out
     :return fig: handle to Matplotlib figure
     :return title: str; title of plot generated from cube attributes
     """
+    # Note **kwargs is used to catch extra arguments that may be passed
+    # as a result of unpacking **kwargs into calling functions
+
+    # Mask out data below threshold
+    cube.data = np.ma.masked_less(cube.data, mask_less)
+
     # Plot data
     fig = plt.figure()
     mesh_plot = iplt.pcolormesh(cube, vmin=vmin, vmax=vmax)
