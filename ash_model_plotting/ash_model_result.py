@@ -112,43 +112,6 @@ class AshModelResult(object):
                             bbox_inches='tight')
                 plt.close(fig)
 
-    # TODO: def _draw_2d_slice(cube,
-    # plot_2d_series, plot_3d_series
-    # loop over altitude then loop over time
-    # time = c.coord('time').points[0]
-    # altitude = c.coord('altitude').points[0]
-    # Perhaps do some numpy array indexing to get correct index for each one
-
-    @staticmethod
-    def _draw_figure_for_slice(cube, level, idx, tidx):
-        """
-        Plot a map of an individual slice from a data cube
-        :param cube: iris Cube with data
-        :param level: iris.coord.DimCoord for given slice
-        :param idx: int, index for given slice
-        :param tidx: int, time index for given slice
-        :return fig, name: Matplotlib figure with plot and str with name
-        """
-        # Plot data
-        fig = plt.figure()
-        mesh_plot = iplt.pcolormesh(cube[idx, tidx, :, :], vmin=0, vmax=cube.data.max())
-        ax = plt.gca()
-        ax.coastlines(resolution='50m', color='grey')
-        ax.grid(True)
-        cbar = fig.colorbar(mesh_plot, orientation='horizontal')
-        cbar.set_label(f'{cube.long_name.title()} ({cube.units})')
-
-        # Get and set title
-        timestamp = cube.coord('time')[tidx]
-        title = "{title}_{quantity}_{level:05d}_{timestamp}.png".format(
-            title=cube.attributes.get('Title').replace(' ', '_'),
-            quantity=cube.attributes.get('Quantity').replace(' ', '_'),
-            level=int(level.points[0]),
-            timestamp=timestamp.units.num2date(timestamp.points[0]).strftime('%Y%m%d%H%M%S')
-        )
-        ax.set_title(title)
-
-        return fig, title
 
     def __repr__(self):
         return f"AshModelResult({self.source_file})"
