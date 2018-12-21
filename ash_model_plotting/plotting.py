@@ -71,14 +71,16 @@ def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, **kwargs):
     # Get title attributes
     try:
         altitude = cube.coord('altitude').points[0]
-        altitude = f"{altitude:05.0f}_"  # Add underscore for use in composite title
+        # Add underscore for use in composite title
+        altitude = f"{altitude:05.0f}_"
     except CoordinateNotFoundError:
         # No altitude coordinate on cube
         altitude = ''
 
     try:
         timestamp = cube.coord('time').points[0]
-        timestamp = cube.coord('time').units.num2date(timestamp).strftime('%Y%m%d%H%M%S')
+        timestamp = cube.coord('time').units.num2date(
+            timestamp).strftime('%Y%m%d%H%M%S')
     except CoordinateNotFoundError:
         # No time coordinate on cube
         timestamp = ''

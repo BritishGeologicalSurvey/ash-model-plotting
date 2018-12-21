@@ -1,3 +1,4 @@
+import os
 import pytest
 import iris.cube
 
@@ -48,3 +49,36 @@ def test_ash_model_total_column(data_dir):
 
     assert isinstance(result.total_column, iris.cube.Cube)
     assert result.total_column.name() == "VOLCANIC_ASH_DOSAGE"
+
+
+@pytest.mark.parametrize('plot_func, expected', [
+    ('plot_air_concentration', [
+      'VA_Tutorial_Air_Concentration_00500_20100418030000.png',
+      'VA_Tutorial_Air_Concentration_01000_20100418030000.png',
+      'VA_Tutorial_Air_Concentration_00500_20100418060000.png',
+      'VA_Tutorial_Air_Concentration_01000_20100418060000.png']),
+    ('plot_total_column', [
+      'VA_Tutorial_Dosage_20100418030000.png',
+      'VA_Tutorial_Dosage_20100418060000.png']),
+    ('plot_total_deposition', [
+      'VA_Tutorial_Total_deposition_20100418030000.png',
+      'VA_Tutorial_Total_deposition_20100418060000.png'])
+    ])
+def test_plot_functions(name_model_result, tmpdir, plot_func, expected):
+    # Call the plot function
+    getattr(name_model_result, plot_func)(tmpdir)
+
+    plot_files = os.listdir(tmpdir)
+    assert plot_files == expected
+
+
+@pytest.mark.parametrize('plot_func', [
+    'plot_air_concentration',
+    'plot_total_column',
+    'plot_total_deposition'
+    ])
+def test_plot_functions_no_data(name_model_result, tmpdir, plot_func):
+    # Call the plot function
+    name_model_result.cubes = iris.cube.CubeList()
+    with pytest.raises(AshModelResultError):
+        getattr(name_model_result, plot_func)(tmpdir)

@@ -8,7 +8,6 @@ from pathlib import Path
 import iris
 import iris.plot as iplt
 import matplotlib.pyplot as plt
-import matplotlib.colors as colors
 import numpy as np
 
 # Monkey patch GeoAxes to fix Matplotlib v3.0.0 - related bug
@@ -32,7 +31,8 @@ def plot_name_files(source_dir, prefix, output_dir):
         output_dir = source_dir
     logger.info(f'Writing files from {source_dir}/{prefix}* to {output_dir}')
 
-    for source_file in glob.glob(str(source_dir.absolute().joinpath(prefix + '*'))):
+    for source_file in glob.glob(
+            str(source_dir.absolute().joinpath(prefix + '*'))):
         logger.debug(f'Plotting data from {source_file}')
         plot_levels(source_file, output_dir)
 
@@ -96,7 +96,8 @@ def plot_level(cube, level, idx):
         title=cube.attributes.get('Title').replace(' ', '_'),
         quantity=cube.attributes.get('Quantity').replace(' ', '_'),
         level=int(level.points[0]),
-        timestamp=timestamp.units.num2date(timestamp.points[0]).strftime('%Y%m%d%H%M%S')
+        timestamp=timestamp.units.num2date(
+            timestamp.points[0]).strftime('%Y%m%d%H%M%S')
     )
     logger.info(title)
     ax.set_title(title)

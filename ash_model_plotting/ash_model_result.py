@@ -1,12 +1,10 @@
 # coding: utf-8
-import os
 from pathlib import Path
 
 import iris
-import iris.plot as iplt
-import matplotlib.pyplot as plt
 from netCDF4 import Dataset
-import numpy as np
+
+from ash_model_plotting.plotting import plot_3d_cube, plot_4d_cube
 
 
 class AshModelResultError(Exception):
@@ -52,7 +50,11 @@ class AshModelResult(object):
         )
 
         valid_cubes = self.cubes.extract(air_concentration & has_altitude)
-        return valid_cubes.concatenate_cube()
+        try:
+            return valid_cubes.concatenate_cube()
+        except ValueError:
+            # Return None if no cubes present
+            return
 
     @property
     def total_column(self):
@@ -65,7 +67,11 @@ class AshModelResult(object):
         )
 
         valid_cubes = self.cubes.extract(total_column)
-        return valid_cubes.concatenate_cube()
+        try:
+            return valid_cubes.concatenate_cube()
+        except ValueError:
+            # Return None if no cubes present
+            return
 
     @property
     def total_deposition(self):
@@ -78,41 +84,68 @@ class AshModelResult(object):
         )
 
         valid_cubes = self.cubes.extract(total_deposition)
-        return valid_cubes.concatenate_cube()
+        try:
+            return valid_cubes.concatenate_cube()
+        except ValueError:
+            # Return None if no cubes present
+            return
 
-    def plot_air_concentration(self, output_dir):
+    def plot_air_concentration(self, output_dir, file_ext='png', **kwargs):
         """
-        Plot air concentration data into directories per level
-        :param output_dir:
+        Plot air concentration data to output directory.
+
+        See plotting.plot_4d_cube for details.
+
+        :param output_dir: Target directory for plots
+        :param file_ext: File extension
         """
-        # Mask out data below threshold
-        cube = self.air_concentration.copy()
-        cube.data = np.ma.masked_less(cube.data, 1e-8)
+        cube = self.air_concentration
 
-        # Prepare plot directory
-        plot_dir = Path(output_dir).joinpath('plots')
-        if not os.path.isdir(plot_dir):
-            os.mkdir(plot_dir)
+        if not cube:
+            msg = 'AshModelResult has no air concentration data'
+            raise AshModelResultError(msg)
 
-        # Plot
-        timestamps = cube.coord('time')
-        levels = cube.coord('altitude')
-        for i, level in enumerate(levels):
-            for t, timestamp in enumerate(timestamps):
-                print(level, timestamp)
-                # Prepare plot directory for given level
-                level_name = f'{int(level.points[0]):05d}'  # Get level as text string
-                level_plot_dir = os.path.join(plot_dir, level_name)
-                if not os.path.isdir(level_plot_dir):
-                    os.mkdir(level_plot_dir)
+        plot_4d_cube(
+            cube, output_dir, file_ext=file_ext,
+            vmax=cube.data.max(), **kwargs)
 
-                # Plot map for level
-                fig, title = self._draw_figure_for_slice(cube, level, i, t)
-                fig.savefig(os.path.join(plot_dir, level_name, title),
-                            bbox_inches='tight')
-                plt.close(fig)
+    def plot_total_column(self, output_dir, file_ext='png', **kwargs):
+        """
+        Plot total column data to output directory.
 
+        See plotting.plot_3d_cube for details.
+
+        :param output_dir: Target directory for plots
+        :param file_ext: File extension
+        """
+        cube = self.total_column
+
+        if not cube:
+            msg = 'AshModelResult has no total column data'
+            raise AshModelResultError(msg)
+
+        plot_3d_cube(
+            cube, output_dir, file_ext=file_ext,
+            vmax=cube.data.max(), **kwargs)
+
+    def plot_total_deposition(self, output_dir, file_ext='png', **kwargs):
+        """
+        Plot total column data to output directory.
+
+        See plotting.plot_3d_cube for details.
+
+        :param output_dir: Target directory for plots
+        :param file_ext: File extension
+        """
+        cube = self.total_deposition
+
+        if not cube:
+            msg = 'AshModelResult has no total deposition data'
+            raise AshModelResultError(msg)
+
+        plot_3d_cube(
+            cube, output_dir, file_ext=file_ext,
+            vmax=cube.data.max(), **kwargs)
 
     def __repr__(self):
         return f"AshModelResult({self.source_file})"
-

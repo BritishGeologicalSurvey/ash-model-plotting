@@ -17,7 +17,7 @@ def data_dir():
     return Path.cwd().joinpath('test', 'data')
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def name_model_result(data_dir):
     """An AshModelResult based on NAME test data."""
     return AshModelResult(data_dir.joinpath('VA_Tutorial_NAME_output.nc'))
