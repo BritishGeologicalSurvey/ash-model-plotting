@@ -8,7 +8,7 @@ from ash_model_plotting.ash_model_result import AshModelResult
 
 @pytest.fixture(scope='module')
 def script_dir():
-    """Path to the plot_name_files.py script"""
+    """Path to the plot_ash_model_results.py script"""
     return Path.cwd().joinpath('ash_model_plotting')
 
 

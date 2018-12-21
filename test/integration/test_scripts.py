@@ -20,26 +20,62 @@ def scantree(path):
             yield entry
 
 
-def test_plot_name_files_air_conc_file(tmpdir, script_dir, data_dir):
+def test_plot_ash_model_results_happy_path(tmpdir, data_dir, script_dir,
+                                           scantree):
     # Arrange
-    tmpdir = Path(tmpdir)
-    plot_dir = tmpdir / 'plots'
-    script_path = script_dir / 'plot_name_files.py'
-    expected_output_files = [
-        '01000/VA_Tutorial_Air_Concentration_01000_20100418030000.png',
-        '01000/VA_Tutorial_Air_Concentration_01000_20100418060000.png',
+    script_path = script_dir / 'plot_ash_model_results.py'
+    input_file = data_dir / 'VA_Tutorial_NAME_output.nc'
+    # Use set for output files to make order unimportant
+    expected_output_files = {
         '00500/VA_Tutorial_Air_Concentration_00500_20100418030000.png',
         '00500/VA_Tutorial_Air_Concentration_00500_20100418060000.png',
-    ]
+        '01000/VA_Tutorial_Air_Concentration_01000_20100418030000.png',
+        '01000/VA_Tutorial_Air_Concentration_01000_20100418060000.png',
+        'VA_Tutorial_Dosage_20100418030000.png',
+        'VA_Tutorial_Dosage_20100418060000.png',
+        'VA_Tutorial_Total_deposition_20100418030000.png',
+        'VA_Tutorial_Total_deposition_20100418060000.png',
+    }
 
     # Act
     exit_code = subprocess.check_call(
-        ['python', script_path, data_dir, 'Air_Conc', '--output_dir', tmpdir])
-    output_files = [Path(entry).relative_to(plot_dir).as_posix()
-                    for entry in scantree(plot_dir) if entry.is_file()]
+        ['python', script_path, input_file, '--output_dir', tmpdir])
+    output_files = {Path(entry).relative_to(tmpdir).as_posix()
+                    for entry in scantree(tmpdir) if entry.is_file()}
 
     # Copy out results for inspection
-    logger.debug(f"Test plots in {plot_dir}")
+    logger.debug(f"Test plots in {tmpdir}")
+
+    # Assert
+    assert exit_code == 0
+    assert output_files == expected_output_files
+
+
+def test_plot_ash_model_results_create_dir(tmpdir, data_dir, script_dir,
+                                           scantree):
+    # Arrange
+    script_path = script_dir / 'plot_ash_model_results.py'
+    input_file = data_dir / 'VA_Tutorial_NAME_output.nc'
+    # Use set for output files to make order unimportant
+    expected_output_files = {
+        'newdir/00500/VA_Tutorial_Air_Concentration_00500_20100418030000.png',
+        'newdir/00500/VA_Tutorial_Air_Concentration_00500_20100418060000.png',
+        'newdir/01000/VA_Tutorial_Air_Concentration_01000_20100418030000.png',
+        'newdir/01000/VA_Tutorial_Air_Concentration_01000_20100418060000.png',
+        'newdir/VA_Tutorial_Dosage_20100418030000.png',
+        'newdir/VA_Tutorial_Dosage_20100418060000.png',
+        'newdir/VA_Tutorial_Total_deposition_20100418030000.png',
+        'newdir/VA_Tutorial_Total_deposition_20100418060000.png',
+    }
+
+    # Act
+    exit_code = subprocess.check_call(
+        ['python', script_path, input_file, '--output_dir', tmpdir / 'newdir'])
+    output_files = {Path(entry).relative_to(tmpdir).as_posix()
+                    for entry in scantree(tmpdir) if entry.is_file()}
+
+    # Copy out results for inspection
+    logger.debug(f"Test plots in {tmpdir}")
 
     # Assert
     assert exit_code == 0

@@ -19,7 +19,7 @@ See below for [dependency installation instructions](#dependencies).
 These must be installed and the correct Python environment configured before running scripts.
 
 
-## Running
+## Setup
 
 Checkout the code from Git:
 
@@ -28,22 +28,6 @@ git checkout git@kwvmxgit.ad.nerc.ac.uk:volcanology/ash_model_plotting.git
 cd ash_model_plotting
 ```
 
-Get instructions for plotting script:
-
-```
-python ash_model_plotting/plot_name_files.py --help
-```
-
-Plot NAME data from the command line:
-
-```
-python ash_model_plotting/plot_name_files.py /path/to/ADM_outputs/NAME Air_Conc --output_dir ./
-```
-
-This will create a `plots` directory in the current directory.
-Plots within are stored in subdirectories for each level (altitude) in the data.
-If the `output_dir` is not specified, plots are written to the data directory.
-
 
 ## Convert NAME to netCDF
 
@@ -51,15 +35,61 @@ The `name_to_netcdf.py` script will collect all the NAME output files in a direc
 
 Get instructions for plotting script:
 
-```
+```bash
 python ash_model_plotting/name_to_netcdf.py --help
 ```
 
-Convert NAME data from the command line:
+Convert NAME data to NetCDF4 from the command line:
 
-```
+```bash
 python ash_model_plotting/name_to_netcdf.py /path/to/ADM_outputs/NAME
 ```
+
+
+## Plot all data
+
+Get instructions for plotting script:
+
+```bash
+python ash_model_plotting/plot_ash_model_results.py --help
+```
+
+Plot NAME data (after converting to NetCDF4) from the command line:
+
+```bash
+python ash_model_plotting/plot_ash_model_results.py /path/to/ADM_outputs/NAME/VA_Tutorial_NAME_output.nc --output_dir ./
+```
+
+This will create a the plots in the current directory.
+There are plots for air concentration, total column and total deposition.
+Plots for air concentration within are stored in subdirectories for each level (altitude) in the data.
+If the `output_dir` is not specified, plots are written to the data directory.
+If the `output_dir` does not exist, it will be created.
+
+
+## AshModelResult
+
+`ash_model_plotting` provides a wrapper class around the Iris data cube.
+It has convenience functions for accessing data of different types.
+It is used as follows:
+
+```python
+from ash_model_plotting import AshModelResult
+result = AshModelResult('path/to/VA_Tutorial_NAME_output.nc')
+
+# Access subsets of data
+print(result.air_concentration)
+print(result.total_column)
+print(result.total_deposition)
+
+# Plot subsets of data
+result.plot_air_concentration('path/to/output/directory')
+result.plot_total_column('path/to/output/directory')
+result.plot_total_deposition('path/to/output/directory')
+```
+
+This class uses the `plot_4d_cube`, `plot_3d_cube` and `draw_2d_cube` functions from `plotting.py` internally.
+
 
 ## For Developers
 
