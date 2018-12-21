@@ -1,7 +1,9 @@
 """
 Plotting functions that draw and save figures from multi-dimensional cubes.
 """
+import os
 from pathlib import Path
+
 from iris.exceptions import CoordinateNotFoundError
 import iris.plot as iplt
 import matplotlib.pyplot as plt
@@ -17,11 +19,19 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
     :param file_ext, file extension suffix for data format e.g. png, pdf
     :param kwargs: dict; extra arguments to pass to plt.savefig
     """
+    base_output_dir = Path(output_dir)
     for i, altitude in enumerate(cube.coord('altitude')):
+        # Create new directory for each altitude level
+        output_dir = base_output_dir / f'{int(altitude.points[0]):05d}'
+        if not output_dir.is_dir():
+            os.mkdir(output_dir)
+
+        # Plot all the slices for that altitude
         for j, timestamp in enumerate(cube.coord('time')):
             fig, title = draw_2d_cube(cube[i, j, :, :], **kwargs)
-            filename = Path(output_dir).joinpath(f"{title}.{file_ext}")
+            filename = output_dir / f"{title}.{file_ext}"
             fig.savefig(filename, **kwargs)
+            plt.close(fig)
 
 
 def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
@@ -33,10 +43,12 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
     :param file_ext, file extension suffix for data format e.g. png, pdf
     :param kwargs: dict; extra args for draw_2d_cube and plt.savefig
     """
+    output_dir = Path(output_dir)
     for i, timestamp in enumerate(cube.coord('time')):
         fig, title = draw_2d_cube(cube[i, :, :], **kwargs)
-        filename = Path(output_dir).joinpath(f"{title}.{file_ext}")
+        filename = output_dir / f"{title}.{file_ext}"
         fig.savefig(filename, **kwargs)
+        plt.close(fig)
 
 
 def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, **kwargs):

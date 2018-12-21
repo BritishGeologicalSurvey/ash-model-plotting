@@ -1,4 +1,6 @@
 import os
+from pathlib import Path
+
 from matplotlib.figure import Figure
 
 from ash_model_plotting.plotting import (
@@ -6,34 +8,40 @@ from ash_model_plotting.plotting import (
 )
 
 
-def test_plot_4d_happy_path(name_model_result, tmpdir):
+def test_plot_4d_happy_path(name_model_result, tmpdir, scantree):
     cube = name_model_result.air_concentration
     expected = [
-        'VA_Tutorial_Air_Concentration_00500_20100418030000.png',
-        'VA_Tutorial_Air_Concentration_01000_20100418030000.png',
-        'VA_Tutorial_Air_Concentration_00500_20100418060000.png',
-        'VA_Tutorial_Air_Concentration_01000_20100418060000.png']
+        '01000/VA_Tutorial_Air_Concentration_01000_20100418030000.png',
+        '01000/VA_Tutorial_Air_Concentration_01000_20100418060000.png',
+        '00500/VA_Tutorial_Air_Concentration_00500_20100418030000.png',
+        '00500/VA_Tutorial_Air_Concentration_00500_20100418060000.png',
+        ]
 
     plot_4d_cube(cube, tmpdir)
-    plot_files = os.listdir(tmpdir)
+
+    plot_files = [Path(entry).relative_to(tmpdir).as_posix()
+                  for entry in scantree(tmpdir) if entry.is_file()]
 
     assert plot_files == expected
 
 
-def test_plot_4d_vmax_and_bbox_inches(name_model_result, tmpdir):
+def test_plot_4d_vmax_and_bbox_inches(name_model_result, tmpdir, scantree):
     """
     Check that **kwargs are passed to called functions. Only check that they
     haven't caused a crash - visual check determines if they worked
     """
     cube = name_model_result.air_concentration
     expected = [
-        'VA_Tutorial_Air_Concentration_00500_20100418030000.png',
-        'VA_Tutorial_Air_Concentration_01000_20100418030000.png',
-        'VA_Tutorial_Air_Concentration_00500_20100418060000.png',
-        'VA_Tutorial_Air_Concentration_01000_20100418060000.png']
+        '01000/VA_Tutorial_Air_Concentration_01000_20100418030000.png',
+        '01000/VA_Tutorial_Air_Concentration_01000_20100418060000.png',
+        '00500/VA_Tutorial_Air_Concentration_00500_20100418030000.png',
+        '00500/VA_Tutorial_Air_Concentration_00500_20100418060000.png',
+    ]
 
     plot_4d_cube(cube, tmpdir, vmax=cube.data.max(), bbox_inches='tight')
-    plot_files = os.listdir(tmpdir)
+
+    plot_files = [Path(entry).relative_to(tmpdir).as_posix()
+                  for entry in scantree(tmpdir) if entry.is_file()]
 
     assert plot_files == expected
 

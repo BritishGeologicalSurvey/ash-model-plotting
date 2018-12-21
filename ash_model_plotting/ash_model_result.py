@@ -107,7 +107,7 @@ class AshModelResult(object):
 
         plot_4d_cube(
             cube, output_dir, file_ext=file_ext,
-            vmax=cube.data.max(), **kwargs)
+            vmin=0, vmax=cube.data.max(), **kwargs)
 
     def plot_total_column(self, output_dir, file_ext='png', **kwargs):
         """
@@ -126,7 +126,7 @@ class AshModelResult(object):
 
         plot_3d_cube(
             cube, output_dir, file_ext=file_ext,
-            vmax=cube.data.max(), **kwargs)
+            vmin=0, vmax=cube.data.max(), **kwargs)
 
     def plot_total_deposition(self, output_dir, file_ext='png', **kwargs):
         """
@@ -145,7 +145,7 @@ class AshModelResult(object):
 
         plot_3d_cube(
             cube, output_dir, file_ext=file_ext,
-            vmax=cube.data.max(), **kwargs)
+            vmin=0, vmax=cube.data.max(), **kwargs)
 
     def __repr__(self):
         return f"AshModelResult({self.source_file})"
