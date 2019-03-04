@@ -9,17 +9,6 @@ logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.DEBUG)
 
 
-def scantree(path):
-    """
-    Recursively yield DirEntry objects for a given directory.
-    """
-    for entry in scandir(path):
-        if entry.is_dir(follow_symlinks=False):
-            yield from scantree(entry.path)
-        else:
-            yield entry
-
-
 def test_plot_ash_model_results_happy_path(tmpdir, data_dir, script_dir,
                                            scantree):
     # Arrange
