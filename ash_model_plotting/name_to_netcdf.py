@@ -46,7 +46,7 @@ if __name__ == '__main__':
         default='')
     parser.add_argument(
         '--output_dir',
-        help="Path to directory to store plots (defaults to source_dir)",
+        help="Path to directory for output file (defaults to source_dir)",
         default=None)
     parser.add_argument(
         '--output_name',
