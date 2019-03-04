@@ -19,24 +19,46 @@ class AshModelResult(object):
     """
     Class to store ash model results from NetCDF4 file with plotting methods
     """
-    def __init__(self, source_file):
-        self.source_file = Path(source_file)
+    def __init__(self, source_data):
+        self.source_data = source_data
         self._load_cubes()
 
     def _load_cubes(self):
         """
-        Load cubes with minor error-checking for valid file
+        Load cubes from single NetCDF file or list of NAME-format .txt files
+        """
+        # TODO: improve error handling here
+        # Load from many NAME files
+        if isinstance(self.source_data, list):
+            self.cubes = iris.load(self.source_data)
+            return
+
+        # Load from NetCDF
+        source_data = Path(self.source_data)
+        if source_data.suffix.lower() == '.nc':
+            self._load_from_netcdf()
+        else:
+            # Assuming single NAME .txt file
+            try:
+                self.cubes = iris.load(str(source_data))
+            except OSError:
+                msg = f"{source_data.absolute()} not found"
+            raise AshModelResultError(msg)
+
+    def _load_from_netcdf(self):
+        """
+        Load cubes from NetCDF4 file with minor error-checking for valid file
         """
         # Check that NetCDF4 driver can open file
         try:
-            nc = Dataset(self.source_file)
+            nc = Dataset(self.source_data)
             nc.close()
         except (OSError, FileNotFoundError) as e:
-            msg = (f"{self.source_file.absolute()} is not a valid '"
+            msg = (f"{self.source_data.absolute()} is not a valid '"
                    f"NetCDF4 file:\n{e}")
             raise AshModelResultError(msg)
 
-        self.cubes = iris.load(str(self.source_file))
+        self.cubes = iris.load(str(self.source_data))
 
     @property
     def air_concentration(self):
@@ -167,7 +189,7 @@ class AshModelResult(object):
             self._write_html(output_dir, metadata)
 
     def __repr__(self):
-        return f"AshModelResult({self.source_file})"
+        return f"AshModelResult({self.source_data})"
 
     def _write_html(self, output_dir, metadata):
         """
@@ -178,7 +200,7 @@ class AshModelResult(object):
         :param metadata: dict, metadata produced by plot function
         """
         # Prepare HTML
-        html = render_html(self.source_file, metadata)
+        html = render_html(self.source_data, metadata)
 
         # Write to file
         name = (f"{metadata['attributes']['Title']}_"
