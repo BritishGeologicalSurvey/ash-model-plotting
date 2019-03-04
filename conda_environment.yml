@@ -18,30 +18,28 @@ dependencies:
   - chardet=3.0.4=py37_1003
   - click=7.0=py_0
   - cloudpickle=0.6.1=py_0
-  - cryptography=2.3.1=py37hdffb7b8_0
-  - curl=7.63.0=h74213dd_0
+  - cryptography=2.5=py37h9d9f1b6_1
+  - curl=7.64.0=h646f8bb_2
   - cycler=0.10.0=py_1
   - cytoolz=0.9.0.1=py37h470a237_1
   - dask=1.0.0=py_0
   - dask-core=1.0.0=py_0
-  - dbus=1.13.0=h3a4f0e9_0
   - decorator=4.3.0=py_0
   - distributed=1.25.1=py37_1000
   - expat=2.2.5=hfc679d8_2
+  - flake8=3.6.0=py37_1000
   - fontconfig=2.13.1=h65d0f4c_0
   - freetype=2.9.1=h6debe1e_4
   - geos=3.6.2=hfc679d8_4
   - gettext=0.19.8.1=h5e8e0c9_1
   - glib=2.56.2=h464dc38_1
-  - gst-plugins-base=1.12.5=hde13a9d_0
-  - gstreamer=1.12.5=h5856ed1_0
   - hdf4=4.2.13=h951d187_2
   - hdf5=1.10.4=nompi_h5598ddc_1003
   - heapdict=1.0.0=py37_1000
   - icu=58.2=hfc679d8_0
   - idna=2.8=py37_1000
   - ipdb=0.11=py_2
-  - ipython=7.2.0=py37h24bf2e0_1000
+  - ipython=7.3.0=py37h24bf2e0_0
   - ipython_genutils=0.2.0=py_1
   - iris=2.2.0=py37_1003
   - iris-sample-data=2.1.0=py_0
@@ -49,8 +47,8 @@ dependencies:
   - jinja2=2.10=py_1
   - jpeg=9c=h470a237_1
   - kiwisolver=1.0.1=py37h2d50403_2
-  - krb5=1.16.2=hbb41f41_0
-  - libcurl=7.63.0=hbdb9355_0
+  - krb5=1.16.3=h05b26f9_1001
+  - libcurl=7.64.0=h541490c_2
   - libedit=3.1.20170329=haf1bffa_1
   - libffi=3.2.1=hfc679d8_5
   - libgfortran=3.0.0=1
@@ -58,8 +56,8 @@ dependencies:
   - libiconv=1.15=h470a237_3
   - libnetcdf=4.6.2=h85b088c_1
   - libpng=1.6.36=ha92aebf_0
-  - libssh2=1.8.0=h5b517e9_3
-  - libstdcxx-ng=7.2.0=hdf63c60_3
+  - libssh2=1.8.0=h90d6eec_1004
+  - libstdcxx-ng=7.3.0=hdf63c60_0
   - libtiff=4.0.10=he6b73bb_1
   - libuuid=2.32.1=h470a237_2
   - libxcb=1.13=h470a237_2
@@ -68,21 +66,23 @@ dependencies:
   - locket=0.2.0=py_2
   - lxml=4.2.5=py37hc9114bc_0
   - markupsafe=1.1.0=py37h470a237_0
-  - matplotlib=3.0.2=py37h8a2030e_1
-  - matplotlib-base=3.0.2=py37h20b835b_1
+  - matplotlib=3.0.3=py37_0
+  - matplotlib-base=3.0.3=py37h167e16e_0
+  - mccabe=0.6.1=py_1
+  - mkl_fft=1.0.10=py37h14c3975_1
+  - mkl_random=1.0.2=py37h637b7d7_2
   - more-itertools=4.3.0=py37_1000
   - msgpack-python=0.6.0=py37h2d50403_0
   - ncurses=6.1=hfc679d8_2
   - netcdf4=1.4.2=py37hf4e5497_1
   - olefile=0.46=py_0
   - openblas=0.3.3=ha44fe06_1
-  - openssl=1.0.2p=h470a237_1
+  - openssl=1.1.1b=h14c3975_0
   - owslib=0.17.0=py_0
   - packaging=18.0=py_0
   - pandas=0.23.4=py37hf8a1672_0
   - parso=0.3.1=py_0
   - partd=0.3.9=py_0
-  - pcre=8.41=hfc679d8_3
   - pexpect=4.6.0=py37_1000
   - pickleshare=0.7.5=py37_1000
   - pillow=5.3.0=py37hc736899_0
@@ -94,8 +94,10 @@ dependencies:
   - pthread-stubs=0.4=h470a237_1
   - ptyprocess=0.6.0=py37_1000
   - py=1.7.0=py_0
+  - pycodestyle=2.4.0=py_1
   - pycparser=2.19=py_0
   - pyepsg=0.4.0=py_0
+  - pyflakes=2.0.0=py_0
   - pygments=2.3.1=py_0
   - pykdtree=1.3.1=py37h7eb728f_2
   - pyke=1.1.1=py37_1000
@@ -106,11 +108,10 @@ dependencies:
   - pyshp=2.0.0=py_0
   - pysocks=1.6.8=py37_1002
   - pytest=4.0.2=py37_1000
-  - python=3.7.1=h5001a0f_0
+  - python=3.7.1=h381d211_1002
   - python-dateutil=2.7.5=py_0
   - pytz=2018.7=py_0
   - pyyaml=3.13=py37h470a237_1
-  - qt=5.6.2=hf70d934_9
   - readline=7.0=haf1bffa_1
   - requests=2.21.0=py37_1000
   - setuptools=40.6.3=py37_0
@@ -135,14 +136,17 @@ dependencies:
   - zict=0.1.3=py_0
   - zlib=1.2.11=h470a237_3
   - blas=1.0=mkl
+  - dbus=1.13.2=h714fa37_1
+  - gst-plugins-base=1.14.0=hbbd80ab_1
+  - gstreamer=1.14.0=hb453b48_1
   - intel-openmp=2019.1=144
   - libgcc-ng=8.2.0=hdf63c60_1
-  - mkl=2018.0.3=1
-  - mkl_fft=1.0.4=py37h4414c95_1
-  - mkl_random=1.0.1=py37h4414c95_1
-  - numpy=1.15.4=py37h1d66e8a_0
-  - numpy-base=1.15.4=py37h81de0dd_0
-  - scipy=1.1.0=py37hc49cb51_0
+  - mkl=2019.1=144
+  - numpy=1.16.2=py37h7e9f1db_0
+  - numpy-base=1.16.2=py37hde5b4d6_0
+  - pcre=8.42=h439df22_0
+  - qt=5.6.3=h8bf5577_3
+  - scipy=1.2.1=py37h7c811a0_0
   - pip:
     - msgpack==0.6.0
     - scitools-iris==2.2.0

@@ -98,6 +98,7 @@ This class uses the `plot_4d_cube`, `plot_3d_cube` and `draw_2d_cube` functions 
 There are unit and integration tests to check that the code does as is expected.  Run them with:
 
 ```
+export PYTHONPATH=.
 pytest -vs test
 ```
 
