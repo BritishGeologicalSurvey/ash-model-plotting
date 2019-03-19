@@ -119,6 +119,12 @@ Activate the virtual environment:
 source activate ash_model_plotting
 ```
 
+Developers should also run:
+
+```
+conda install ipdb flake8 pytest
+```
+
 The virtual environment isolates the Python packages used by ash_model_plotting from the rest of the system.
 This means that they will not interfere with each other.
 
