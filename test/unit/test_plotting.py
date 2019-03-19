@@ -16,13 +16,39 @@ def test_plot_4d_happy_path(name_model_result, tmpdir, scantree):
         '00500/VA_Tutorial_Air_Concentration_00500_20100418030000.png',
         '00500/VA_Tutorial_Air_Concentration_00500_20100418060000.png',
         ]
-
-    plot_4d_cube(cube, tmpdir)
+    expected_metadata = {
+        'created_by': 'plot_4d_cube',
+        'attributes': {'End of release': '0800UTC 17/04/2010',
+                       'Forecast duration': '75 hours',
+                       'Met data': 'NWP Flow.ECMWF ERAInt Regional',
+                       'NAME Version': 'NAME III (version 7.2)',
+                       'Release height': '1651.000 to 6151.000m asl',
+                       'Release location': '19.3600W   63.3700N',
+                       'Release rate': '9.4444448E+07g/s',
+                       'Run time': '0904UTC 20/07/2018',
+                       'Species': 'VOLCANIC_ASH',
+                       'Species Category': 'VOLCANIC',
+                       'Start of release': '0000UTC 17/04/2010',
+                       'Title': 'VA_Tutorial',
+                       'Conventions': 'CF-1.5',
+                       'Quantity': 'Air Concentration',
+                       'Time Av or Int': '003 hr time averaged'},
+        'plots': {
+            '00500':
+                 {'20100418030000': 'VA_Tutorial_Air_Concentration_00500_20100418030000.png',
+                  '20100418060000': 'VA_Tutorial_Air_Concentration_00500_20100418060000.png'},
+            '01000':
+                 {'20100418030000': 'VA_Tutorial_Air_Concentration_01000_20100418030000.png',
+                  '20100418060000': 'VA_Tutorial_Air_Concentration_01000_20100418060000.png'}
+                  }
+        }
+    metadata = plot_4d_cube(cube, tmpdir)
 
     plot_files = [Path(entry).relative_to(tmpdir).as_posix()
                   for entry in scantree(tmpdir) if entry.is_file()]
 
     assert plot_files == expected
+    assert metadata == expected_metadata
 
 
 def test_plot_4d_vmax_and_bbox_inches(name_model_result, tmpdir, scantree):
@@ -65,11 +91,31 @@ def test_plot_3d_happy_path(name_model_result, tmpdir):
     cube = name_model_result.total_deposition
     expected = ['VA_Tutorial_Total_deposition_20100418030000.png',
                 'VA_Tutorial_Total_deposition_20100418060000.png']
+    expected_metadata = {
+        'created_by': 'plot_3d_cube',
+        'attributes': {'End of release': '0800UTC 17/04/2010',
+                       'Forecast duration': '75 hours',
+                       'Met data': 'NWP Flow.ECMWF ERAInt Regional',
+                       'NAME Version': 'NAME III (version 7.2)',
+                       'Release height': '1651.000 to 6151.000m asl',
+                       'Release location': '19.3600W   63.3700N',
+                       'Release rate': '9.4444448E+07g/s',
+                       'Run time': '0904UTC 20/07/2018',
+                       'Species': 'VOLCANIC_ASH',
+                       'Species Category': 'VOLCANIC',
+                       'Start of release': '0000UTC 17/04/2010',
+                       'Title': 'VA_Tutorial',
+                       'Conventions': 'CF-1.5',
+                       'Quantity': 'Total deposition',
+                       'Time Av or Int': '078 hr time integrated'},
+        'plots': {'20100418030000': 'VA_Tutorial_Total_deposition_20100418030000.png',
+                  '20100418060000': 'VA_Tutorial_Total_deposition_20100418060000.png'}}
 
-    plot_3d_cube(cube, tmpdir)
+    metadata = plot_3d_cube(cube, tmpdir)
     plot_files = os.listdir(tmpdir)
 
     assert plot_files == expected
+    assert metadata == expected_metadata
 
 
 def test_plot_2d_happy_path(name_model_result):
