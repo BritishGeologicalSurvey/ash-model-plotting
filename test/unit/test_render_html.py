@@ -80,6 +80,9 @@ EXPECTED_3D = dedent("""
 """).strip()
 
 
+EXPECTED_4D = ""
+
+
 def test_render_html_3d():
     # Arrange
     source = 'some source'
@@ -109,7 +112,81 @@ def test_render_html_3d():
     # Act
     html = render_html(source, metadata)
 
-    remove_whitespace = lambda x: " ".join(x.split())
 
     # Assert
     assert remove_whitespace(html) == remove_whitespace(EXPECTED_3D)
+
+
+def test_render_html_3d():
+    # Arrange
+    source = 'some source'
+    metadata = {
+        'created_by': 'plot_3d_cube',
+        'attributes': {
+            'End of release': '0800UTC 17/04/2010',
+            'Forecast duration': '75 hours',
+            'Met data': 'NWP Flow.ECMWF ERAInt Regional',
+            'NAME Version': 'NAME III (version 7.2)',
+            'Release height': '1651.000 to 6151.000m asl',
+            'Release location': '19.3600W   63.3700N',
+            'Release rate': '9.4444448E+07g/s',
+            'Run time': '0904UTC 20/07/2018',
+            'Species': 'VOLCANIC_ASH',
+            'Species Category': 'VOLCANIC',
+            'Start of release': '0000UTC 17/04/2010',
+            'Title': 'VA_Tutorial',
+            'Conventions': 'CF-1.5',
+            'Quantity': 'Total deposition',
+            'Time Av or Int': '078 hr time integrated'},
+        'plots': {
+            '20100418030000': 'VA_Tutorial_Total_deposition_20100418030000.png',
+            '20100418060000': 'VA_Tutorial_Total_deposition_20100418060000.png'}
+    }
+
+    # Act
+    html = render_html(source, metadata)
+
+    # Assert
+    assert _remove_whitespace(html) == _remove_whitespace(EXPECTED_3D)
+
+
+def test_render_html_4d():
+    # Arrange
+    source = 'some source'
+    metadata = {
+        'created_by': 'plot_4d_cube',
+        'attributes': {'End of release': '0800UTC 17/04/2010',
+                       'Forecast duration': '75 hours',
+                       'Met data': 'NWP Flow.ECMWF ERAInt Regional',
+                       'NAME Version': 'NAME III (version 7.2)',
+                       'Release height': '1651.000 to 6151.000m asl',
+                       'Release location': '19.3600W   63.3700N',
+                       'Release rate': '9.4444448E+07g/s',
+                       'Run time': '0904UTC 20/07/2018',
+                       'Species': 'VOLCANIC_ASH',
+                       'Species Category': 'VOLCANIC',
+                       'Start of release': '0000UTC 17/04/2010',
+                       'Title': 'VA_Tutorial',
+                       'Conventions': 'CF-1.5',
+                       'Quantity': 'Air Concentration',
+                       'Time Av or Int': '003 hr time averaged'},
+        'plots': {
+            '00500':
+                {'20100418030000': 'VA_Tutorial_Air_Concentration_00500_20100418030000.png',
+                 '20100418060000': 'VA_Tutorial_Air_Concentration_00500_20100418060000.png'},
+            '01000':
+                {'20100418030000': 'VA_Tutorial_Air_Concentration_01000_20100418030000.png',
+                 '20100418060000': 'VA_Tutorial_Air_Concentration_01000_20100418060000.png'}
+        }
+    }
+
+    # Act
+    html = render_html(source, metadata)
+
+    # Assert
+    assert html == EXPECTED_4D
+    assert _remove_whitespace(html) == _remove_whitespace(EXPECTED_4D)
+
+
+def _remove_whitespace(text):
+    return " ".join(text.split())
