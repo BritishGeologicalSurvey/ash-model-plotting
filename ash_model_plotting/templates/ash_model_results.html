@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ title }}</title>
+    <style type="text/css">
+      h3, h4 {
+        color: grey;
+        font-family: sans-serif;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      blockquote {
+        font-family: "Courier New", Courier, monospace;
+      }
+
+      th, td {
+        text-align: left;
+        padding: 8px;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+    </style>
+  </head>
+
+  <body>
+
+  <h3>{{ title }}</h3>
+
+  <h4>Attributes</h4>
+  <hr>
+
+  <blockquote>
+    <b>Source data:</b> {{ source }}<br>
+    {% for item in metadata['attributes'] -%}
+    <b>{{ item }}:</b> {{ metadata['attributes'][item] }}<br>
+    {% endfor -%}
+  </blockquote>
+
+  <h4>Plots</h4>
+  <hr>
+
+    <table>
+      {% for timestamp in metadata['plots'] -%}
+      <tr><td>
+        <a href="{{ metadata['plots'][timestamp] }}">
+          <img src="{{ metadata['plots'][timestamp] }}" width="640">
+        </a>
+      </td></tr>
+      {% endfor -%}
+    </table>
+
+  </body>
+</html>

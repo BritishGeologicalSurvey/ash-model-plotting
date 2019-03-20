@@ -6,6 +6,7 @@ from pathlib import Path
 
 from iris.exceptions import CoordinateNotFoundError
 import iris.plot as iplt
+from jinja2 import Template
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -123,6 +124,31 @@ def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, **kwargs):
     ax.set_title(title)
 
     return fig, title
+
+
+def render_html(source, metadata):
+    """
+    Return string for HTML page displaying metadata and plots.
+
+    :param source: str, source data for cube
+    :param metadata: dict, metadata returned by plotting function
+    :return: str, HTML for plot viewing page
+    """
+    # Prepare parameters
+    title = (f"{metadata['attributes']['Title']} - "
+             f"{metadata['attributes']['Quantity']} - "
+             f"{metadata['attributes']['Run time']}")
+    params = dict(source=source, metadata=metadata, title=title)
+
+    # Load template
+    with open('ash_model_plotting/templates/ash_model_results.html') as f:
+        template = Template(f.read())
+
+    return template.render(**params)
+
+
+#with open('/tmp/test.html', 'w') as f:
+#    f.write(render_html('some source', '/path/to/dir', metadata))
 
 
 def _format_timestamp_string(cube):
