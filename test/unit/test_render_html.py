@@ -206,40 +206,6 @@ def test_render_html_3d():
     # Act
     html = render_html(source, metadata)
 
-
-    # Assert
-    assert remove_whitespace(html) == remove_whitespace(EXPECTED_3D)
-
-
-def test_render_html_3d():
-    # Arrange
-    source = 'some source'
-    metadata = {
-        'created_by': 'plot_3d_cube',
-        'attributes': {
-            'End of release': '0800UTC 17/04/2010',
-            'Forecast duration': '75 hours',
-            'Met data': 'NWP Flow.ECMWF ERAInt Regional',
-            'NAME Version': 'NAME III (version 7.2)',
-            'Release height': '1651.000 to 6151.000m asl',
-            'Release location': '19.3600W   63.3700N',
-            'Release rate': '9.4444448E+07g/s',
-            'Run time': '0904UTC 20/07/2018',
-            'Species': 'VOLCANIC_ASH',
-            'Species Category': 'VOLCANIC',
-            'Start of release': '0000UTC 17/04/2010',
-            'Title': 'VA_Tutorial',
-            'Conventions': 'CF-1.5',
-            'Quantity': 'Total deposition',
-            'Time Av or Int': '078 hr time integrated'},
-        'plots': {
-            '20100418030000': 'VA_Tutorial_Total_deposition_20100418030000.png',
-            '20100418060000': 'VA_Tutorial_Total_deposition_20100418060000.png'}
-    }
-
-    # Act
-    html = render_html(source, metadata)
-
     # Assert
     assert _remove_whitespace(html) == _remove_whitespace(EXPECTED_3D)
 

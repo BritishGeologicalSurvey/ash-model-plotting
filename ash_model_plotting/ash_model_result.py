@@ -103,6 +103,7 @@ class AshModelResult(object):
 
         :param output_dir: Target directory for plots
         :param file_ext: File extension
+        :param html: bool, set whether html page is created or not
         """
         cube = self.air_concentration
 
@@ -126,6 +127,7 @@ class AshModelResult(object):
 
         :param output_dir: Target directory for plots
         :param file_ext: File extension
+        :param html: bool, set whether html page is created or not
         """
         cube = self.total_column
 
@@ -149,6 +151,7 @@ class AshModelResult(object):
 
         :param output_dir: Target directory for plots
         :param file_ext: File extension
+        :param html: bool, set whether html page is created or not
         """
         cube = self.total_deposition
 
@@ -182,4 +185,3 @@ class AshModelResult(object):
                 f"{metadata['attributes']['Quantity']}.html").replace(' ', '_')
         output_file = Path(output_dir) / name
         output_file.write_text(html)
-

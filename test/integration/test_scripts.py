@@ -1,5 +1,5 @@
 import logging
-from os import scandir, listdir
+from os import listdir
 from pathlib import Path
 import subprocess
 

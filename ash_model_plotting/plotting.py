@@ -45,7 +45,8 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
             fig.savefig(filename, **kwargs)
             plt.close(fig)
 
-            metadata['plots'][altitude][timestamp] = str(filename.relative_to(output_dir))
+            metadata['plots'][altitude][timestamp] = str(
+                filename.relative_to(output_dir))
 
     return metadata
 
