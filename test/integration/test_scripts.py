@@ -24,6 +24,9 @@ def test_plot_ash_model_results_happy_path(tmpdir, data_dir, script_dir,
         'VA_Tutorial_Dosage_20100418060000.png',
         'VA_Tutorial_Total_deposition_20100418030000.png',
         'VA_Tutorial_Total_deposition_20100418060000.png',
+        'VA_Tutorial_Air_Concentration.html',
+        'VA_Tutorial_Dosage.html',
+        'VA_Tutorial_Total_deposition.html',
     }
 
     # Act
@@ -55,6 +58,9 @@ def test_plot_ash_model_results_create_dir(tmpdir, data_dir, script_dir,
         'newdir/VA_Tutorial_Dosage_20100418060000.png',
         'newdir/VA_Tutorial_Total_deposition_20100418030000.png',
         'newdir/VA_Tutorial_Total_deposition_20100418060000.png',
+        'newdir/VA_Tutorial_Air_Concentration.html',
+        'newdir/VA_Tutorial_Dosage.html',
+        'newdir/VA_Tutorial_Total_deposition.html',
     }
 
     # Act

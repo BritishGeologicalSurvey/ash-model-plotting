@@ -147,10 +147,6 @@ def render_html(source, metadata):
     return template.render(**params)
 
 
-#with open('/tmp/test.html', 'w') as f:
-#    f.write(render_html('some source', '/path/to/dir', metadata))
-
-
 def _format_timestamp_string(cube):
     """
     Return string representation of the timestamp for the cube. Method takes

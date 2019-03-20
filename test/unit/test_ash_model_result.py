@@ -53,27 +53,30 @@ def test_ash_model_total_column(data_dir):
 
 
 @pytest.mark.parametrize('plot_func, expected', [
-    ('plot_air_concentration', [
-      '01000/VA_Tutorial_Air_Concentration_01000_20100418030000.png',
+    ('plot_air_concentration',
+     ['01000/VA_Tutorial_Air_Concentration_01000_20100418030000.png',
       '01000/VA_Tutorial_Air_Concentration_01000_20100418060000.png',
       '00500/VA_Tutorial_Air_Concentration_00500_20100418030000.png',
-      '00500/VA_Tutorial_Air_Concentration_00500_20100418060000.png']),
-    ('plot_total_column', [
-      'VA_Tutorial_Dosage_20100418030000.png',
-      'VA_Tutorial_Dosage_20100418060000.png']),
-    ('plot_total_deposition', [
-      'VA_Tutorial_Total_deposition_20100418030000.png',
-      'VA_Tutorial_Total_deposition_20100418060000.png'])
+      '00500/VA_Tutorial_Air_Concentration_00500_20100418060000.png',
+      'VA_Tutorial_Air_Concentration.html']),
+    ('plot_total_column',
+     ['VA_Tutorial_Dosage_20100418030000.png',
+      'VA_Tutorial_Dosage_20100418060000.png',
+      'VA_Tutorial_Dosage.html']),
+    ('plot_total_deposition',
+     ['VA_Tutorial_Total_deposition_20100418030000.png',
+      'VA_Tutorial_Total_deposition_20100418060000.png',
+      'VA_Tutorial_Total_deposition.html'])
     ])
 def test_plot_functions(name_model_result, tmpdir, plot_func, expected,
                         scantree):
-    # Call the plot function
+    # Call the plot function - we expect html to be generated here, too
     getattr(name_model_result, plot_func)(tmpdir)
 
     plot_files = [Path(entry).relative_to(tmpdir).as_posix()
                   for entry in scantree(tmpdir) if entry.is_file()]
 
-    assert plot_files == expected
+    assert set(plot_files) == set(expected)
 
 
 @pytest.mark.parametrize('plot_func', [
