@@ -73,7 +73,7 @@ def test_plot_functions(name_model_result, tmpdir, plot_func, expected,
     plot_files = [Path(entry).relative_to(tmpdir).as_posix()
                   for entry in scantree(tmpdir) if entry.is_file()]
 
-    assert plot_files == expected
+    assert set(plot_files) == set(expected)
 
 
 @pytest.mark.parametrize('plot_func', [
