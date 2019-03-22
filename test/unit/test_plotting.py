@@ -47,8 +47,8 @@ def test_plot_4d_happy_path(name_model_result, tmpdir, scantree):
     plot_files = [Path(entry).relative_to(tmpdir).as_posix()
                   for entry in scantree(tmpdir) if entry.is_file()]
 
-    assert plot_files == expected
     assert metadata == expected_metadata
+    assert set(plot_files) == set(expected)
 
 
 def test_plot_4d_vmax_and_bbox_inches(name_model_result, tmpdir, scantree):
@@ -69,7 +69,7 @@ def test_plot_4d_vmax_and_bbox_inches(name_model_result, tmpdir, scantree):
     plot_files = [Path(entry).relative_to(tmpdir).as_posix()
                   for entry in scantree(tmpdir) if entry.is_file()]
 
-    assert plot_files == expected
+    assert set(plot_files) == set(expected)
 
 
 def test_plot_3d_vmax_and_bbox_inches(name_model_result, tmpdir):
@@ -84,7 +84,7 @@ def test_plot_3d_vmax_and_bbox_inches(name_model_result, tmpdir):
     plot_3d_cube(cube, tmpdir, vmax=cube.data.max(), bbox_inches='tight')
     plot_files = os.listdir(tmpdir)
 
-    assert plot_files == expected
+    assert set(plot_files) == set(expected)
 
 
 def test_plot_3d_happy_path(name_model_result, tmpdir):
@@ -114,8 +114,8 @@ def test_plot_3d_happy_path(name_model_result, tmpdir):
     metadata = plot_3d_cube(cube, tmpdir)
     plot_files = os.listdir(tmpdir)
 
-    assert plot_files == expected
     assert metadata == expected_metadata
+    assert set(plot_files) == set(expected)
 
 
 def test_plot_2d_happy_path(name_model_result):

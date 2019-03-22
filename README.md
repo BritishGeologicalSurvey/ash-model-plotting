@@ -24,8 +24,16 @@ These must be installed and the correct Python environment configured before run
 Checkout the code from Git:
 
 ```
-git checkout git@kwvmxgit.ad.nerc.ac.uk:volcanology/ash_model_plotting.git
-cd ash_model_plotting
+git checkout git@kwvmxgit.ad.nerc.ac.uk:volcanology/ash-model-plotting.git
+cd ash-model-plotting
+```
+
+Alternatively, you can checkout a read-only version of the code (e.g. on the
+cluster) with:
+
+```
+git clone https://gitlab+deploy-token-6:PXqjssfyhyJSWysAzwT5@kwvmxgit.ad.nerc.ac.uk/volcanology/ash-model-plotting.git
+cd ash-model-plotting
 ```
 
 ### Installation via Conda (recommended)
