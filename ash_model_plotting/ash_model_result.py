@@ -4,7 +4,11 @@ from pathlib import Path
 import iris
 from netCDF4 import Dataset
 
-from ash_model_plotting.plotting import plot_3d_cube, plot_4d_cube
+from ash_model_plotting.plotting import (
+    plot_3d_cube,
+    plot_4d_cube,
+    render_html,
+)
 
 
 class AshModelResultError(Exception):
@@ -90,7 +94,8 @@ class AshModelResult(object):
             # Return None if no cubes present
             return
 
-    def plot_air_concentration(self, output_dir, file_ext='png', **kwargs):
+    def plot_air_concentration(self, output_dir, file_ext='png',
+                               html=True, **kwargs):
         """
         Plot air concentration data to output directory.
 
@@ -98,6 +103,7 @@ class AshModelResult(object):
 
         :param output_dir: Target directory for plots
         :param file_ext: File extension
+        :param html: bool, set whether html page is created or not
         """
         cube = self.air_concentration
 
@@ -105,11 +111,15 @@ class AshModelResult(object):
             msg = 'AshModelResult has no air concentration data'
             raise AshModelResultError(msg)
 
-        plot_4d_cube(
+        metadata = plot_4d_cube(
             cube, output_dir, file_ext=file_ext,
             vmin=0, vmax=cube.data.max(), **kwargs)
 
-    def plot_total_column(self, output_dir, file_ext='png', **kwargs):
+        if html:
+            self._write_html(output_dir, metadata)
+
+    def plot_total_column(self, output_dir, file_ext='png',
+                          html=True, **kwargs):
         """
         Plot total column data to output directory.
 
@@ -117,6 +127,7 @@ class AshModelResult(object):
 
         :param output_dir: Target directory for plots
         :param file_ext: File extension
+        :param html: bool, set whether html page is created or not
         """
         cube = self.total_column
 
@@ -124,11 +135,15 @@ class AshModelResult(object):
             msg = 'AshModelResult has no total column data'
             raise AshModelResultError(msg)
 
-        plot_3d_cube(
+        metadata = plot_3d_cube(
             cube, output_dir, file_ext=file_ext,
             vmin=0, vmax=cube.data.max(), **kwargs)
 
-    def plot_total_deposition(self, output_dir, file_ext='png', **kwargs):
+        if html:
+            self._write_html(output_dir, metadata)
+
+    def plot_total_deposition(self, output_dir, file_ext='png',
+                              html=True, **kwargs):
         """
         Plot total column data to output directory.
 
@@ -136,6 +151,7 @@ class AshModelResult(object):
 
         :param output_dir: Target directory for plots
         :param file_ext: File extension
+        :param html: bool, set whether html page is created or not
         """
         cube = self.total_deposition
 
@@ -143,9 +159,29 @@ class AshModelResult(object):
             msg = 'AshModelResult has no total deposition data'
             raise AshModelResultError(msg)
 
-        plot_3d_cube(
+        metadata = plot_3d_cube(
             cube, output_dir, file_ext=file_ext,
             vmin=0, vmax=cube.data.max(), **kwargs)
 
+        if html:
+            self._write_html(output_dir, metadata)
+
     def __repr__(self):
         return f"AshModelResult({self.source_file})"
+
+    def _write_html(self, output_dir, metadata):
+        """
+        Write HTML page for plots using metadata outputs from plotting
+        functions.
+
+        :param output_dir: str, target directory for html file
+        :param metadata: dict, metadata produced by plot function
+        """
+        # Prepare HTML
+        html = render_html(self.source_file, metadata)
+
+        # Write to file
+        name = (f"{metadata['attributes']['Title']}_"
+                f"{metadata['attributes']['Quantity']}.html").replace(' ', '_')
+        output_file = Path(output_dir) / name
+        output_file.write_text(html)

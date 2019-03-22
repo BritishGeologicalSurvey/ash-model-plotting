@@ -8,6 +8,7 @@ import cartopy.crs as ccrs
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 from iris.exceptions import CoordinateNotFoundError
 import iris.plot as iplt
+from jinja2 import Template
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -21,6 +22,11 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
     :param file_ext, file extension suffix for data format e.g. png, pdf
     :param kwargs: dict; extra arguments to pass to plt.savefig
     """
+    metadata = {'created_by': 'plot_4d_cube',
+                'attributes': cube.attributes,
+                'plots': {}
+                }
+
     base_output_dir = Path(output_dir)
     for i, altitude in enumerate(cube.coord('altitude')):
         # Create new directory for each altitude level
@@ -28,12 +34,23 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
         if not output_dir.is_dir():
             os.mkdir(output_dir)
 
+        # Create placeholder for altitude level of nesting
+        altitude = _format_altitude_string(cube[i, :, :, :])
+        metadata['plots'][altitude] = {}
+
         # Plot all the slices for that altitude
         for j, timestamp in enumerate(cube.coord('time')):
+            timestamp = _format_timestamp_string(cube[i, j, :, :])
+
             fig, title = draw_2d_cube(cube[i, j, :, :], **kwargs)
             filename = output_dir / f"{title}.{file_ext}"
             fig.savefig(filename, **kwargs)
             plt.close(fig)
+
+            metadata['plots'][altitude][timestamp] = str(
+                filename.relative_to(output_dir))
+
+    return metadata
 
 
 def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
@@ -45,12 +62,23 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
     :param file_ext, file extension suffix for data format e.g. png, pdf
     :param kwargs: dict; extra args for draw_2d_cube and plt.savefig
     """
+    metadata = {'created_by': 'plot_3d_cube',
+                'attributes': cube.attributes,
+                'plots': {}
+                }
+
     output_dir = Path(output_dir)
     for i, timestamp in enumerate(cube.coord('time')):
+        timestamp = _format_timestamp_string(cube[i, :, :])
+
         fig, title = draw_2d_cube(cube[i, :, :], **kwargs)
         filename = output_dir / f"{title}.{file_ext}"
         fig.savefig(filename, **kwargs)
         plt.close(fig)
+
+        metadata['plots'][timestamp] = str(filename.relative_to(output_dir))
+
+    return metadata
 
 
 def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, **kwargs):
@@ -92,21 +120,11 @@ def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, **kwargs):
     ax.grid(linewidth=0.5, color='grey', alpha=0.25, linestyle='--')
 
     # Get title attributes
-    try:
-        altitude = cube.coord('altitude').points[0]
-        # Add underscore for use in composite title
-        altitude = f"{altitude:05.0f}_"
-    except CoordinateNotFoundError:
-        # No altitude coordinate on cube
-        altitude = ''
-
-    try:
-        timestamp = cube.coord('time').points[0]
-        timestamp = cube.coord('time').units.num2date(
-            timestamp).strftime('%Y%m%d%H%M%S')
-    except CoordinateNotFoundError:
-        # No time coordinate on cube
-        timestamp = ''
+    altitude = _format_altitude_string(cube)
+    if altitude:
+        # Add underscore to make title separation correct
+        altitude += '_'
+    timestamp = _format_timestamp_string(cube)
 
     # Get and apply title
     title = "{title}_{quantity}_{altitude}{timestamp}".format(
@@ -118,3 +136,64 @@ def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, **kwargs):
     ax.set_title(title)
 
     return fig, title
+
+
+def render_html(source, metadata):
+    """
+    Return string for HTML page displaying metadata and plots.
+
+    :param source: str, source data for cube
+    :param metadata: dict, metadata returned by plotting function
+    :return: str, HTML for plot viewing page
+    """
+    # Prepare parameters
+    title = (f"{metadata['attributes']['Title']} - "
+             f"{metadata['attributes']['Quantity']} - "
+             f"{metadata['attributes']['Run time']}")
+    params = dict(source=source, metadata=metadata, title=title)
+
+    # Load template
+    with open('ash_model_plotting/templates/ash_model_results.html') as f:
+        template = Template(f.read())
+
+    return template.render(**params)
+
+
+def _format_timestamp_string(cube):
+    """
+    Return string representation of the timestamp for the cube. Method takes
+    the first value in the time dimension e.g. assumes cube represents single
+    time step.
+
+    :param cube: Iris cube
+    :return: str representation of timestamp
+    """
+    try:
+        timestamp = cube.coord('time').points[0]
+        timestamp = cube.coord('time').units.num2date(
+            timestamp).strftime('%Y%m%d%H%M%S')
+    except CoordinateNotFoundError:
+        # No time coordinate on cube
+        timestamp = ''
+
+    return timestamp
+
+
+def _format_altitude_string(cube):
+    """
+    Return string representation of the altitude for the cube. Method takes
+    the first value in the time dimension e.g. assumes cube represents single
+    time step.
+
+    :param cube: Iris cube
+    :return: str representation of altitude
+    """
+    try:
+        altitude = cube.coord('altitude').points[0]
+        # Add underscore for use in composite title
+        altitude = f"{altitude:05.0f}"
+    except CoordinateNotFoundError:
+        # No altitude coordinate on cube
+        altitude = ''
+
+    return altitude

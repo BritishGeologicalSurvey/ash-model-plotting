@@ -36,6 +36,30 @@ git clone https://gitlab+deploy-token-6:PXqjssfyhyJSWysAzwT5@kwvmxgit.ad.nerc.ac
 cd ash-model-plotting
 ```
 
+### Installation via Conda (recommended)
+
+Download and run the Miniconda3 installer for Linux, Mac or Windows from the [Conda website](https://conda.io/miniconda.html).
+Create an 'environment' and install Iris and other Python packages:
+
+```
+conda create -y -c conda-forge -n ash_model_plotting iris iris-sample-data ipython numpy matplotlib
+```
+
+Activate the virtual environment:
+
+```
+source activate ash_model_plotting
+```
+
+The virtual environment isolates the Python packages used by ash_model_plotting from the rest of the system.
+This means that they will not interfere with each other.
+
+Deactivate the virtual environment:
+
+```
+source deactivate
+```
+
 
 ## Convert NAME to netCDF
 
@@ -112,34 +136,11 @@ pytest -vs test
 
 ## Dependencies
 
-### Installation via Conda (recommended)
-
-Download and run the Miniconda3 installer for Linux, Mac or Windows from the [Conda website](https://conda.io/miniconda.html).
-Create an 'environment' and install Iris and other Python packages:
-
-```
-conda create -y -c conda-forge -n ash_model_plotting iris iris-sample-data ipython numpy matplotlib
-```
-
-Activate the virtual environment:
-
-```
-source activate ash_model_plotting
-```
 
 Developers should also run:
 
 ```
-conda install ipdb flake8 pytest
-```
-
-The virtual environment isolates the Python packages used by ash_model_plotting from the rest of the system.
-This means that they will not interfere with each other.
-
-Deactivate the virtual environment:
-
-```
-source deactivate
+conda install -c conda-forge ipdb flake8 pytest pytest-icdiff
 ```
 
 ### Running via Docker

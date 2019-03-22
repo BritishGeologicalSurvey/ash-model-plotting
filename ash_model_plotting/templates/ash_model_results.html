@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ title }}</title>
+    <style type="text/css">
+      h3, h4, h5 {
+        color: grey;
+        font-family: sans-serif;
+      }
+
+      table {
+        border-collapse: collapse;
+      }
+
+      blockquote {
+        font-family: "Courier New", Courier, monospace;
+      }
+
+      th, td {
+        text-align: left;
+        padding: 8px;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+    </style>
+  </head>
+
+  <body>
+
+  <h3>{{ title }}</h3>
+
+  <hr>
+  <h4>Attributes</h4>
+
+  <blockquote>
+    <b>Source data:</b> {{ source }}<br>
+    {% for item in metadata['attributes'] -%}
+    <b>{{ item }}:</b> {{ metadata['attributes'][item] }}<br>
+    {% endfor -%}
+  </blockquote>
+
+  <hr>
+  <h4>Plots</h4>
+
+  {%- if metadata['created_by'] == 'plot_3d_cube' %}
+    <table>
+      {% for timestamp in metadata['plots'] -%}
+      <tr><td>
+        <a href="{{ metadata['plots'][timestamp] }}">
+          <img src="{{ metadata['plots'][timestamp] }}" width="640">
+        </a>
+      </td></tr>
+      {% endfor -%}
+    </table>
+  {% else %}
+    <h5>Altitude levels:</h5>
+    <ul>
+    {% for altitude in metadata['plots'] -%}
+      <li><a href="#{{ altitude }}">{{ altitude }}</a></li>
+    {% endfor %}
+    </ul>
+    {% for altitude in metadata['plots'] -%}
+
+      <h5 id="{{ altitude }}">Altitude: {{ altitude }}</h5>
+      <table>
+        {% for timestamp in metadata['plots'][altitude] -%}
+        <tr><td>
+          <a href="{{ altitude }}/{{ metadata['plots'][altitude][timestamp] }}">
+            <img src="{{ altitude }}/{{ metadata['plots'][altitude][timestamp] }}" width="640">
+          </a>
+        </td></tr>
+        {% endfor -%}
+      </table>
+      <hr>
+    {% endfor %}
+  {% endif -%}
+
+  </body>
+</html>
