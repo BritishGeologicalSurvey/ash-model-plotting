@@ -46,7 +46,8 @@ def plot_name_files(input_file, output_dir=None):
             logger.info(f'No {attribute} data found')
 
 
-if __name__ == '__main__':
+def main():
+    """Parse arguments and call plot_name_files."""
     parser = argparse.ArgumentParser(
         description='Generate plots from netCDF4 file of NAME data')
     parser.add_argument(
@@ -58,3 +59,7 @@ if __name__ == '__main__':
         default=None)
     args = parser.parse_args()
     plot_name_files(args.input_file, args.output_dir)
+
+
+if __name__ == '__main__':
+    main()

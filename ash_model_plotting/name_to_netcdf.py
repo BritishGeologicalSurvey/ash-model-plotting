@@ -34,7 +34,8 @@ def name_to_netcdf(source_dir, prefix=None, output_dir=None, output_name=None):
     iris.save(cubes, output_path)
 
 
-if __name__ == '__main__':
+def main():
+    """Parse arguments then call name_to_netcdf."""
     parser = argparse.ArgumentParser(
         description='Convert NAME output (.txt) files into a NetCDF file.')
     parser.add_argument(
@@ -56,3 +57,7 @@ if __name__ == '__main__':
     name_to_netcdf(
         args.source_dir, prefix=args.prefix,
         output_dir=args.output_dir, output_name=args.output_name)
+
+
+if __name__ == '__main__':
+    main()
