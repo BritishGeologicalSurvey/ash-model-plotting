@@ -1,3 +1,6 @@
+"""
+Script to convert NAME files in directory to single NetCDF
+"""
 import argparse
 import glob
 from pathlib import Path

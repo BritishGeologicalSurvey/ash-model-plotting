@@ -81,7 +81,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
     return metadata
 
 
-def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, **kwargs):
+def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8):
     """
     Draw a map of a two dimensional cube.  Cube should have two spatial
     dimensions (e.g. latitude, longitude).  All other dimensions (time,

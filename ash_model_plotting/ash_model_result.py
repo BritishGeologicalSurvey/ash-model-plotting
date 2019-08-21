@@ -1,3 +1,6 @@
+"""
+Class to store ash model results.
+"""
 # coding: utf-8
 from pathlib import Path
 
@@ -17,7 +20,7 @@ class AshModelResultError(Exception):
 
 class AshModelResult(object):
     """
-    Class to store ash model results from NetCDF4 file with plotting methods
+    Class to store ash model results with plotting methods
     """
     def __init__(self, source_data):
         self.source_data = source_data

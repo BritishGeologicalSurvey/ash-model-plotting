@@ -1,3 +1,6 @@
+"""
+Script to plot NAME output files
+"""
 # coding: utf-8
 import argparse
 import logging
@@ -50,7 +53,7 @@ def plot_name_files(input_files, output_dir=None):
 def main():
     """Parse arguments and call plot_name_files."""
     parser = argparse.ArgumentParser(
-        description='Generate plots from netCDF4 file of NAME data')
+        description='Generate plots from NAME data .txt files')
     parser.add_argument(
         'input_files',
         help="Input file path(s)",
