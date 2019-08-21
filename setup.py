@@ -14,9 +14,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://kwvmxgit.ad.nerc.ac.uk/volcanology/ash-model-plotting",
     packages=["ash_model_plotting"],
-    install_requires=[
-        "scitools-iris",
-    ],
+    install_requires=[],
     extras_require={
         "dev": ["flake8",
                 "ipdb",
