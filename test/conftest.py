@@ -3,7 +3,11 @@ from pathlib import Path
 
 import pytest
 
-from ash_model_plotting.ash_model_result import AshModelResult
+# Use Agg plotting backend for tests so matplotlib doesn't open window
+import matplotlib
+matplotlib.use('Agg')
+
+from ash_model_plotting.ash_model_result import AshModelResult  # noqa
 
 
 @pytest.fixture(scope='module')
