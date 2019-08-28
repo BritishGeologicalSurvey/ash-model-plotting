@@ -111,13 +111,13 @@ def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, **kwargs):
     colorbar.set_label(f'{cube.long_name.title()} ({cube.units})')
 
     # Add tick marks
-    ax.set_xticks(ax.get_xticks(), crs=ccrs.PlateCarree())
-    ax.set_yticks(ax.get_yticks(), crs=ccrs.PlateCarree())
-    lon_formatter = LongitudeFormatter(zero_direction_label=True)
-    lat_formatter = LatitudeFormatter()
-    ax.xaxis.set_major_formatter(lon_formatter)
-    ax.yaxis.set_major_formatter(lat_formatter)
-    ax.grid(linewidth=0.5, color='grey', alpha=0.25, linestyle='--')
+    #ax.set_xticks(ax.get_xticks(), crs=ccrs.PlateCarree())
+    #ax.set_yticks(ax.get_yticks(), crs=ccrs.PlateCarree())
+    #lon_formatter = LongitudeFormatter(zero_direction_label=True)
+    #lat_formatter = LatitudeFormatter()
+    #ax.xaxis.set_major_formatter(lon_formatter)
+    #ax.yaxis.set_major_formatter(lat_formatter)
+    #ax.grid(linewidth=0.5, color='grey', alpha=0.25, linestyle='--')
 
     # Get title attributes
     zlevel = _format_zlevel_string(cube)
@@ -194,7 +194,7 @@ def _format_zlevel_string(cube):
         zlevel = cube.coord('altitude').points[0]
         zlevel = f"{zlevel:05.0f}"
     elif 'flight_level' in coord_types:
-        zlevel = cube.coord('flight_level').points.tolist()
+        zlevel = cube.coord('flight_level').points[0]
         zlevel = f"FL{zlevel:03.0f}"
     else:
         zlevel = ''

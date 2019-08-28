@@ -73,12 +73,15 @@ class AshModelResult(object):
             name='VOLCANIC_ASH_AIR_CONCENTRATION'
             )
 
-        has_altitude = iris.Constraint(
-            cube_func=lambda cube: 'altitude' in {
-                c[0].standard_name for c in cube.dim_coords}
-        )
+        def match_zlevels(cube):
+            # is_disjoint() is True if sets don't overlap
+            zlevels = {'altitude', 'flight_level'}
+            coord_names = {c.name() for c in cube.coords()}
+            return not zlevels.isdisjoint(coord_names)
 
-        valid_cubes = self.cubes.extract(air_concentration & has_altitude)
+        has_zlevel = iris.Constraint(cube_func=match_zlevels)
+
+        valid_cubes = self.cubes.extract(air_concentration & has_zlevel)
         try:
             return valid_cubes.concatenate_cube()
         except ValueError:
