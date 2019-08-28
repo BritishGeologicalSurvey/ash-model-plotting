@@ -9,6 +9,7 @@ from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 from iris.exceptions import CoordinateNotFoundError
 import iris.plot as iplt
 from jinja2 import Template
+import matplotlib.colors
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -102,12 +103,21 @@ def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, **kwargs):
     # Mask out data below threshold
     cube.data = np.ma.masked_less(cube.data, mask_less)
 
+    # Prepare colormap
+    colors = ['cyan', 'grey']
+    levels = [0.0002, 0.002, 0.004]
+    cmap = matplotlib.colors.ListedColormap(colors)
+    cmap.set_over('red')
+    norm = matplotlib.colors.BoundaryNorm(levels, cmap.N, clip=False)
+
     # Plot data
     fig = plt.figure()
-    mesh_plot = iplt.pcolormesh(cube, vmin=vmin, vmax=vmax)
+    mesh_plot = iplt.pcolormesh(cube, vmin=vmin, vmax=vmax,
+                                cmap=cmap, norm=norm)
     ax = plt.gca()
     ax.coastlines(resolution='50m', color='grey')
-    colorbar = fig.colorbar(mesh_plot, orientation='horizontal')
+    colorbar = fig.colorbar(mesh_plot, orientation='horizontal',
+                            extend='max', extendfrac='auto')
     colorbar.set_label(f'{cube.long_name.title()} ({cube.units})')
 
     # Add tick marks
