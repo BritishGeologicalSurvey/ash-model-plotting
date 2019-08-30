@@ -10,7 +10,7 @@ from ash_model_plotting.analyse_refir_outputs import (
 
 def test_advisory_area(refir_result):
     data = advisory_area(refir_result)
-    expected = {'flight_level': 450.0,
+    expected = {'flight_level': 100.0,
                 'time': dt.datetime(2010, 5, 6, 18, 0),
                 'advisory_area': 193443000287.01135}
     # Test non-numeric keys

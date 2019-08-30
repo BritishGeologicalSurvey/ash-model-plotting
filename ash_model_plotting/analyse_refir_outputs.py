@@ -104,10 +104,12 @@ def advisory_area(ash_model_result, threshold=0.002):
 
         advisory_area = cell_areas[xy_slice.data > threshold].sum()
         if advisory_area > max_area:
+            max_flight_level = flight_level
+            max_timestamp = timestamp
             max_area = advisory_area
 
-    data = {'flight_level': flight_level,
-            'time': timestamp,
+    data = {'flight_level': max_flight_level,
+            'time': max_timestamp,
             'advisory_area': max_area}
 
     return data
