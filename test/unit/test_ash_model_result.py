@@ -1,4 +1,4 @@
-from glob import glob
+"""Tests for AshModelResult class."""
 from pathlib import Path
 
 import pytest
