@@ -41,20 +41,39 @@ def plot_results(all_results, output_dir):
 
     # Plot advisory_area results
     advisory_area = df['advisory_area'] / 1e6
-    advisory_area.plot.bar()
-    plt.ylabel('Advisory area (>0.002 g/m3)')
-    plt.grid()
+    fig, ax = plot_bar_with_errors(advisory_area)
+    ax.set_ylabel('Advisory area (>0.002 g/m3)')
     plt.tight_layout()
-    plt.savefig(output_dir / 'REFIR_advisory_area.png')
+    fig.savefig(output_dir / 'REFIR_advisory_area.png', dpi=450)
     plt.close()
 
     # Plot advisory_area results
-    df['max_concentration'].plot.bar()
-    plt.ylabel('Concentration (g/m3)')
-    plt.grid()
+    max_concentration = df['max_concentration']
+    fig, ax = plot_bar_with_errors(max_concentration)
+    ax.set_ylabel('Concentration (g/m3)')
     plt.tight_layout()
-    plt.savefig(output_dir / 'REFIR_max_concentration.png')
+    fig.savefig(output_dir / 'REFIR_max_concentration.png', dpi=450)
     plt.close()
+
+
+def plot_bar_with_errors(df):
+    # Prepare data
+    heights = df.xs('Av', level='run')
+    min_offset = heights - df.xs('Min', level='run')
+    max_offset = df.xs('Max', level='run') - heights
+    error_bars = [min_offset, max_offset]
+    x_pos = range(len(heights))
+
+    # Plot
+    fig, ax = plt.subplots()
+    plt.bar(x_pos, heights, yerr=error_bars, align='center', alpha=0.5,
+            capsize=10)
+    ax.set_xticks(x_pos)
+    ax.set_xticklabels(heights.index)
+    plt.grid()
+
+    return fig, ax
+
 
 
 def analyse_run(data_dir, experiment, model, run):
