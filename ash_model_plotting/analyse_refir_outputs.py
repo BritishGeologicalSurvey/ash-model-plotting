@@ -9,7 +9,7 @@ import pandas as pd
 from ash_model_plotting.ash_model_result import AshModelResult
 
 EXPERIMENTS = ['30MinAv']
-MODELS = ['EmpOnly', 'MastinOnly', 'WoodOnly', 'WWOnly']
+MODELS = ['AllModels', 'EmpOnly', 'WindOnly']
 RUNS = ['Av', 'Max', 'Min']
 
 
@@ -24,12 +24,16 @@ def main(data_dir, output_dir):
     # Analyse runs
     all_results = []
     for experiment in EXPERIMENTS:
-        for model in MODELS[:-1]:  # WWOnly was broken
+        for model in MODELS:
             for run in RUNS:
                 print(experiment, model, run)
                 results = analyse_run(data_dir, experiment, model, run)
                 all_results.append(results)
 
+    plot_results(all_results, output_dir)
+
+
+def plot_results(all_results, output_dir):
     # Convert to dataframe to export csv
     df = pd.DataFrame(all_results)
     df = df.set_index(['experiment', 'model', 'run'])
