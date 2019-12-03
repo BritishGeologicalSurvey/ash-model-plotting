@@ -44,7 +44,6 @@ def plot_results(results_df, output_dir):
     advisory_area = results_df['advisory_area'] / 1e6
     fig, ax = plot_bar_with_errors(advisory_area)
     ax.set_ylabel('Advisory area (conc >0.002 g/m3) [km2]')
-    add_area_comparison(ax)
     plt.tight_layout()
     fig.savefig(output_dir / 'REFIR_advisory_area.png', dpi=450)
     plt.close()
@@ -75,23 +74,6 @@ def plot_bar_with_errors(df):
     plt.grid()
 
     return fig, ax
-
-
-def add_area_comparison(ax):
-    """
-    Add labelled horizontal bars corresponding to areas of geographic
-    features or locations.
-    """
-    areas = {
-        "Iceland": 103000,
-    }
-
-    xmin, xmax = ax.get_xlim()
-    trans = ax.get_yaxis_transform()
-    for name, area in areas.items():
-        ax.hlines(area, xmin, xmax, color='green', linestyles='dotted')
-        ax.text(1, area + 1e3, name, color='green', horizontalalignment='right',
-                transform=trans)
 
 
 def analyse_run(data_dir, experiment, model, run):
