@@ -30,27 +30,29 @@ def main(data_dir, output_dir):
                 results = analyse_run(data_dir, experiment, model, run)
                 all_results.append(results)
 
-    plot_results(all_results, output_dir)
-
-
-def plot_results(all_results, output_dir):
     # Convert to dataframe to export csv
     df = pd.DataFrame(all_results)
     df = df.set_index(['experiment', 'model', 'run'])
     df.to_csv(output_dir / 'REFIR_summary.csv')
 
+    # Plot results
+    plot_results(df, output_dir)
+
+
+def plot_results(results_df, output_dir):
     # Plot advisory_area results
-    advisory_area = df['advisory_area'] / 1e6
+    advisory_area = results_df['advisory_area'] / 1e6
     fig, ax = plot_bar_with_errors(advisory_area)
-    ax.set_ylabel('Advisory area (>0.002 g/m3)')
+    ax.set_ylabel('Advisory area (conc >0.002 g/m3) [km2]')
+    add_area_comparison(ax)
     plt.tight_layout()
     fig.savefig(output_dir / 'REFIR_advisory_area.png', dpi=450)
     plt.close()
 
     # Plot advisory_area results
-    max_concentration = df['max_concentration']
+    max_concentration = results_df['max_concentration']
     fig, ax = plot_bar_with_errors(max_concentration)
-    ax.set_ylabel('Concentration (g/m3)')
+    ax.set_ylabel('Concentration [g/m3]')
     plt.tight_layout()
     fig.savefig(output_dir / 'REFIR_max_concentration.png', dpi=450)
     plt.close()
@@ -69,11 +71,27 @@ def plot_bar_with_errors(df):
     plt.bar(x_pos, heights, yerr=error_bars, align='center', alpha=0.5,
             capsize=10)
     ax.set_xticks(x_pos)
-    ax.set_xticklabels(heights.index)
+    ax.set_xticklabels(heights.index.levels[1])
     plt.grid()
 
     return fig, ax
 
+
+def add_area_comparison(ax):
+    """
+    Add labelled horizontal bars corresponding to areas of geographic
+    features or locations.
+    """
+    areas = {
+        "Iceland": 103000,
+    }
+
+    xmin, xmax = ax.get_xlim()
+    trans = ax.get_yaxis_transform()
+    for name, area in areas.items():
+        ax.hlines(area, xmin, xmax, color='green', linestyles='dotted')
+        ax.text(1, area + 1e3, name, color='green', horizontalalignment='right',
+                transform=trans)
 
 
 def analyse_run(data_dir, experiment, model, run):
