@@ -43,7 +43,7 @@ def plot_results(results_df, output_dir):
     # Plot advisory_area results
     advisory_area = results_df['advisory_area'] / 1e6
     fig, ax = plot_bar_with_errors(advisory_area)
-    ax.set_ylabel('Advisory area (conc >0.002 g/m3) [km2]')
+    ax.set_ylabel('Advisory area [km2]')
     plt.tight_layout()
     fig.savefig(output_dir / 'REFIR_advisory_area.png', dpi=450)
     plt.close()
