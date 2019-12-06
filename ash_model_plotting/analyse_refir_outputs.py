@@ -9,7 +9,8 @@ import pandas as pd
 from ash_model_plotting.ash_model_result import AshModelResult
 
 EXPERIMENTS = ['30MinAv']
-MODELS = ['MastinOnly', 'EmpOnly', 'WindOnly', 'AllModels']
+MODELS = ['AllModels', 'WindOnly', 'EmpOnly', 'MastinOnly']
+LABELS = ['ALL', 'WA', 'NWA', 'Mastin']
 RUNS = ['Av', 'Max', 'Min']
 
 
@@ -45,15 +46,16 @@ def plot_results(results_df, output_dir):
     # Plot advisory_area results
     advisory_area = results_df['advisory_area'] / 1e6
     fig, ax = plot_bar_with_errors(advisory_area)
-    ax.set_ylabel('Advisory area [km2]')
+    ax.set_ylabel('Area with concentration exceeding 2000 µg/m³ [km²]')
     plt.tight_layout()
     fig.savefig(output_dir / 'REFIR_advisory_area.png', dpi=450)
     plt.close()
 
-    # Plot advisory_area results
-    max_concentration = results_df['max_concentration']
+    # Plot max_concentration results
+    # Convert to micrograms per cubic metre
+    max_concentration = results_df['max_concentration'] * 1e6
     fig, ax = plot_bar_with_errors(max_concentration)
-    ax.set_ylabel('Concentration [g/m3]')
+    ax.set_ylabel('Maximum concentration [µg/m³]')
     plt.tight_layout()
     fig.savefig(output_dir / 'REFIR_max_concentration.png', dpi=450)
     plt.close()
@@ -72,11 +74,9 @@ def plot_bar_with_errors(df):
     plt.bar(x_pos, heights, yerr=error_bars, align='center', alpha=0.5,
             capsize=10)
 
-    # Labels for bars.  Can't use heights.index.levels[1] because Pandas sorts
-    # their names in alphabetical order
+    # Labels for bars.
     ax.set_xticks(x_pos)
-    labels = [i[1] for i in heights.index.tolist()]
-    ax.set_xticklabels(labels)
+    ax.set_xticklabels(LABELS)
     plt.grid()
 
     return fig, ax
