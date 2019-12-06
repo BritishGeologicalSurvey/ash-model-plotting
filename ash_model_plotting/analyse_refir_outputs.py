@@ -9,7 +9,7 @@ import pandas as pd
 from ash_model_plotting.ash_model_result import AshModelResult
 
 EXPERIMENTS = ['30MinAv']
-MODELS = ['AllModels', 'EmpOnly', 'WindOnly']
+MODELS = ['MastinOnly', 'EmpOnly', 'WindOnly', 'AllModels']
 RUNS = ['Av', 'Max', 'Min']
 
 
@@ -18,6 +18,8 @@ def main(data_dir, output_dir):
     data_dir = Path(data_dir)
     if output_dir:
         output_dir = Path(output_dir)
+        if not output_dir.is_dir():
+            output_dir.mkdir(parents=True)
     else:
         output_dir = data_dir
 
@@ -69,8 +71,12 @@ def plot_bar_with_errors(df):
     fig, ax = plt.subplots()
     plt.bar(x_pos, heights, yerr=error_bars, align='center', alpha=0.5,
             capsize=10)
+
+    # Labels for bars.  Can't use heights.index.levels[1] because Pandas sorts
+    # their names in alphabetical order
     ax.set_xticks(x_pos)
-    ax.set_xticklabels(heights.index.levels[1])
+    labels = [i[1] for i in heights.index.tolist()]
+    ax.set_xticklabels(labels)
     plt.grid()
 
     return fig, ax
