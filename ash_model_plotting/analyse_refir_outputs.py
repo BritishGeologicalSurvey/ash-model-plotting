@@ -45,7 +45,7 @@ def main(data_dir, output_dir):
 def plot_results(results_df, output_dir):
     # Plot advisory_area results
     advisory_area = results_df['advisory_area'] / 1e6
-    fig, ax = plot_bar_with_errors(advisory_area)
+    fig, ax = plot_bar_with_errors(advisory_area, label='(a)')
     ax.set_ylabel('Area with concentration exceeding 2000 µg/m³ [km²]')
     plt.tight_layout()
     fig.savefig(output_dir / 'REFIR_advisory_area.png', dpi=450)
@@ -54,14 +54,14 @@ def plot_results(results_df, output_dir):
     # Plot max_concentration results
     # Convert to micrograms per cubic metre
     max_concentration = results_df['max_concentration'] * 1e6
-    fig, ax = plot_bar_with_errors(max_concentration)
+    fig, ax = plot_bar_with_errors(max_concentration, label='(b)')
     ax.set_ylabel('Maximum concentration [µg/m³]')
     plt.tight_layout()
     fig.savefig(output_dir / 'REFIR_max_concentration.png', dpi=450)
     plt.close()
 
 
-def plot_bar_with_errors(df):
+def plot_bar_with_errors(df, label=None):
     # Prepare data
     heights = df.xs('Av', level='run')
     min_offset = heights - df.xs('Min', level='run')
@@ -74,10 +74,16 @@ def plot_bar_with_errors(df):
     plt.bar(x_pos, heights, yerr=error_bars, align='center', alpha=0.5,
             capsize=10)
 
-    # Labels for bars.
+    # Labels for bars
     ax.set_xticks(x_pos)
     ax.set_xticklabels(LABELS)
     plt.grid()
+
+    # Label for chart
+    if label:
+        ax.text(0.99, 0.98, label, size=12, weight='semibold',
+                transform=ax.transAxes, horizontalalignment='right',
+                verticalalignment='top')
 
     return fig, ax
 
