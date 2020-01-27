@@ -24,15 +24,7 @@ These must be installed and the correct Python environment configured before run
 Checkout the code from Git:
 
 ```
-git checkout git@kwvmxgit.ad.nerc.ac.uk:volcanology/ash-model-plotting.git
-cd ash-model-plotting
-```
-
-Alternatively, you can checkout a read-only version of the code (e.g. on the
-cluster) with:
-
-```
-git clone https://gitlab+deploy-token-6:PXqjssfyhyJSWysAzwT5@kwvmxgit.ad.nerc.ac.uk/volcanology/ash-model-plotting.git
+git clone git@bitbucket.org:jsteven5/ash-model-plotting.git
 cd ash-model-plotting
 ```
 
@@ -60,6 +52,54 @@ Deactivate the virtual environment:
 source deactivate
 ```
 
+To be able to import from the `ash_model_plotting` repository, it may be
+necessary to add it to the Python path:
+
+```bash
+export PYTHONPATH=.
+```
+
+### Environment-wide installation
+
+The repository contains a `setup.py` file that can install the module and make
+it available from anywhere on the system.
+If you have access to `pip`, it can be installed as follows:
+
+```bash
+python -m pip install -e .
+```
+
+The `-e` flag means that changes made to files in this source directory will be
+applied without having to reinstall the module.
+
+This installation should make a number of scripts available on the `$PATH`,
+such as `plot_ash_model_results`.
+
+
+## REFIR analysis
+
+To analyse output from REFIR model runs, use the following command:
+
+```bash
+python ash_model_plotting/analyse_refir_outputs.py  /path/to/name_results --output_dir /path/to/outputs
+```
+
+The script extracts the maximum concentration and the area above the advisory
+threshold for each of the modelled runs.
+It creates a CSV file with a summary of the data and bar charts comparing the
+different models.
+
+Maps can be plotted for each model run with:
+
+```bash
+python ash_model_plotting/plot_ash_model_results /path/to/name_results/Fields_grid88*.txt --output_dir /path/to/outputs
+```
+
+
+# Previous information
+
+The text below belongs to a previous incarnation of the script and is not
+relevant to the current REFIR project.
 
 ## Convert NAME to netCDF
 

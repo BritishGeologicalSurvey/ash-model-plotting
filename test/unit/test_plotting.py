@@ -1,7 +1,8 @@
+"""Unit tests for plotting module."""
 import os
 from pathlib import Path
 
-from matplotlib.figure import Figure
+from matplotlib.figure import Figure  # noqa
 
 from ash_model_plotting.plotting import (
     draw_2d_cube, plot_3d_cube, plot_4d_cube

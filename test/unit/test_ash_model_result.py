@@ -1,3 +1,4 @@
+"""Tests for AshModelResult class."""
 from pathlib import Path
 
 import pytest
@@ -9,23 +10,25 @@ from ash_model_plotting.ash_model_result import (
 )
 
 
-def test_ash_model_result_init_happy_path(data_dir):
+def test_ash_model_result_init_happy_path_netcdf(data_dir):
     source_file = data_dir / 'VA_Tutorial_NAME_output.nc'
     result = AshModelResult(source_file)
 
-    assert result.source_file == source_file
+    assert result.source_data == source_file
+    assert isinstance(result.cubes, iris.cube.CubeList)
+
+
+def test_ash_model_result_init_happy_path_name_format(data_dir):
+    source_files = [str(f) for f in data_dir.glob('*.txt')]
+    result = AshModelResult(source_files)
+
+    assert result.source_data == source_files
     assert isinstance(result.cubes, iris.cube.CubeList)
 
 
 def test_ash_model_result_init_not_a_file():
     with pytest.raises(AshModelResultError):
         AshModelResult('not a file')
-
-
-def test_ash_model_result_init_not_netcdf(data_dir):
-    source_file = data_dir / 'Air_Conc_grid_201004180300_trimmed.txt'
-    with pytest.raises(AshModelResultError):
-        AshModelResult(source_file)
 
 
 def test_ash_model_air_concentration(data_dir):

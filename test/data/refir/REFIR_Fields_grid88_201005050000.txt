@@ -1,0 +1,26 @@
+NAME III (development version 7.2+)                             
+ Title:               EmpOnly_Av
+ Run time:            0824UTC 22/05/2019
+ Met data:            NWP Flow.Global_PT1_flow; NWP Flow.Global_PT2_flow
+ Start of release:     0000UTC 05/05/2010
+ End of release:       2330UTC 08/05/2010
+ Release rate:        Multiple Sources
+ Release location:    Multiple Sources
+ Release height:      Multiple Sources
+ Forecast duration:   96 hours
+ X grid origin:        -0.1127113    
+ Y grid origin:         -90.11264    
+ X grid size:                 1598
+ Y grid size:                  800
+ X grid resolution:     0.2254227    
+ Y grid resolution:     0.2252816    
+ Number of fields:               3
+
+                   ,                   ,                   ,                   ,                VOLCANIC,                VOLCANIC,                VOLCANIC, 
+                   ,                   ,                   ,                   ,            VOLCANIC_ASH,            VOLCANIC_ASH,            VOLCANIC_ASH, 
+                   ,                   ,                   ,                   ,    006 hr time averaged,    006 hr time averaged,    006 hr time averaged, 
+                   ,                   ,                   ,                   ,       Air Concentration,       Air Concentration,       Air Concentration, 
+                   ,                   ,                   ,                   ,                    g/m3,                    g/m3,                    g/m3, 
+                   ,                   ,                   ,                   ,      From FL000 - FL200,      From FL200 - FL350,      From FL350 - FL550, 
+             X grid,             Y grid,          Longitude,           Latitude,      0000UTC 05/05/2010,      0000UTC 05/05/2010,      0000UTC 05/05/2010, 
+

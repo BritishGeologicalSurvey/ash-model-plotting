@@ -1,9 +1,14 @@
+"""Test fixtures for use with pytest"""
 import os
 from pathlib import Path
 
 import pytest
 
-from ash_model_plotting.ash_model_result import AshModelResult
+# Use Agg plotting backend for tests so matplotlib doesn't open window
+import matplotlib
+matplotlib.use('Agg')
+
+from ash_model_plotting.ash_model_result import AshModelResult  # noqa
 
 
 @pytest.fixture(scope='module')
@@ -22,6 +27,13 @@ def data_dir():
 def name_model_result(data_dir):
     """An AshModelResult based on NAME test data."""
     return AshModelResult(data_dir.joinpath('VA_Tutorial_NAME_output.nc'))
+
+
+@pytest.fixture(scope='function')
+def refir_result(data_dir):
+    """An AshModelResult based on NAME test data."""
+    refir_files = [str(f.absolute()) for f in data_dir.rglob('REFIR*.txt')]
+    return AshModelResult(refir_files)
 
 
 @pytest.fixture(scope='module')

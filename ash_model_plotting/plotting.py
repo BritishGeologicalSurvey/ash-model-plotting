@@ -9,6 +9,7 @@ from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 from iris.exceptions import CoordinateNotFoundError
 import iris.plot as iplt
 from jinja2 import Template
+import matplotlib.colors
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -28,17 +29,17 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
                 }
 
     base_output_dir = Path(output_dir)
-    for i, altitude in enumerate(cube.coord('altitude')):
+    for i, zlevel in enumerate(_get_zlevels(cube)):
+        zlevel_str = _format_zlevel_string(cube[i, :, :, :])
         # Create new directory for each altitude level
-        output_dir = base_output_dir / f'{int(altitude.points[0]):05d}'
+        output_dir = base_output_dir / zlevel_str
         if not output_dir.is_dir():
             os.mkdir(output_dir)
 
         # Create placeholder for altitude level of nesting
-        altitude = _format_altitude_string(cube[i, :, :, :])
-        metadata['plots'][altitude] = {}
+        metadata['plots'][zlevel_str] = {}
 
-        # Plot all the slices for that altitude
+        # Plot all the slices for that zlevel
         for j, timestamp in enumerate(cube.coord('time')):
             timestamp = _format_timestamp_string(cube[i, j, :, :])
 
@@ -47,7 +48,7 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
             fig.savefig(filename, **kwargs)
             plt.close(fig)
 
-            metadata['plots'][altitude][timestamp] = str(
+            metadata['plots'][zlevel_str][timestamp] = str(
                 filename.relative_to(output_dir))
 
     return metadata
@@ -102,15 +103,26 @@ def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, **kwargs):
     # Mask out data below threshold
     cube.data = np.ma.masked_less(cube.data, mask_less)
 
+    # Prepare colormap
+    colors = ['cyan', 'grey']
+    levels = [0.0002, 0.002, 0.004]
+    cmap = matplotlib.colors.ListedColormap(colors)
+    cmap.set_over('red')
+    norm = matplotlib.colors.BoundaryNorm(levels, cmap.N, clip=False)
+
     # Plot data
     fig = plt.figure()
-    mesh_plot = iplt.pcolormesh(cube, vmin=vmin, vmax=vmax)
+    mesh_plot = iplt.pcolormesh(cube, vmin=vmin, vmax=vmax,
+                                cmap=cmap, norm=norm)
     ax = plt.gca()
     ax.coastlines(resolution='50m', color='grey')
-    colorbar = fig.colorbar(mesh_plot, orientation='horizontal')
+    colorbar = fig.colorbar(mesh_plot, orientation='horizontal',
+                            extend='max', extendfrac='auto')
     colorbar.set_label(f'{cube.long_name.title()} ({cube.units})')
 
     # Add tick marks
+    ax.set_xlim(-35, 25)
+    ax.set_ylim(35, 70)
     ax.set_xticks(ax.get_xticks(), crs=ccrs.PlateCarree())
     ax.set_yticks(ax.get_yticks(), crs=ccrs.PlateCarree())
     lon_formatter = LongitudeFormatter(zero_direction_label=True)
@@ -120,17 +132,17 @@ def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, **kwargs):
     ax.grid(linewidth=0.5, color='grey', alpha=0.25, linestyle='--')
 
     # Get title attributes
-    altitude = _format_altitude_string(cube)
-    if altitude:
+    zlevel = _format_zlevel_string(cube)
+    if zlevel:
         # Add underscore to make title separation correct
-        altitude += '_'
+        zlevel += '_'
     timestamp = _format_timestamp_string(cube)
 
     # Get and apply title
-    title = "{title}_{quantity}_{altitude}{timestamp}".format(
+    title = "{title}_{quantity}_{zlevel}{timestamp}".format(
         title=cube.attributes.get('Title').replace(' ', '_'),
         quantity=cube.attributes.get('Quantity').replace(' ', '_'),
-        altitude=altitude,
+        zlevel=zlevel,
         timestamp=timestamp
     )
     ax.set_title(title)
@@ -179,21 +191,44 @@ def _format_timestamp_string(cube):
     return timestamp
 
 
-def _format_altitude_string(cube):
+def _format_zlevel_string(cube):
     """
-    Return string representation of the altitude for the cube. Method takes
-    the first value in the time dimension e.g. assumes cube represents single
-    time step.
+    Return string representation of the zlevel for the cube. Method takes
+    the first value in the zlevel dimension e.g. assumes cube represents
+    single zlevel step.
 
     :param cube: Iris cube
-    :return: str representation of altitude
+    :return: str representation of zlevel
     """
-    try:
-        altitude = cube.coord('altitude').points[0]
-        # Add underscore for use in composite title
-        altitude = f"{altitude:05.0f}"
-    except CoordinateNotFoundError:
-        # No altitude coordinate on cube
-        altitude = ''
+    coord_types = {c.name() for c in cube.coords()}
 
-    return altitude
+    if 'altitude' in coord_types:
+        zlevel = cube.coord('altitude').points[0]
+        zlevel = f"{zlevel:05.0f}"
+    elif 'flight_level' in coord_types:
+        zlevel = cube.coord('flight_level').points[0]
+        zlevel = f"FL{zlevel:03.0f}"
+    else:
+        zlevel = ''
+
+    return zlevel
+
+
+def _get_zlevels(cube):
+    """
+    Return level values for z-coordinate of cube, typically alititude or
+    flight level.
+
+    :param cube: Iris cube
+    :return list: z level numbers
+    """
+    if len(cube.coords()) != 4:
+        raise ValueError("Cube does not have 4 dimensions")
+
+    coord_types = {c.name() for c in cube.coords()}
+    if 'altitude' in coord_types:
+        return cube.coord('altitude').points.tolist()
+    elif 'flight_level' in coord_types:
+        return cube.coord('flight_level').points.tolist()
+    else:
+        raise ValueError("Cube doesn't have altitude or flight_level")
