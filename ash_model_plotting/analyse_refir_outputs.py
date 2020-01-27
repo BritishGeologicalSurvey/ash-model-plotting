@@ -1,4 +1,16 @@
-"""Analyse REFIR outputs to extract maximum concentration and affected area."""
+"""
+Analyse REFIR outputs to extract maximum concentration and affected area plots.
+
+This script produces two individual plots.  These can be joined together using ImageMagick with the following command:
+
+```bash
+montage \
+  ADM_outputs/REFIR/outputs/REFIR_advisory_area.png \
+  ADM_outputs/REFIR/outputs/REFIR_max_concentration.png \
+  -tile 2x1 -geometry +0+0 \
+  ADM_outputs/REFIR/outputs/REFIR_NAME_results.png
+```
+"""
 import argparse
 import matplotlib.pyplot as plt
 from pathlib import Path
@@ -44,18 +56,20 @@ def main(data_dir, output_dir):
 
 def plot_results(results_df, output_dir):
     # Plot advisory_area results
-    advisory_area = results_df['advisory_area'] / 1e6
+    advisory_area = results_df['advisory_area'] / 1e9
     fig, ax = plot_bar_with_errors(advisory_area, label='(a)')
-    ax.set_ylabel('Area with concentration exceeding 2000 µg/m³ [km²]')
+    ax.set_ylabel('Area with concentration exceeding 2 mg/m³\n[x1000 km²]',
+                  fontsize='large')
     plt.tight_layout()
     fig.savefig(output_dir / 'REFIR_advisory_area.png', dpi=450)
     plt.close()
 
     # Plot max_concentration results
     # Convert to micrograms per cubic metre
-    max_concentration = results_df['max_concentration'] * 1e6
+    max_concentration = results_df['max_concentration'] * 1e3
     fig, ax = plot_bar_with_errors(max_concentration, label='(b)')
-    ax.set_ylabel('Maximum concentration [µg/m³]')
+    ax.set_ylabel('Maximum concentration\n[mg/m³]',
+                  fontsize='large')
     plt.tight_layout()
     fig.savefig(output_dir / 'REFIR_max_concentration.png', dpi=450)
     plt.close()
