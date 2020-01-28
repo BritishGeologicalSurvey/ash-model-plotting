@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
+def plot_4d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs):
     """
     Plot multiple figures of 2D slices from a 4D cube in output directory.
 
@@ -44,7 +44,7 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
         for yx_slice in tyx_slice.slices(['latitude', 'longitude']):
             timestamp = _format_timestamp_string(yx_slice)
 
-            fig, title = draw_2d_cube(yx_slice, **kwargs)
+            fig, title = draw_2d_cube(yx_slice, vaac_colours=False, **kwargs)
             filename = output_dir / f"{title}.{file_ext}"
             fig.savefig(filename, **kwargs)
             plt.close(fig)
@@ -55,7 +55,7 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
     return metadata
 
 
-def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
+def plot_3d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs):
     """
     Plot multiple figures of 2D slices from a cube in output directory.
 
@@ -73,7 +73,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
     for i, timestamp in enumerate(cube.coord('time')):
         timestamp = _format_timestamp_string(cube[i, :, :])
 
-        fig, title = draw_2d_cube(cube[i, :, :], **kwargs)
+        fig, title = draw_2d_cube(cube[i, :, :], vaac_colours=False, **kwargs)
         filename = output_dir / f"{title}.{file_ext}"
         fig.savefig(filename, **kwargs)
         plt.close(fig)
@@ -83,7 +83,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
     return metadata
 
 
-def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, **kwargs):
+def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, vaac_colours=False, **kwargs):
     """
     Draw a map of a two dimensional cube.  Cube should have two spatial
     dimensions (e.g. latitude, longitude).  All other dimensions (time,
@@ -105,11 +105,17 @@ def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, **kwargs):
     cube.data = np.ma.masked_less(cube.data, mask_less)
 
     # Prepare colormap
-    colors = ['cyan', 'grey']
-    levels = [0.0002, 0.002, 0.004]
-    cmap = matplotlib.colors.ListedColormap(colors)
-    cmap.set_over('red')
-    norm = matplotlib.colors.BoundaryNorm(levels, cmap.N, clip=False)
+
+    if vaac_colours:
+        colors = ['cyan', 'grey']
+        levels = [0.0002, 0.002, 0.004]
+        cmap = matplotlib.colors.ListedColormap(colors)
+        cmap.set_over('red')
+        norm = matplotlib.colors.BoundaryNorm(levels, cmap.N, clip=False)
+
+    if not vaac_colours:
+        cmap = "viridis"
+        norm = None
 
     # Plot data
     fig = plt.figure()
