@@ -1,6 +1,12 @@
 """Tests for AshModelResult abstract base class"""
 # pylint: disable=missing-docstring
+import pytest
 from ash_model_plotting import AshModelResult
+
+
+def test_base_class_cannot_be_instantiated():
+    with pytest.raises(TypeError):
+        AshModelResult([])
 
 
 def test_base_class_requires_abstractmethod_definitions():
