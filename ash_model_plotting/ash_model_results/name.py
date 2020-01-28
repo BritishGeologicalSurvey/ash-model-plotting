@@ -16,6 +16,9 @@ class NameAshModelResult(AshModelResult):
     """
     AshModelResult for data from NAME model simulations.
     """
+    def __repr__(self):
+        return f"NameAshModelResult({self.source_data})"
+
     def _load_cubes(self):
         """
         Load cubes from single NetCDF file or list of NAME-format .txt files
@@ -96,6 +99,3 @@ class NameAshModelResult(AshModelResult):
         except ValueError:
             # Return None if no cubes present
             return
-
-    def __repr__(self):
-        return f"NameAshModelResult({self.source_data})"

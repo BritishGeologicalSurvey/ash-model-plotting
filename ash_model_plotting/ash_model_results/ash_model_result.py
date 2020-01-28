@@ -2,6 +2,7 @@
 Class to store ash model results.
 """
 # coding: utf-8
+from abc import ABCMeta, abstractmethod
 from pathlib import Path
 
 import iris
@@ -18,7 +19,7 @@ class AshModelResultError(Exception):
     pass
 
 
-class AshModelResult(object):
+class AshModelResult(metaclass=ABCMeta):
     """
     Class to store ash model results with plotting methods
     """
@@ -26,27 +27,48 @@ class AshModelResult(object):
         self.source_data = source_data
         self._load_cubes()
 
+    @abstractmethod
+    def __repr__(self):
+        return f"AshModelResult({self.source_data})"
+
+    @abstractmethod
     def _load_cubes(self):
         """
-        Load cubes from single NetCDF file or list of NAME-format .txt files
+        Load cubes from data files.  Override this to deal with specific
+        model data formats.
         """
-        # TODO: improve error handling here
-        # Load from many NAME files
-        if isinstance(self.source_data, list):
-            self.cubes = iris.load(self.source_data)
-            return
+        pass
 
-        # Load from NetCDF
-        source_data = Path(self.source_data)
-        if source_data.suffix.lower() == '.nc':
-            self._load_from_netcdf()
-        else:
-            # Assuming single NAME .txt file
-            try:
-                self.cubes = iris.load(str(source_data))
-            except OSError:
-                msg = f"{source_data.absolute()} not found"
-            raise AshModelResultError(msg)
+    @property
+    @abstractmethod
+    def air_concentration(self):
+        """
+        Cube containing air concentration data.  Override to extract specific
+        attribute names used by different model formats.
+        :return: iris.cube.Cube
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def total_column(self):
+        """
+        Cube containing total_column loading data. Override to extract specific
+        attribute names used by different model formats.
+
+        :return: iris.cube.Cube
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def total_deposition(self):
+        """
+        Cube containing total deposition loading data.  Override to extract specific
+        attribute names used by different model formats.
+        :return: iris.cube.Cube
+        """
+        pass
 
     def _load_from_netcdf(self):
         """
@@ -62,65 +84,6 @@ class AshModelResult(object):
             raise AshModelResultError(msg)
 
         self.cubes = iris.load(str(self.source_data))
-
-    @property
-    def air_concentration(self):
-        """
-        Cube containing air concentration data
-        :return: iris.cube.Cube
-        """
-        air_concentration = iris.Constraint(
-            name='VOLCANIC_ASH_AIR_CONCENTRATION'
-            )
-
-        def match_zlevels(cube):
-            # is_disjoint() is True if sets don't overlap
-            zlevels = {'altitude', 'flight_level'}
-            coord_names = {c.name() for c in cube.coords()}
-            return not zlevels.isdisjoint(coord_names)
-
-        has_zlevel = iris.Constraint(cube_func=match_zlevels)
-
-        valid_cubes = self.cubes.extract(air_concentration & has_zlevel)
-        try:
-            return valid_cubes.concatenate_cube()
-        except ValueError:
-            # Return None if no cubes present
-            return
-
-    @property
-    def total_column(self):
-        """
-        Cube containing total_column loading data
-        :return: iris.cube.Cube
-        """
-        total_column = iris.Constraint(
-            name='VOLCANIC_ASH_DOSAGE'
-        )
-
-        valid_cubes = self.cubes.extract(total_column)
-        try:
-            return valid_cubes.concatenate_cube()
-        except ValueError:
-            # Return None if no cubes present
-            return
-
-    @property
-    def total_deposition(self):
-        """
-        Cube containing total deposition loading data
-        :return: iris.cube.Cube
-        """
-        total_deposition = iris.Constraint(
-            name='VOLCANIC_ASH_TOTAL_DEPOSITION'
-        )
-
-        valid_cubes = self.cubes.extract(total_deposition)
-        try:
-            return valid_cubes.concatenate_cube()
-        except ValueError:
-            # Return None if no cubes present
-            return
 
     def plot_air_concentration(self, output_dir, file_ext='png',
                                html=True, **kwargs):
@@ -193,9 +156,6 @@ class AshModelResult(object):
 
         if html:
             self._write_html(output_dir, metadata)
-
-    def __repr__(self):
-        return f"AshModelResult({self.source_data})"
 
     def _write_html(self, output_dir, metadata):
         """
