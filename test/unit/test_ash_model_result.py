@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 import iris.cube
 
-from ash_model_plotting.ash_model_result import (
+from ash_model_plotting.ash_model_results import (
     AshModelResult,
     AshModelResultError,
 )

@@ -8,7 +8,7 @@ import pytest
 import matplotlib
 matplotlib.use('Agg')
 
-from ash_model_plotting.ash_model_result import AshModelResult  # noqa
+from ash_model_plotting import AshModelResult  # noqa
 
 
 @pytest.fixture(scope='module')

@@ -7,7 +7,7 @@ import logging
 import os
 from pathlib import Path
 
-from ash_model_plotting.ash_model_result import (
+from ash_model_plotting import (
     AshModelResult,
     AshModelResultError,
 )
