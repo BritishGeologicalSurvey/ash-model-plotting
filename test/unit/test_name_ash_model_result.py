@@ -1,55 +1,55 @@
-"""Tests for AshModelResult class."""
+"""Tests for NameAshModelResult class."""
 from pathlib import Path
 
 import pytest
 import iris.cube
 
 from ash_model_plotting.ash_model_results import (
-    AshModelResult,
+    NameAshModelResult,
     AshModelResultError,
 )
 
 
-def test_ash_model_result_init_happy_path_netcdf(data_dir):
+def test_name_ash_model_result_init_happy_path_netcdf(data_dir):
     source_file = data_dir / 'VA_Tutorial_NAME_output.nc'
-    result = AshModelResult(source_file)
+    result = NameAshModelResult(source_file)
 
     assert result.source_data == source_file
     assert isinstance(result.cubes, iris.cube.CubeList)
 
 
-def test_ash_model_result_init_happy_path_name_format(data_dir):
+def test_name_ash_model_result_init_happy_path_name_format(data_dir):
     source_files = [str(f) for f in data_dir.glob('*.txt')]
-    result = AshModelResult(source_files)
+    result = NameAshModelResult(source_files)
 
     assert result.source_data == source_files
     assert isinstance(result.cubes, iris.cube.CubeList)
 
 
-def test_ash_model_result_init_not_a_file():
+def test_name_ash_model_result_init_not_a_file():
     with pytest.raises(AshModelResultError):
-        AshModelResult('not a file')
+        NameAshModelResult('not a file')
 
 
-def test_ash_model_air_concentration(data_dir):
+def test_name_ash_model_air_concentration(data_dir):
     source_file = data_dir / 'VA_Tutorial_NAME_output.nc'
-    result = AshModelResult(source_file)
+    result = NameAshModelResult(source_file)
 
     assert isinstance(result.air_concentration, iris.cube.Cube)
     assert result.air_concentration.name() == "VOLCANIC_ASH_AIR_CONCENTRATION"
 
 
-def test_ash_model_total_deposition(data_dir):
+def test_name_ash_model_total_deposition(data_dir):
     source_file = data_dir / 'VA_Tutorial_NAME_output.nc'
-    result = AshModelResult(source_file)
+    result = NameAshModelResult(source_file)
 
     assert isinstance(result.total_deposition, iris.cube.Cube)
     assert result.total_deposition.name() == "VOLCANIC_ASH_TOTAL_DEPOSITION"
 
 
-def test_ash_model_total_column(data_dir):
+def test_name_ash_model_total_column(data_dir):
     source_file = data_dir / 'VA_Tutorial_NAME_output.nc'
-    result = AshModelResult(source_file)
+    result = NameAshModelResult(source_file)
 
     assert isinstance(result.total_column, iris.cube.Cube)
     assert result.total_column.name() == "VOLCANIC_ASH_DOSAGE"
