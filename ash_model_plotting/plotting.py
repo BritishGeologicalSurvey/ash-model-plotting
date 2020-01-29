@@ -112,10 +112,10 @@ def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, vaac_colours=None, 
 
     # Prepare colormap
     if vaac_colours and _vaac_compatible(cube):
-        colors = ['cyan', 'grey']
+        colors = ['#80ffff', '#939598']
         levels = [0.0002, 0.002, 0.004]
         cmap = matplotlib.colors.ListedColormap(colors)
-        cmap.set_over('red')
+        cmap.set_over('#e00404')
         norm = matplotlib.colors.BoundaryNorm(levels, cmap.N, clip=False)
 
     elif vaac_colours and not _vaac_compatible(cube):
