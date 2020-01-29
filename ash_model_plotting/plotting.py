@@ -85,7 +85,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs)
     return metadata
 
 
-def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, vaac_colours=False, **kwargs):
+def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, vaac_colours=None, **kwargs):
     """
     Draw a map of a two dimensional cube.  Cube should have two spatial
     dimensions (e.g. latitude, longitude).  All other dimensions (time,
@@ -105,6 +105,10 @@ def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, vaac_colours=False,
 
     # Mask out data below threshold
     cube.data = np.ma.masked_less(cube.data, mask_less)
+
+    # Default to using VAAC colours if not specified with compatible data
+    if vaac_colours is None and _vaac_compatible(cube):
+        vaac_colours = True
 
     # Prepare colormap
     if vaac_colours and _vaac_compatible(cube):
