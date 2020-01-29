@@ -3,6 +3,7 @@ Plotting functions that draw and save figures from multi-dimensional cubes.
 """
 import os
 from pathlib import Path
+import warnings
 
 import cartopy.crs as ccrs
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
@@ -12,6 +13,7 @@ from jinja2 import Template
 import matplotlib.colors
 import matplotlib.pyplot as plt
 import numpy as np
+import cf_units
 
 
 def plot_4d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs):
@@ -105,15 +107,22 @@ def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, vaac_colours=False,
     cube.data = np.ma.masked_less(cube.data, mask_less)
 
     # Prepare colormap
-
-    if vaac_colours:
+    if vaac_colours and _vaac_compatible(cube):
         colors = ['cyan', 'grey']
         levels = [0.0002, 0.002, 0.004]
         cmap = matplotlib.colors.ListedColormap(colors)
         cmap.set_over('red')
         norm = matplotlib.colors.BoundaryNorm(levels, cmap.N, clip=False)
 
-    if not vaac_colours:
+    elif vaac_colours and not _vaac_compatible(cube):
+        # Raise a warning but continue with default colour scheme
+        warnings.warn("The VAAC colour scheme option (vaac_colours=True)"
+                      " is only compatible with air concentration data."
+                      " Falling back to use the default colour scheme...")
+        cmap = "viridis"
+        norm = None
+
+    else:
         cmap = "viridis"
         norm = None
 
@@ -252,3 +261,14 @@ def _get_zlevels(cube):
         return cube.coord('flight_level').points.tolist()
     else:
         raise ValueError("Cube doesn't have altitude or flight_level")
+
+
+def _vaac_compatible(cube):
+    """
+    Check if the cube attempting to plot has compatible units
+    (i.e. scientifically sensible), to use the official VAAC
+    colour scheme.
+
+    return boolean
+    """
+    return cube.units == cf_units.Unit('g/m3')
