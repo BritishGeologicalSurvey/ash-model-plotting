@@ -18,7 +18,7 @@ from pathlib import Path
 import iris
 import pandas as pd
 
-from ash_model_plotting.ash_model_result import AshModelResult
+from ash_model_plotting import AshModelResult
 
 EXPERIMENTS = ['30MinAv']
 MODELS = ['AllModels', 'WindOnly', 'EmpOnly', 'MastinOnly']

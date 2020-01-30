@@ -8,7 +8,7 @@ import pytest
 import matplotlib
 matplotlib.use('Agg')
 
-from ash_model_plotting.ash_model_result import AshModelResult  # noqa
+from ash_model_plotting import NameAshModelResult  # noqa
 
 
 @pytest.fixture(scope='module')
@@ -25,15 +25,15 @@ def data_dir():
 
 @pytest.fixture(scope='function')
 def name_model_result(data_dir):
-    """An AshModelResult based on NAME test data."""
-    return AshModelResult(data_dir.joinpath('VA_Tutorial_NAME_output.nc'))
+    """An NameAshModelResult based on NAME test data."""
+    return NameAshModelResult(data_dir.joinpath('VA_Tutorial_NAME_output.nc'))
 
 
 @pytest.fixture(scope='function')
 def refir_result(data_dir):
-    """An AshModelResult based on NAME test data."""
+    """An NameAshModelResult based on NAME test data."""
     refir_files = [str(f.absolute()) for f in data_dir.rglob('REFIR*.txt')]
-    return AshModelResult(refir_files)
+    return NameAshModelResult(refir_files)
 
 
 @pytest.fixture(scope='module')

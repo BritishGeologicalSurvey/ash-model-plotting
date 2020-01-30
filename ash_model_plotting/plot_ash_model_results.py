@@ -7,8 +7,8 @@ import logging
 import os
 from pathlib import Path
 
-from ash_model_plotting.ash_model_result import (
-    AshModelResult,
+from ash_model_plotting import (
+    NameAshModelResult,
     AshModelResultError,
 )
 
@@ -37,7 +37,7 @@ def plot_name_files(input_files, output_dir=None):
         os.mkdir(output_dir)
 
     # Load data
-    result = AshModelResult(input_files)
+    result = NameAshModelResult(input_files)
 
     # Make plots
     logger.info(f'Writing plots from {input_files} to {output_dir}')
