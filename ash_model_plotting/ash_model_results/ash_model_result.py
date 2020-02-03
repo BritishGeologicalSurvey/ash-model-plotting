@@ -70,6 +70,18 @@ class AshModelResult(metaclass=ABCMeta):
         """
         pass
 
+    @staticmethod
+    def _has_zlevels(cube):
+        """
+        Determines if a cube has z-levels.
+
+        :return: bool
+        """
+        zlevel_names = {'altitude', 'alt', 'flight_level'}
+        coord_names = {c.name() for c in cube.coords()}
+        # is_disjoint() is True if sets don't overlap
+        return not zlevel_names.isdisjoint(coord_names)
+
     def _load_from_netcdf(self):
         """
         Load cubes from NetCDF4 file with minor error-checking for valid file

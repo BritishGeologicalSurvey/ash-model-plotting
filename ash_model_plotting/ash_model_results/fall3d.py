@@ -36,16 +36,7 @@ class Fall3DAshModelResult(AshModelResult):
             name='CON'
             )
 
-        def match_zlevels(cube):
-            """
-            Find how z-levels are named in cube.
-            """
-            # is_disjoint() is True if sets don't overlap
-            zlevels = {'altitude', 'alt', 'flight_level'}
-            coord_names = {c.name() for c in cube.coords()}
-            return not zlevels.isdisjoint(coord_names)
-
-        has_zlevel = iris.Constraint(cube_func=match_zlevels)
+        has_zlevel = iris.Constraint(cube_func=self._has_zlevels)
 
         valid_cubes = self.cubes.extract(air_concentration & has_zlevel)
 
