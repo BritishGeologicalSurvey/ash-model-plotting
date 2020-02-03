@@ -200,8 +200,8 @@ class AshModelResult(metaclass=ABCMeta):
 
         # Write to file
         name = '_'.join(filter(None, (
-            metadata['attributes']['model_run_title'],
-            metadata['attributes']['quantity'],
+            metadata['attributes'].get('model_run_title'),
+            metadata['attributes'].get('quantity'),
             "summary.html"))).replace(' ', '_')
         output_file = Path(output_dir) / name
         output_file.write_text(html)

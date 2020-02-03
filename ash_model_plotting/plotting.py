@@ -156,9 +156,11 @@ def render_html(source, metadata):
     :return: str, HTML for plot viewing page
     """
     # Prepare parameters
-    title = (f"{metadata['attributes']['Title']} - "
-             f"{metadata['attributes']['Quantity']} - "
-             f"{metadata['attributes']['Run time']}")
+    title = ' - '.join(filter(None, (
+        metadata['attributes'].get('model_run_title'),
+        metadata['attributes'].get('quantity'),
+        metadata['attributes'].get('Run time')
+    )))
     params = dict(source=source, metadata=metadata, title=title)
 
     # Load template
@@ -225,6 +227,8 @@ def _get_zlevels(cube):
     coord_types = {c.name() for c in cube.coords()}
     if 'altitude' in coord_types:
         return cube.coord('altitude').points.tolist()
+    elif 'alt' in coord_types:
+        return cube.coord('alt').points.tolist()
     elif 'flight_level' in coord_types:
         return cube.coord('flight_level').points.tolist()
     else:
