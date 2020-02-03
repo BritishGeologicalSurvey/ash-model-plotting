@@ -53,9 +53,12 @@ class NameAshModelResult(AshModelResult):
 
         has_zlevel = iris.Constraint(cube_func=self._has_zlevels)
 
-        valid_cubes = self.cubes.extract(air_concentration & has_zlevel)
         try:
-            return valid_cubes.concatenate_cube()
+            valid_cubes = self.cubes.extract(air_concentration & has_zlevel)
+            cube = valid_cubes.concatenate_cube()
+            cube.attributes['model_run_title'] = self._get_model_run_title(cube)
+            cube.attributes['quantity'] = 'Air Concentration'
+            return cube
         except ValueError:
             # Return None if no cubes present
             return
@@ -70,9 +73,12 @@ class NameAshModelResult(AshModelResult):
             name='VOLCANIC_ASH_DOSAGE'
         )
 
-        valid_cubes = self.cubes.extract(total_column)
         try:
-            return valid_cubes.concatenate_cube()
+            valid_cubes = self.cubes.extract(total_column)
+            cube = valid_cubes.concatenate_cube()
+            cube.attributes['model_run_title'] = self._get_model_run_title(cube)
+            cube.attributes['quantity'] = 'Total Column Mass'
+            return cube
         except ValueError:
             # Return None if no cubes present
             return
@@ -87,9 +93,12 @@ class NameAshModelResult(AshModelResult):
             name='VOLCANIC_ASH_TOTAL_DEPOSITION'
         )
 
-        valid_cubes = self.cubes.extract(total_deposition)
         try:
-            return valid_cubes.concatenate_cube()
+            valid_cubes = self.cubes.extract(total_deposition)
+            cube = valid_cubes.concatenate_cube()
+            cube.attributes['model_run_title'] = self._get_model_run_title(cube)
+            cube.attributes['quantity'] = 'Total Deposition'
+            return cube
         except ValueError:
             # Return None if no cubes present
             return

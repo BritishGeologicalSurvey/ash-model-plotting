@@ -61,15 +61,15 @@ def test_name_ash_model_total_column(data_dir):
       '01000/VA_Tutorial_Air_Concentration_01000_20100418060000.png',
       '00500/VA_Tutorial_Air_Concentration_00500_20100418030000.png',
       '00500/VA_Tutorial_Air_Concentration_00500_20100418060000.png',
-      'VA_Tutorial_Air_Concentration.html']),
+      'VA_Tutorial_Air_Concentration_summary.html']),
     ('plot_total_column',
-     ['VA_Tutorial_Dosage_20100418030000.png',
-      'VA_Tutorial_Dosage_20100418060000.png',
-      'VA_Tutorial_Dosage.html']),
+     ['VA_Tutorial_Total_Column_Mass_20100418030000.png',
+      'VA_Tutorial_Total_Column_Mass_20100418060000.png',
+      'VA_Tutorial_Total_Column_Mass_summary.html']),
     ('plot_total_deposition',
-     ['VA_Tutorial_Total_deposition_20100418030000.png',
-      'VA_Tutorial_Total_deposition_20100418060000.png',
-      'VA_Tutorial_Total_deposition.html'])
+     ['VA_Tutorial_Total_Deposition_20100418030000.png',
+      'VA_Tutorial_Total_Deposition_20100418060000.png',
+      'VA_Tutorial_Total_Deposition_summary.html'])
     ])
 def test_plot_functions(name_model_result, tmpdir, plot_func, expected,
                         scantree):

@@ -118,7 +118,7 @@ def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, **kwargs):
     ax.coastlines(resolution='50m', color='grey')
     colorbar = fig.colorbar(mesh_plot, orientation='horizontal',
                             extend='max', extendfrac='auto')
-    colorbar.set_label(f'{cube.long_name.title()} ({cube.units})')
+    colorbar.set_label(f'{cube.units}')
 
     # Add tick marks
     ax.set_xlim(-35, 25)
@@ -133,18 +133,15 @@ def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, **kwargs):
 
     # Get title attributes
     zlevel = _format_zlevel_string(cube)
-    if zlevel:
-        # Add underscore to make title separation correct
-        zlevel += '_'
     timestamp = _format_timestamp_string(cube)
 
-    # Get and apply title
-    title = "{title}_{quantity}_{zlevel}{timestamp}".format(
-        title=cube.attributes.get('Title').replace(' ', '_'),
-        quantity=cube.attributes.get('Quantity').replace(' ', '_'),
-        zlevel=zlevel,
-        timestamp=timestamp
-    )
+    # Get and apply title, filter removes NoneType
+    # elements before joining.
+    title = '_'.join(filter(None, (
+        cube.attributes.get('model_run_title').replace(' ', '_'),
+        cube.attributes.get('quantity').replace(' ', '_'),
+        str(zlevel),
+        str(timestamp))))
     ax.set_title(title)
 
     return fig, title
