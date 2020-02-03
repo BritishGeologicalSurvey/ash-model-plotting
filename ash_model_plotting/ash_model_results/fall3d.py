@@ -8,7 +8,6 @@ import iris
 
 from ash_model_plotting.ash_model_results import (
     AshModelResult,
-    AshModelResultError,
 )
 
 
@@ -24,12 +23,8 @@ class Fall3DAshModelResult(AshModelResult):
         Load cubes from single NetCDF file
         """
         # Load from NetCDF
-        source_data = Path(self.source_data)
-        try:
-            self._load_from_netcdf()
-        except OSError:
-            msg = f"{source_data.absolute()} not found"
-            raise AshModelResultError(msg)
+        self.source_data = Path(self.source_data)
+        self._load_from_netcdf()
 
     @property
     def air_concentration(self):
@@ -42,14 +37,18 @@ class Fall3DAshModelResult(AshModelResult):
             )
 
         def match_zlevels(cube):
+            """
+            Find how z-levels are named in cube.
+            """
             # is_disjoint() is True if sets don't overlap
-            zlevels = {'altitude', 'flight_level'}
+            zlevels = {'altitude', 'alt', 'flight_level'}
             coord_names = {c.name() for c in cube.coords()}
             return not zlevels.isdisjoint(coord_names)
 
         has_zlevel = iris.Constraint(cube_func=match_zlevels)
 
         valid_cubes = self.cubes.extract(air_concentration & has_zlevel)
+
         try:
             return valid_cubes.concatenate_cube()
         except ValueError:
