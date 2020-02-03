@@ -29,6 +29,21 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
                 }
 
     base_output_dir = Path(output_dir)
+
+    # Slice the cube so the input data are reordered to
+    # the standard order of dimensions (T, Z, Y, X)
+    zlevel_name = _get_zlevel_name(cube)
+
+    # TODO: make this the new way to do it!
+    for tyx_slice in aircon.slices(['time', 'latitude', 'longitude']): 
+         zlevel_name = get_z_name(tyx_slice) 
+         zlevel = tyx_slice.coord(zlevel_name).points[0] 
+         zlevel_str = f"{zlevel:05.0f}" 
+         print(zlevel_str) 
+         for yx_slice in tyx_slice.slices(['latitude', 'longitude']): 
+             time = yx_slice.coord('time').points[0] 
+             print(time) 
+         
     for i, zlevel in enumerate(_get_zlevels(cube)):
         zlevel_str = _format_zlevel_string(cube[i, :, :, :])
         # Create new directory for each altitude level
@@ -38,6 +53,7 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
 
         # Create placeholder for altitude level of nesting
         metadata['plots'][zlevel_str] = {}
+
 
         # Plot all the slices for that zlevel
         for j, timestamp in enumerate(cube.coord('time')):
@@ -188,6 +204,15 @@ def _format_timestamp_string(cube):
         timestamp = ''
 
     return timestamp
+
+
+def _get_zlevel_name(cube):
+    """
+    Return name of coordinate representing zlevel for cube.
+    """
+    known_z = set(['alt', 'altitude', 'flight_level'])
+    cube_coords = [c.name() for c in cube.coords()]
+    return known_z.intersection(cube_coords).pop()
 
 
 def _format_zlevel_string(cube):
