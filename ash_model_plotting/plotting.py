@@ -30,22 +30,8 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
 
     base_output_dir = Path(output_dir)
 
-    # Slice the cube so the input data are reordered to
-    # the standard order of dimensions (T, Z, Y, X)
-    zlevel_name = _get_zlevel_name(cube)
-
-    # TODO: make this the new way to do it!
-    for tyx_slice in aircon.slices(['time', 'latitude', 'longitude']): 
-         zlevel_name = get_z_name(tyx_slice) 
-         zlevel = tyx_slice.coord(zlevel_name).points[0] 
-         zlevel_str = f"{zlevel:05.0f}" 
-         print(zlevel_str) 
-         for yx_slice in tyx_slice.slices(['latitude', 'longitude']): 
-             time = yx_slice.coord('time').points[0] 
-             print(time) 
-         
-    for i, zlevel in enumerate(_get_zlevels(cube)):
-        zlevel_str = _format_zlevel_string(cube[i, :, :, :])
+    for tyx_slice in cube.slices(['time', 'latitude', 'longitude']):
+        zlevel_str = _format_zlevel_string(tyx_slice)
         # Create new directory for each altitude level
         output_dir = base_output_dir / zlevel_str
         if not output_dir.is_dir():
@@ -54,12 +40,11 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
         # Create placeholder for altitude level of nesting
         metadata['plots'][zlevel_str] = {}
 
-
         # Plot all the slices for that zlevel
-        for j, timestamp in enumerate(cube.coord('time')):
-            timestamp = _format_timestamp_string(cube[i, j, :, :])
+        for yx_slice in tyx_slice.slices(['latitude', 'longitude']):
+            timestamp = _format_timestamp_string(yx_slice)
 
-            fig, title = draw_2d_cube(cube[i, j, :, :], **kwargs)
+            fig, title = draw_2d_cube(yx_slice, **kwargs)
             filename = output_dir / f"{title}.{file_ext}"
             fig.savefig(filename, **kwargs)
             plt.close(fig)
@@ -228,6 +213,9 @@ def _format_zlevel_string(cube):
 
     if 'altitude' in coord_types:
         zlevel = cube.coord('altitude').points[0]
+        zlevel = f"{zlevel:05.0f}"
+    elif 'alt' in coord_types:
+        zlevel = cube.coord('alt').points[0]
         zlevel = f"{zlevel:05.0f}"
     elif 'flight_level' in coord_types:
         zlevel = cube.coord('flight_level').points[0]

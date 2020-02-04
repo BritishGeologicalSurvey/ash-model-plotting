@@ -49,18 +49,20 @@ def test_fall3d_ash_model_total_column(data_dir):
 
 @pytest.mark.parametrize('plot_func, expected', [
     ('plot_air_concentration',
-     ['01000/Fall3d_7.1_results_Air_Concentration_01000_20100418020000.png',
-      '01000/Fall3d_7.1_results_Air_Concentration_01000_20100418050000.png',
-      '00500/Fall3d_7.1_results_Air_Concentration_00500_20100418020000.png',
-      '00500/Fall3d_7.1_results_Air_Concentration_00500_20100418050000.png',
+     ['00000/Fall3d_7.1_results_Air_Concentration_00000_20100418030000.png',
+      '00000/Fall3d_7.1_results_Air_Concentration_00000_20100418060000.png',
+      '01000/Fall3d_7.1_results_Air_Concentration_01000_20100418030000.png',
+      '01000/Fall3d_7.1_results_Air_Concentration_01000_20100418060000.png',
+      '00500/Fall3d_7.1_results_Air_Concentration_00500_20100418030000.png',
+      '00500/Fall3d_7.1_results_Air_Concentration_00500_20100418060000.png',
       'Fall3d_7.1_results_Air_Concentration_summary.html']),
     ('plot_total_column',
-     ['Fall3d_7.1_results_Total_Column_Mass_20100418020000.png',
-      'Fall3d_7.1_results_Total_Column_Mass_20100418050000.png',
+     ['Fall3d_7.1_results_Total_Column_Mass_20100418030000.png',
+      'Fall3d_7.1_results_Total_Column_Mass_20100418060000.png',
       'Fall3d_7.1_results_Total_Column_Mass_summary.html']),
     ('plot_total_deposition',
-     ['Fall3d_7.1_results_Total_Deposition_20100418020000.png',
-      'Fall3d_7.1_results_Total_Deposition_20100418050000.png',
+     ['Fall3d_7.1_results_Total_Deposition_20100418030000.png',
+      'Fall3d_7.1_results_Total_Deposition_20100418060000.png',
       'Fall3d_7.1_results_Total_Deposition_summary.html'])
     ])
 def test_plot_functions(fall3d_model_result, tmpdir, plot_func, expected,
