@@ -3,6 +3,7 @@ Plotting functions that draw and save figures from multi-dimensional cubes.
 """
 import os
 from pathlib import Path
+import warnings
 
 import cartopy.crs as ccrs
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
@@ -12,9 +13,10 @@ from jinja2 import Template
 import matplotlib.colors
 import matplotlib.pyplot as plt
 import numpy as np
+import cf_units
 
 
-def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
+def plot_4d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs):
     """
     Plot multiple figures of 2D slices from a 4D cube in output directory.
 
@@ -23,6 +25,7 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
     :param file_ext, file extension suffix for data format e.g. png, pdf
     :param kwargs: dict; extra arguments to pass to plt.savefig
     """
+    kwargs.update(vaac_colours=vaac_colours)
     metadata = {'created_by': 'plot_4d_cube',
                 'attributes': cube.attributes,
                 'plots': {}
@@ -55,7 +58,7 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
     return metadata
 
 
-def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
+def plot_3d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs):
     """
     Plot multiple figures of 2D slices from a cube in output directory.
 
@@ -64,6 +67,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
     :param file_ext, file extension suffix for data format e.g. png, pdf
     :param kwargs: dict; extra args for draw_2d_cube and plt.savefig
     """
+    kwargs.update(vaac_colours=vaac_colours)
     metadata = {'created_by': 'plot_3d_cube',
                 'attributes': cube.attributes,
                 'plots': {}
@@ -73,7 +77,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
     for i, timestamp in enumerate(cube.coord('time')):
         timestamp = _format_timestamp_string(cube[i, :, :])
 
-        fig, title = draw_2d_cube(cube[i, :, :], **kwargs)
+        fig, title = draw_2d_cube(cube[i, :, :], vaac_colours=False, **kwargs)
         filename = output_dir / f"{title}.{file_ext}"
         fig.savefig(filename, **kwargs)
         plt.close(fig)
@@ -83,7 +87,8 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
     return metadata
 
 
-def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, **kwargs):
+def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8,
+                 vaac_colours=False, **kwargs):
     """
     Draw a map of a two dimensional cube.  Cube should have two spatial
     dimensions (e.g. latitude, longitude).  All other dimensions (time,
@@ -105,11 +110,24 @@ def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, **kwargs):
     cube.data = np.ma.masked_less(cube.data, mask_less)
 
     # Prepare colormap
-    colors = ['cyan', 'grey']
-    levels = [0.0002, 0.002, 0.004]
-    cmap = matplotlib.colors.ListedColormap(colors)
-    cmap.set_over('red')
-    norm = matplotlib.colors.BoundaryNorm(levels, cmap.N, clip=False)
+    if vaac_colours and _vaac_compatible(cube):
+        colors = ['#80ffff', '#939598']
+        levels = [0.0002, 0.002, 0.004]
+        cmap = matplotlib.colors.ListedColormap(colors)
+        cmap.set_over('#e00404')
+        norm = matplotlib.colors.BoundaryNorm(levels, cmap.N, clip=False)
+
+    elif vaac_colours and not _vaac_compatible(cube):
+        # Raise a warning but continue with default colour scheme
+        warnings.warn("The VAAC colour scheme option (vaac_colours=True)"
+                      " is only compatible with air concentration data."
+                      " Falling back to use the default colour scheme...")
+        cmap = "viridis"
+        norm = None
+
+    else:
+        cmap = "viridis"
+        norm = None
 
     # Plot data
     fig = plt.figure()
@@ -246,3 +264,14 @@ def _get_zlevels(cube):
         return cube.coord('flight_level').points.tolist()
     else:
         raise ValueError("Cube doesn't have altitude or flight_level")
+
+
+def _vaac_compatible(cube):
+    """
+    Check if the cube attempting to plot has compatible units
+    (i.e. scientifically sensible), to use the official VAAC
+    colour scheme.
+
+    return boolean
+    """
+    return cube.units in (cf_units.Unit('g/m3'), cf_units.Unit('gr/m3'))
