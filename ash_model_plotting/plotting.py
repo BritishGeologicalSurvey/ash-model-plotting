@@ -25,6 +25,7 @@ def plot_4d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs)
     :param file_ext, file extension suffix for data format e.g. png, pdf
     :param kwargs: dict; extra arguments to pass to plt.savefig
     """
+    kwargs.update(vaac_colours=vaac_colours)
     metadata = {'created_by': 'plot_4d_cube',
                 'attributes': cube.attributes,
                 'plots': {}
@@ -46,7 +47,7 @@ def plot_4d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs)
         for yx_slice in tyx_slice.slices(['latitude', 'longitude']):
             timestamp = _format_timestamp_string(yx_slice)
 
-            fig, title = draw_2d_cube(yx_slice, vaac_colours=False, **kwargs)
+            fig, title = draw_2d_cube(yx_slice, **kwargs)
             filename = output_dir / f"{title}.{file_ext}"
             fig.savefig(filename, **kwargs)
             plt.close(fig)
@@ -66,6 +67,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs)
     :param file_ext, file extension suffix for data format e.g. png, pdf
     :param kwargs: dict; extra args for draw_2d_cube and plt.savefig
     """
+    kwargs.update(vaac_colours=vaac_colours)
     metadata = {'created_by': 'plot_3d_cube',
                 'attributes': cube.attributes,
                 'plots': {}
@@ -85,7 +87,8 @@ def plot_3d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs)
     return metadata
 
 
-def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, vaac_colours=None, **kwargs):
+def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8,
+                 vaac_colours=False, **kwargs):
     """
     Draw a map of a two dimensional cube.  Cube should have two spatial
     dimensions (e.g. latitude, longitude).  All other dimensions (time,
@@ -105,10 +108,6 @@ def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, vaac_colours=None, 
 
     # Mask out data below threshold
     cube.data = np.ma.masked_less(cube.data, mask_less)
-
-    # Default to using VAAC colours if not specified with compatible data
-    if vaac_colours is None and _vaac_compatible(cube):
-        vaac_colours = True
 
     # Prepare colormap
     if vaac_colours and _vaac_compatible(cube):
@@ -275,4 +274,4 @@ def _vaac_compatible(cube):
 
     return boolean
     """
-    return cube.units == cf_units.Unit('g/m3')
+    return cube.units in (cf_units.Unit('g/m3'), cf_units.Unit('gr/m3'))

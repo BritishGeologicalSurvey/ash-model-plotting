@@ -116,7 +116,7 @@ class AshModelResult(metaclass=ABCMeta):
         self.cubes = iris.load(str(self.source_data))
 
     def plot_air_concentration(self, output_dir, file_ext='png',
-                               html=True, **kwargs):
+                               html=True, vaac_colours=True, **kwargs):
         """
         Plot air concentration data to output directory.
 
@@ -125,7 +125,9 @@ class AshModelResult(metaclass=ABCMeta):
         :param output_dir: Target directory for plots
         :param file_ext: File extension
         :param html: bool, set whether html page is created or not
+        :param vaac_colors: bool, use vaac_colors for plot
         """
+        kwargs.update(vaac_colours=vaac_colours)
         cube = self.air_concentration
 
         if not cube:
@@ -133,8 +135,8 @@ class AshModelResult(metaclass=ABCMeta):
             raise AshModelResultError(msg)
 
         metadata = plot_4d_cube(
-            cube, output_dir, file_ext=file_ext,
-            vmin=0, vmax=cube.data.max(), **kwargs)
+            cube, output_dir, file_ext=file_ext, vmin=0, vmax=cube.data.max(),
+            **kwargs)
 
         if html:
             self._write_html(output_dir, metadata)
