@@ -29,8 +29,9 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
                 }
 
     base_output_dir = Path(output_dir)
-    for i, zlevel in enumerate(_get_zlevels(cube)):
-        zlevel_str = _format_zlevel_string(cube[i, :, :, :])
+
+    for tyx_slice in cube.slices(['time', 'latitude', 'longitude']):
+        zlevel_str = _format_zlevel_string(tyx_slice)
         # Create new directory for each altitude level
         output_dir = base_output_dir / zlevel_str
         if not output_dir.is_dir():
@@ -40,10 +41,10 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
         metadata['plots'][zlevel_str] = {}
 
         # Plot all the slices for that zlevel
-        for j, timestamp in enumerate(cube.coord('time')):
-            timestamp = _format_timestamp_string(cube[i, j, :, :])
+        for yx_slice in tyx_slice.slices(['latitude', 'longitude']):
+            timestamp = _format_timestamp_string(yx_slice)
 
-            fig, title = draw_2d_cube(cube[i, j, :, :], **kwargs)
+            fig, title = draw_2d_cube(yx_slice, **kwargs)
             filename = output_dir / f"{title}.{file_ext}"
             fig.savefig(filename, **kwargs)
             plt.close(fig)
@@ -118,7 +119,7 @@ def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, **kwargs):
     ax.coastlines(resolution='50m', color='grey')
     colorbar = fig.colorbar(mesh_plot, orientation='horizontal',
                             extend='max', extendfrac='auto')
-    colorbar.set_label(f'{cube.long_name.title()} ({cube.units})')
+    colorbar.set_label(f'{cube.units}')
 
     # Add tick marks
     ax.set_xlim(-35, 25)
@@ -133,18 +134,15 @@ def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8, **kwargs):
 
     # Get title attributes
     zlevel = _format_zlevel_string(cube)
-    if zlevel:
-        # Add underscore to make title separation correct
-        zlevel += '_'
     timestamp = _format_timestamp_string(cube)
 
-    # Get and apply title
-    title = "{title}_{quantity}_{zlevel}{timestamp}".format(
-        title=cube.attributes.get('Title').replace(' ', '_'),
-        quantity=cube.attributes.get('Quantity').replace(' ', '_'),
-        zlevel=zlevel,
-        timestamp=timestamp
-    )
+    # Get and apply title, filter removes NoneType
+    # elements before joining.
+    title = '_'.join(filter(None, (
+        cube.attributes.get('model_run_title').replace(' ', '_'),
+        cube.attributes.get('quantity').replace(' ', '_'),
+        str(zlevel),
+        str(timestamp))))
     ax.set_title(title)
 
     return fig, title
@@ -159,9 +157,11 @@ def render_html(source, metadata):
     :return: str, HTML for plot viewing page
     """
     # Prepare parameters
-    title = (f"{metadata['attributes']['Title']} - "
-             f"{metadata['attributes']['Quantity']} - "
-             f"{metadata['attributes']['Run time']}")
+    title = ' - '.join(filter(None, (
+        metadata['attributes'].get('model_run_title'),
+        metadata['attributes'].get('quantity'),
+        metadata['attributes'].get('Run time')
+    )))
     params = dict(source=source, metadata=metadata, title=title)
 
     # Load template
@@ -191,6 +191,15 @@ def _format_timestamp_string(cube):
     return timestamp
 
 
+def _get_zlevel_name(cube):
+    """
+    Return name of coordinate representing zlevel for cube.
+    """
+    known_z = set(['alt', 'altitude', 'flight_level'])
+    cube_coords = [c.name() for c in cube.coords()]
+    return known_z.intersection(cube_coords).pop()
+
+
 def _format_zlevel_string(cube):
     """
     Return string representation of the zlevel for the cube. Method takes
@@ -204,6 +213,9 @@ def _format_zlevel_string(cube):
 
     if 'altitude' in coord_types:
         zlevel = cube.coord('altitude').points[0]
+        zlevel = f"{zlevel:05.0f}"
+    elif 'alt' in coord_types:
+        zlevel = cube.coord('alt').points[0]
         zlevel = f"{zlevel:05.0f}"
     elif 'flight_level' in coord_types:
         zlevel = cube.coord('flight_level').points[0]
@@ -228,6 +240,8 @@ def _get_zlevels(cube):
     coord_types = {c.name() for c in cube.coords()}
     if 'altitude' in coord_types:
         return cube.coord('altitude').points.tolist()
+    elif 'alt' in coord_types:
+        return cube.coord('alt').points.tolist()
     elif 'flight_level' in coord_types:
         return cube.coord('flight_level').points.tolist()
     else:

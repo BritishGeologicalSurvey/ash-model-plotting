@@ -70,6 +70,36 @@ class AshModelResult(metaclass=ABCMeta):
         """
         pass
 
+    @staticmethod
+    def _has_zlevels(cube):
+        """
+        Determines if a cube has z-levels.
+
+        :return: bool
+        """
+        zlevel_names = {'altitude', 'alt', 'flight_level'}
+        coord_names = {c.name() for c in cube.coords()}
+        # is_disjoint() is True if sets don't overlap
+        return not zlevel_names.isdisjoint(coord_names)
+
+    @staticmethod
+    def _get_model_run_title(cube):
+        """
+        Extract pretty formatted run-title name from cube
+        attributes.
+
+        :return: str
+        """
+        # Title, TITLE, (None)
+        if 'Title' in cube.attributes:
+            title = cube.attributes.get('Title')
+        elif 'TITLE' in cube.attributes:
+            title = cube.attributes.get('TITLE')
+        else:
+            title = ''
+
+        return title
+
     def _load_from_netcdf(self):
         """
         Load cubes from NetCDF4 file with minor error-checking for valid file
@@ -169,7 +199,9 @@ class AshModelResult(metaclass=ABCMeta):
         html = render_html(self.source_data, metadata)
 
         # Write to file
-        name = (f"{metadata['attributes']['Title']}_"
-                f"{metadata['attributes']['Quantity']}.html").replace(' ', '_')
+        name = '_'.join(filter(None, (
+            metadata['attributes'].get('model_run_title'),
+            metadata['attributes'].get('quantity'),
+            "summary.html"))).replace(' ', '_')
         output_file = Path(output_dir) / name
         output_file.write_text(html)

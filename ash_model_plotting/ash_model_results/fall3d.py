@@ -8,38 +8,23 @@ import iris
 
 from ash_model_plotting.ash_model_results import (
     AshModelResult,
-    AshModelResultError,
 )
 
 
-class NameAshModelResult(AshModelResult):
+class Fall3DAshModelResult(AshModelResult):
     """
-    AshModelResult for data from NAME model simulations.
+    AshModelResult for data from FALL3D model simulations.
     """
     def __repr__(self):
-        return f"NameAshModelResult({self.source_data})"
+        return f"Fall3DAshModelResult({self.source_data})"
 
     def _load_cubes(self):
         """
-        Load cubes from single NetCDF file or list of NAME-format .txt files
+        Load cubes from single NetCDF file
         """
-        # TODO: improve error handling here
-        # Load from many NAME files
-        if isinstance(self.source_data, list):
-            self.cubes = iris.load(self.source_data)
-            return
-
         # Load from NetCDF
-        source_data = Path(self.source_data)
-        if source_data.suffix.lower() == '.nc':
-            self._load_from_netcdf()
-        else:
-            # Assuming single NAME .txt file
-            try:
-                self.cubes = iris.load(str(source_data))
-            except OSError:
-                msg = f"{source_data.absolute()} not found"
-            raise AshModelResultError(msg)
+        self.source_data = Path(self.source_data)
+        self._load_from_netcdf()
 
     @property
     def air_concentration(self):
@@ -48,7 +33,7 @@ class NameAshModelResult(AshModelResult):
         :return: iris.cube.Cube
         """
         air_concentration = iris.Constraint(
-            name='VOLCANIC_ASH_AIR_CONCENTRATION'
+            name='CON'
             )
 
         has_zlevel = iris.Constraint(cube_func=self._has_zlevels)
@@ -70,7 +55,7 @@ class NameAshModelResult(AshModelResult):
         :return: iris.cube.Cube
         """
         total_column = iris.Constraint(
-            name='VOLCANIC_ASH_DOSAGE'
+            name='COL_MASS'
         )
 
         try:
@@ -90,7 +75,7 @@ class NameAshModelResult(AshModelResult):
         :return: iris.cube.Cube
         """
         total_deposition = iris.Constraint(
-            name='VOLCANIC_ASH_TOTAL_DEPOSITION'
+            name='LOAD'
         )
 
         try:

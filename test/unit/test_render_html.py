@@ -2,11 +2,12 @@ from textwrap import dedent
 
 from ash_model_plotting.plotting import render_html
 
+# flake8: noqa
 EXPECTED_3D = dedent("""
 <!DOCTYPE html>
 <html>
   <head>
-    <title>VA_Tutorial - Total deposition - 0904UTC 20/07/2018</title>
+    <title>0904UTC 20/07/2018</title>
     <style type="text/css">
       h3, h4, h5 {
         color: grey;
@@ -34,7 +35,7 @@ EXPECTED_3D = dedent("""
 
   <body>
 
-  <h3>VA_Tutorial - Total deposition - 0904UTC 20/07/2018</h3>
+  <h3>0904UTC 20/07/2018</h3>
 
   <hr>
   <h4>Attributes</h4>
@@ -56,11 +57,10 @@ EXPECTED_3D = dedent("""
     <b>Conventions:</b> CF-1.5<br>
     <b>Quantity:</b> Total deposition<br>
     <b>Time Av or Int:</b> 078 hr time integrated<br>
-  </blockquote>
+    </blockquote>
 
   <hr>
   <h4>Plots</h4>
-
     <table>
       <tr><td>
         <a href="VA_Tutorial_Total_deposition_20100418030000.png">
@@ -73,7 +73,6 @@ EXPECTED_3D = dedent("""
         </a>
       </td></tr>
       </table>
-
   </body>
 </html>
 """).strip()
@@ -83,7 +82,7 @@ EXPECTED_4D = dedent("""
 <!DOCTYPE html>
 <html>
   <head>
-    <title>VA_Tutorial - Air Concentration - 0904UTC 20/07/2018</title>
+    <title>0904UTC 20/07/2018</title>
     <style type="text/css">
       h3, h4, h5 {
         color: grey;
@@ -111,7 +110,7 @@ EXPECTED_4D = dedent("""
 
   <body>
 
-  <h3>VA_Tutorial - Air Concentration - 0904UTC 20/07/2018</h3>
+  <h3>0904UTC 20/07/2018</h3>
 
   <hr>
   <h4>Attributes</h4>
@@ -141,7 +140,7 @@ EXPECTED_4D = dedent("""
     <ul>
     <li><a href="#00500">00500</a></li>
     <li><a href="#01000">01000</a></li>
-
+    
     </ul>
     <h5 id="00500">Altitude: 00500</h5>
       <table>
@@ -171,7 +170,7 @@ EXPECTED_4D = dedent("""
         </td></tr>
         </table>
       <hr>
-
+    
   </body>
 </html>
 """).strip()
@@ -205,6 +204,8 @@ def test_render_html_3d():
 
     # Act
     html = render_html(source, metadata)
+    with open('htmltest3d.html', 'w') as f:
+        f.write(html)
 
     # Assert
     assert _remove_whitespace(html) == _remove_whitespace(EXPECTED_3D)
@@ -242,6 +243,8 @@ def test_render_html_4d():
 
     # Act
     html = render_html(source, metadata)
+    with open('htmltest4d.html', 'w') as f:
+        f.write(html)
 
     # Assert
     assert _remove_whitespace(html) == _remove_whitespace(EXPECTED_4D)

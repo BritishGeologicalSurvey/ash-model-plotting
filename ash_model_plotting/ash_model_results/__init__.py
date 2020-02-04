@@ -5,3 +5,4 @@ from ash_model_plotting.ash_model_results.ash_model_result import (
     AshModelResultError
 )
 from ash_model_plotting.ash_model_results.name import NameAshModelResult
+from ash_model_plotting.ash_model_results.fall3d import Fall3DAshModelResult
