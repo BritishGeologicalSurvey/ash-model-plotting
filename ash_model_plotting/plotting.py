@@ -274,4 +274,8 @@ def _vaac_compatible(cube):
 
     return boolean
     """
+    # Note: Technically "gr/m3" represents "grains per cubic metre,
+    # we include this check because an older version of Fall 3D
+    # uses this abbreviation for grams, rather than the standard "g".
+    # This convention is based on the udunits package conventions.
     return cube.units in (cf_units.Unit('g/m3'), cf_units.Unit('gr/m3'))
