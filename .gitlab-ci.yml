@@ -1,0 +1,36 @@
+# let's make CI run for the ash plotting
+---
+stages:
+  - test
+
+services:
+  - docker:18-dind
+
+test:
+  tags:
+    - docker-builder
+  image: docker
+  stage: test
+  script:
+    # Login to registry and previous test container
+    - >
+      docker login -u "$CI_REGISTRY_USER" \
+          -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - >
+      docker pull "$CI_REGISTRY_IMAGE:test-runner" \
+          || true # Don't fail if missing
+
+    # Build new container using cached layers from previous
+    - >
+      docker build \
+          --cache-from "$CI_REGISTRY_IMAGE:test-runner" \
+          -t "$CI_REGISTRY_IMAGE:test-runner" .
+
+    # Run linting and tests
+    - >
+      docker run \
+          "$CI_REGISTRY_IMAGE:test-runner" flake8 ash-model-plotting test
+
+    - >
+      docker run \
+          "$CI_REGISTRY_IMAGE:test-runner" pytest -vvs test/

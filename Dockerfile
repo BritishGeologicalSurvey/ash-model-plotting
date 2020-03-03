@@ -1,23 +1,29 @@
+# Let's build a Dockerfile to run our tests for ash model plotting
+# We use miniconda because the Iris package and its dependencies are 
+# easiest to install from the conda-forge repository. 
 FROM continuumio/miniconda3
 
-RUN conda install -y -c conda-forge \
-  iris iris-sample-data jupyterlab
+# Install package dependencies
+RUN apt-get update -y && \
+    apt-get install -y \
+     build-essential \
+     curl \
+     git 
 
-# Add an iris user so that process doesn't run as root. This also means that
-# files created on the host system belong to 1000:1000, not root:root.
-# Files owned by root within Docker cannot usually be modified on the host
-# system by non-root users.
-RUN useradd -m iris
-WORKDIR /home/iris
-USER iris
+# Install requirements
+RUN conda install -y -c conda-forge iris \
+    iris-sample-data flake8 pytest
 
-# The 'owner' of a single user Linux system is  usually allocated id=1000. They
-# will own these files outside the container.  If your id is different
-# (run `id -u` to check), you can specify the id and gid by uncommenting the
-# following line.
-# RUN usermod --uid 1234 iris && groupmod --gid 1234 iris
+# Install Python modules
+ENV APP=/app
+ENV PYTHONPATH=$APP
+WORKDIR $APP
+RUN mkdir ash-model-plotting
 
-#  For explanation of parameters, see:
-#  https://stackoverflow.com/questions/49024624/how-to-dockerize-jupyter-lab
-ENTRYPOINT [ "jupyter-lab", "--port=8888", "--ip=0.0.0.0" ]
+# Copy app files to container
+COPY setup.py README.md $APP/
+COPY ash_model_plotting/ $APP/ash_model_plotting
+COPY test/ $APP/test
 
+# Clear old caches, if present
+RUN find . -regextype posix-egrep -regex '.*/__pycache__.*' -delete
