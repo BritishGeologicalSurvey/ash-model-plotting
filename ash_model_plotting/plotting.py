@@ -25,7 +25,6 @@ def plot_4d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs)
     :param file_ext, file extension suffix for data format e.g. png, pdf
     :param kwargs: dict; extra arguments to pass to plt.savefig
     """
-    kwargs.update(vaac_colours=vaac_colours)
     metadata = {'created_by': 'plot_4d_cube',
                 'attributes': cube.attributes,
                 'plots': {}
@@ -67,7 +66,6 @@ def plot_3d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs)
     :param file_ext, file extension suffix for data format e.g. png, pdf
     :param kwargs: dict; extra args for draw_2d_cube and plt.savefig
     """
-    kwargs.update(vaac_colours=vaac_colours)
     metadata = {'created_by': 'plot_3d_cube',
                 'attributes': cube.attributes,
                 'plots': {}
