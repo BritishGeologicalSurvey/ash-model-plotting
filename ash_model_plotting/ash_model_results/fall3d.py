@@ -3,6 +3,7 @@ Class to store ash model results.
 """
 # coding: utf-8
 from pathlib import Path
+from warnings import warn
 
 import iris
 
@@ -43,9 +44,17 @@ class Fall3DAshModelResult(AshModelResult):
             cube = valid_cubes.concatenate_cube()
             cube.attributes['model_run_title'] = self._get_model_run_title(cube)
             cube.attributes['quantity'] = 'Air Concentration'
+            if cube.attributes['units'] == "gr/m3":
+                warn("Air concentration reports units of"
+                     "\"gr/m3\", which represents *grains* in"
+                     " the udunits library. This may cause issues"
+                     " in unit conversion. \n"
+                     "(Did you mean \"g/m3\")")
+
             return cube
         except ValueError:
             # Return None if no cubes present
+            # A warning might be useful here?
             return
 
     @property
