@@ -233,10 +233,14 @@ def _format_zlevel_string(cube):
     elif 'alt' in coord_types:
         zlevel = cube.coord('alt').points[0]
         zlevel = f"{zlevel:05.0f}"
+    elif 'Top height of each layer' in coord_types:
+        zlevel = cube.coord('Top height of each layer').points[0]
+        zlevel = f"{zlevel:05.0f}"
     elif 'flight_level' in coord_types:
         zlevel = cube.coord('flight_level').points[0]
         zlevel = f"FL{zlevel:03.0f}"
     else:
+        # TODO: think about raising an exception here instead
         zlevel = ''
 
     return zlevel
@@ -258,6 +262,8 @@ def _get_zlevels(cube):
         return cube.coord('altitude').points.tolist()
     elif 'alt' in coord_types:
         return cube.coord('alt').points.tolist()
+    elif 'Top height of each level' in coord_types:
+        return cube.coord('Top height of each level').points.tolist()
     elif 'flight_level' in coord_types:
         return cube.coord('flight_level').points.tolist()
     else:
