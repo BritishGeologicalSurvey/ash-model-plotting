@@ -21,7 +21,7 @@ WORKDIR $APP
 RUN mkdir ash-model-plotting
 
 # Copy app files to container
-COPY setup.py README.md $APP/
+COPY setup.py README.md .flake8 $APP/
 COPY ash_model_plotting/ $APP/ash_model_plotting
 COPY test/ $APP/test
 
