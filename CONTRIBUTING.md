@@ -1,5 +1,13 @@
 # Developer notes and contribution guide
 
+## Running tests
+
+There are unit and integration tests to check that the code does as is expected.  Run them with:
+
+```
+conda install -c conda-forge ipdb flake8 pytest pytest-icdiff
+pytest -vs test
+```
 
 ## Installation for development (on Ubuntu Linux)
 

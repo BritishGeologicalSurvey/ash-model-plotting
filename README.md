@@ -2,8 +2,6 @@
 
 > Code to plot and compare the results from volcanic ash dispersion model runs.
 
-## Software
-
 The plotting scripts are based on the following Python libraries.
 
 + [Iris](https://scitools.org.uk/iris/docs/latest): "A powerful,
@@ -19,7 +17,36 @@ See below for [dependency installation instructions](#dependencies).
 These must be installed and the correct Python environment configured before running scripts.
 
 
-## Setup
+## Installation
+
+### Prepare environment with dependencies
+
+Anaconda Python is used because it provides an easy way to install all the
+dependencies required by Iris.
+Download and run the Miniconda3 installer for Linux, Mac or Windows from the [Conda website](https://conda.io/miniconda.html).
+Create an 'environment' and install Iris and other Python packages:
+
+```bash
+conda create -y -c conda-forge -n ash-model-plotting \
+  iris ipython numpy matplotlib
+```
+
+Activate the virtual environment:
+
+```bash
+conda activate ash-model-plotting
+```
+
+The virtual environment isolates the Python packages used by ash-model-plotting from the rest of the system.
+This means that they will not interfere with each other.
+
+You can deactivate the virtual environment with:
+
+```bash
+conda deactivate
+```
+
+### Install ash-model-plotting
 
 Checkout the code from Git:
 
@@ -28,42 +55,8 @@ git clone git@bitbucket.org:jsteven5/ash-model-plotting.git
 cd ash-model-plotting
 ```
 
-### Installation via Conda (recommended)
-
-Download and run the Miniconda3 installer for Linux, Mac or Windows from the [Conda website](https://conda.io/miniconda.html).
-Create an 'environment' and install Iris and other Python packages:
-
-```
-conda create -y -c conda-forge -n ash_model_plotting iris iris-sample-data ipython numpy matplotlib
-```
-
-Activate the virtual environment:
-
-```
-source activate ash_model_plotting
-```
-
-The virtual environment isolates the Python packages used by ash_model_plotting from the rest of the system.
-This means that they will not interfere with each other.
-
-Deactivate the virtual environment:
-
-```
-source deactivate
-```
-
-To be able to import from the `ash_model_plotting` repository, it may be
-necessary to add it to the Python path:
-
-```bash
-export PYTHONPATH=.
-```
-
-### Environment-wide installation
-
-The repository contains a `setup.py` file that can install the module and make
-it available from anywhere on the system.
-If you have access to `pip`, it can be installed as follows:
+The repository contains a `setup.py` file installed ash-model-plotting so it can be used within the virtual environment from anywhere on the system.
+Install is as follows.
 
 ```bash
 python -m pip install -e .
@@ -75,33 +68,47 @@ applied without having to reinstall the module.
 This installation should make a number of scripts available on the `$PATH`,
 such as `plot_ash_model_results`.
 
+## How to use ash-model-plotting
 
-## REFIR analysis
+`ash_model_plotting` provides a wrapper class around the Iris data cube.
+This AshModelResult class has convenience functions for accessing data for air
+concentration, total column loading and total deposition.
+The data are returned as Iris cubes and can be further processed as required.
+There are different AshModelResult classes for different dispersion model
+result types.
+There are also functions for plotting these results.
 
-To analyse output from REFIR model runs, use the following command:
+`ash-model-plotting` is most easily used in an interactive environment (e.g.
+IPython terminal or Jupyter notebook).
 
-```bash
-python ash_model_plotting/analyse_refir_outputs.py  /path/to/name_results --output_dir /path/to/outputs
+```python
+from glob import glob
+from ash_model_plotting import NameAshModelResult, Fall3DAshModelResult
+
+# Load NAME data from text files, or Fall3D from NetCDF
+name_files = glob('test/data/*.txt')
+name_result = NameAshModelResult(name_files)
+fall3d_result = Fall3DAshModelResult('test/data/fall3d_realistic_res_clip.nc')
+
+# Access subsets of data as class "properties"
+print(name_result.air_concentration)
+print(name_result.total_column)
+print(name_result.total_deposition)
+
+# Easily plot different attributes
+fall3d_result.plot_air_concentration('path/to/output/directory')
+fall3d_result.plot_total_column('path/to/output/directory')
+fall3d_result.plot_total_deposition('path/to/output/directory')
 ```
 
-The script extracts the maximum concentration and the area above the advisory
-threshold for each of the modelled runs.
-It creates a CSV file with a summary of the data and bar charts comparing the
-different models.
+This class uses the `plot_4d_cube`, `plot_3d_cube` and `draw_2d_cube` functions from `plotting.py` internally.
 
-Maps can be plotted for each model run with:
+## Analysis scripts for earlier versions
 
-```bash
-python ash_model_plotting/plot_ash_model_results /path/to/name_results/Fields_grid88*.txt --output_dir /path/to/outputs
-```
+The following examples were based on earlier version of ash-model-plotting.
+They will be updated soon.
 
-
-# Previous information
-
-The text below belongs to a previous incarnation of the script and is not
-relevant to the current REFIR project.
-
-## Convert NAME to netCDF
+### Convert NAME to netCDF
 
 The `name_to_netcdf.py` script will collect all the NAME output files in a directory and convert them into a single NetCDF file.
 
@@ -118,7 +125,9 @@ python ash_model_plotting/name_to_netcdf.py /path/to/ADM_outputs/NAME
 ```
 
 
-## Plot all data
+### Plot all data
+
+The plot_ash_model_results.py script was created to plot NAME data.
 
 Get instructions for plotting script:
 
@@ -139,46 +148,26 @@ If the `output_dir` is not specified, plots are written to the data directory.
 If the `output_dir` does not exist, it will be created.
 
 
-## AshModelResult
 
-`ash_model_plotting` provides a wrapper class around the Iris data cube.
-It has convenience functions for accessing data of different types.
-It is used as follows:
+### REFIR analysis
 
-```python
-from ash_model_plotting import AshModelResult
-result = AshModelResult('path/to/VA_Tutorial_NAME_output.nc')
+The following section contains information specific to a study using the REFIR
+tool.
 
-# Access subsets of data
-print(result.air_concentration)
-print(result.total_column)
-print(result.total_deposition)
+To analyse output from REFIR model runs, use the following command:
 
-# Plot subsets of data
-result.plot_air_concentration('path/to/output/directory')
-result.plot_total_column('path/to/output/directory')
-result.plot_total_deposition('path/to/output/directory')
+```bash
+python ash_model_plotting/analyse_refir_outputs.py  /path/to/name_results --output_dir /path/to/outputs
 ```
 
-This class uses the `plot_4d_cube`, `plot_3d_cube` and `draw_2d_cube` functions from `plotting.py` internally.
+The script extracts the maximum concentration and the area above the advisory
+threshold for each of the modelled runs.
+It creates a CSV file with a summary of the data and bar charts comparing the
+different models.
 
+Maps can be plotted for each model run with:
 
-## For Developers
-
-#### Running tests
-
-There are unit and integration tests to check that the code does as is expected.  Run them with:
-
-```
-export PYTHONPATH=.
-pytest -vs test
+```bash
+python ash_model_plotting/plot_ash_model_results /path/to/name_results/Fields_grid88*.txt --output_dir /path/to/outputs
 ```
 
-## Dependencies
-
-
-Developers should also run:
-
-```
-conda install -c conda-forge ipdb flake8 pytest pytest-icdiff
-```
