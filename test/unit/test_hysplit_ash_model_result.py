@@ -49,21 +49,19 @@ def test_hysplit_ash_model_total_column(data_dir):
 
 @pytest.mark.parametrize('plot_func, expected', [
     ('plot_air_concentration',
-     ['00000/hysplit_7.1_results_Air_Concentration_00000_20100418030000.png',
-      '00000/hysplit_7.1_results_Air_Concentration_00000_20100418060000.png',
-      '01000/hysplit_7.1_results_Air_Concentration_01000_20100418030000.png',
-      '01000/hysplit_7.1_results_Air_Concentration_01000_20100418060000.png',
-      '00500/hysplit_7.1_results_Air_Concentration_00500_20100418030000.png',
-      '00500/hysplit_7.1_results_Air_Concentration_00500_20100418060000.png',
-      'hysplit_7.1_results_Air_Concentration_summary.html']),
+     ['01000/Air_Concentration_01000_20100418030000.png',
+      '01000/Air_Concentration_01000_20100418060000.png',
+      '00500/Air_Concentration_00500_20100418030000.png',
+      '00500/Air_Concentration_00500_20100418060000.png',
+      'Air_Concentration_summary.html']),
     ('plot_total_column',
-     ['hysplit_7.1_results_Total_Column_Mass_20100418030000.png',
-      'hysplit_7.1_results_Total_Column_Mass_20100418060000.png',
-      'hysplit_7.1_results_Total_Column_Mass_summary.html']),
+     ['Total_Column_Mass_20100418030000.png',
+      'Total_Column_Mass_20100418060000.png',
+      'Total_Column_Mass_summary.html']),
     ('plot_total_deposition',
-     ['hysplit_7.1_results_Total_Deposition_20100418030000.png',
-      'hysplit_7.1_results_Total_Deposition_20100418060000.png',
-      'hysplit_7.1_results_Total_Deposition_summary.html'])
+     ['Total_Deposition_20100418030000.png',
+      'Total_Deposition_20100418060000.png',
+      'Total_Deposition_summary.html'])
     ])
 def test_plot_functions(hysplit_model_result, tmpdir, plot_func, expected,
                         scantree):
