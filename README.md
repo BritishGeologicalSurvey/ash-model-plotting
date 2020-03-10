@@ -182,31 +182,6 @@ Developers should also run:
 ```
 conda install -c conda-forge ipdb flake8 pytest pytest-icdiff
 ```
-
-### Running via Docker
-
-An alternative to a local installation is to run a Jupyter Labs session with all the Iris dependencies installed.
-This is good for interactive experimentation.
-A Dockerfile is included to create the container.
-
-```
-docker build -t iris .
-```
-
-Jupyter Labs can be started via:
-
-```
-docker run -p 8888:8888 -v $(pwd):/home/iris --rm --name iris iris:latest
-```
-
-This will start a server that can see the files in the current directory.
-The server can be run in the background by passing the `-d` flag.
-The URL and token to access the webpage are then obtained via:
-
-```
-docker exec iris jupyter notebook list
-```
-
 ### Installation for development (on Ubuntu Linux)
 
 This method is only recommended if you intend to make changes to Iris itself.
