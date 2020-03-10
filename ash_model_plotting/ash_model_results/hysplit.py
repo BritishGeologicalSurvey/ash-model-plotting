@@ -12,12 +12,12 @@ from ash_model_plotting.ash_model_results import (
 )
 
 
-class HySplitAshModelResult(AshModelResult):
+class HysplitAshModelResult(AshModelResult):
     """
-    AshModelResult for data from HySplit model simulations.
+    AshModelResult for data from Hysplit model simulations.
     """
     def __repr__(self):
-        return f"HySplitAshModelResult({self.source_data})"
+        return f"HysplitAshModelResult({self.source_data})"
 
     def _load_cubes(self):
         """
