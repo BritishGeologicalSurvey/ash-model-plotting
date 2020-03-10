@@ -38,7 +38,7 @@ pip install -r setup.txt
 ### Sort out pyke
 
 Pyke is is needed to run `setup.py`
-Download pyke3-1.1.1.zip from [https://pyke.sourceforge.net](https://pyke.sourceforge.net)
+Download pyke3-1.1.1.zip from [http://pyke.sourceforge.net](https://pyke.sourceforge.net)
 
 ```
 unzip pyke3-1.1.1.zip
