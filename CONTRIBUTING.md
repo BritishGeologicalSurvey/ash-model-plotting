@@ -48,7 +48,7 @@ cd pyke-1.1.1
 python setup.py install
 ```
 
-### Install IRIS
+### Install Iris
 
 ```
 cd ../iris
