@@ -5,6 +5,7 @@ Class to store ash model results.
 from pathlib import Path
 
 import iris
+import numpy as np
 
 from ash_model_plotting.ash_model_results import (
     AshModelResult,
@@ -34,7 +35,7 @@ class HysplitAshModelResult(AshModelResult):
     @property
     def air_concentration(self):
         """
-        Cube containing air concentration data
+        Cube containing air concentration data.  The lowest altitude in the cube corresponds to deposition.
         :return: iris.cube.Cube
         """
         air_concentration = iris.Constraint(
@@ -57,22 +58,36 @@ class HysplitAshModelResult(AshModelResult):
     @property
     def total_column(self):
         """
-        Cube containing total_column loading data
+        Cube containing total_column loading data.  For Hysplit data, the total column loading must be calculated
+        on-the-fly by summing the mass of volcanic ash at each zlevel.
         :return: iris.cube.Cube
         """
-        total_column = iris.Constraint(
-            name='VOLCANIC_ASH_DOSAGE'
-        )
-
-        try:
-            valid_cubes = self.cubes.extract(total_column)
-            cube = valid_cubes.concatenate_cube()
-            cube.attributes['model_run_title'] = self._get_model_run_title(cube)
+        if self.air_concentration:
+            cube = self._calculate_total_column(self.air_concentration)
             cube.attributes['quantity'] = 'Total Column Mass'
             return cube
-        except ValueError:
+        else:
             # Return None if no cubes present
             return
+
+    @staticmethod
+    def _calculate_total_column(cube):
+        """
+        Collapse a cube of air_concentration by summing the mass of volcanic ash at each zlevel.
+        """
+        # Get thicknesses of zlevels
+        zlevels = cube.coord('Top height of each layer')
+        zlevel_thicknesses = np.concatenate((zlevels.points[:1],
+                                             np.diff(zlevels.points)))
+
+        # Setting weights for collapsed cube (should match shape of data array)
+        weights = np.ones(cube.data.shape)
+        for i, thickness in enumerate(zlevel_thicknesses):
+            weights[:, i, :, :] *= thickness
+
+        # Collapsing cube
+        return cube.collapsed('Top height of each layer', iris.analysis.SUM,
+                              weights=weights)
 
     @property
     def total_deposition(self):

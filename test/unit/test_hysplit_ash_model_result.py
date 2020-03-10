@@ -1,6 +1,7 @@
 """Tests for HysplitAshModelResult class."""
 from pathlib import Path
 
+import numpy as np
 import pytest
 import iris.cube
 
@@ -8,6 +9,8 @@ from ash_model_plotting.ash_model_results import (
     HysplitAshModelResult,
     AshModelResultError,
 )
+
+# pylint: disable=unused-argument, missing-docstring
 
 
 def test_hysplit_ash_model_result_init_happy_path_netcdf(data_dir):
@@ -47,6 +50,7 @@ def test_hysplit_ash_model_total_column(data_dir):
     assert result.total_column.name() == "COL_MASS"
 
 
+# TODO: find where 00750 comes from.
 @pytest.mark.parametrize('plot_func, expected', [
     ('plot_air_concentration',
      ['01000/Air_Concentration_01000_20100418030000.png',
@@ -55,8 +59,8 @@ def test_hysplit_ash_model_total_column(data_dir):
       '00500/Air_Concentration_00500_20100418060000.png',
       'Air_Concentration_summary.html']),
     ('plot_total_column',
-     ['Total_Column_Mass_20100418030000.png',
-      'Total_Column_Mass_20100418060000.png',
+     ['Total_Column_Mass_00750_20100418030000.png',
+      'Total_Column_Mass_00750_20100418060000.png',
       'Total_Column_Mass_summary.html']),
     ('plot_total_deposition',
      ['Total_Deposition_20100418030000.png',
@@ -84,3 +88,17 @@ def test_plot_functions_no_data(hysplit_model_result, tmpdir, plot_func):
     hysplit_model_result.cubes = iris.cube.CubeList()
     with pytest.raises(AshModelResultError):
         getattr(hysplit_model_result, plot_func)(tmpdir)
+
+
+def test_calculate_total_column(hysplit_model_result):
+    # Arrange
+    air_concentration = hysplit_model_result.air_concentration
+    air_concentration.data = np.ones(air_concentration.data.shape)
+    # Collapse two layers 500 m thick to get time, lat, lon
+    expected = np.ones(air_concentration.data.shape)[:, 0, :, :] * 2 * 500
+
+    # Act
+    total_column = HysplitAshModelResult._calculate_total_column(air_concentration)
+
+    # Assert
+    np.testing.assert_array_equal(total_column.data, expected)
