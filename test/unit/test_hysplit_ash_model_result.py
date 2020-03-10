@@ -1,0 +1,88 @@
+"""Tests for HysplitAshModelResult class."""
+from pathlib import Path
+
+import pytest
+import iris.cube
+
+from ash_model_plotting.ash_model_results import (
+    HysplitAshModelResult,
+    AshModelResultError,
+)
+
+
+def test_hysplit_ash_model_result_init_happy_path_netcdf(data_dir):
+    source_file = data_dir / 'hysplit_cdump.nc'
+    result = HysplitAshModelResult(source_file)
+
+    assert result.source_data == source_file
+    assert isinstance(result.cubes, iris.cube.CubeList)
+
+
+def test_hysplit_ash_model_result_init_not_a_file():
+    with pytest.raises(AshModelResultError):
+        HysplitAshModelResult('not a file')
+
+
+def test_hysplit_ash_model_air_concentration(data_dir):
+    source_file = data_dir / 'hysplit_cdump.nc'
+    result = HysplitAshModelResult(source_file)
+
+    assert isinstance(result.air_concentration, iris.cube.Cube)
+    assert result.air_concentration.name() == "Concentration Array - ASH "
+
+
+def test_hysplit_ash_model_total_deposition(data_dir):
+    source_file = data_dir / 'hysplit_cdump.nc'
+    result = HysplitAshModelResult(source_file)
+
+    assert isinstance(result.total_deposition, iris.cube.Cube)
+    assert result.total_deposition.name() == "LOAD"
+
+
+def test_hysplit_ash_model_total_column(data_dir):
+    source_file = data_dir / 'hysplit_cdump.nc'
+    result = HysplitAshModelResult(source_file)
+
+    assert isinstance(result.total_column, iris.cube.Cube)
+    assert result.total_column.name() == "COL_MASS"
+
+
+@pytest.mark.parametrize('plot_func, expected', [
+    ('plot_air_concentration',
+     ['00000/hysplit_7.1_results_Air_Concentration_00000_20100418030000.png',
+      '00000/hysplit_7.1_results_Air_Concentration_00000_20100418060000.png',
+      '01000/hysplit_7.1_results_Air_Concentration_01000_20100418030000.png',
+      '01000/hysplit_7.1_results_Air_Concentration_01000_20100418060000.png',
+      '00500/hysplit_7.1_results_Air_Concentration_00500_20100418030000.png',
+      '00500/hysplit_7.1_results_Air_Concentration_00500_20100418060000.png',
+      'hysplit_7.1_results_Air_Concentration_summary.html']),
+    ('plot_total_column',
+     ['hysplit_7.1_results_Total_Column_Mass_20100418030000.png',
+      'hysplit_7.1_results_Total_Column_Mass_20100418060000.png',
+      'hysplit_7.1_results_Total_Column_Mass_summary.html']),
+    ('plot_total_deposition',
+     ['hysplit_7.1_results_Total_Deposition_20100418030000.png',
+      'hysplit_7.1_results_Total_Deposition_20100418060000.png',
+      'hysplit_7.1_results_Total_Deposition_summary.html'])
+    ])
+def test_plot_functions(hysplit_model_result, tmpdir, plot_func, expected,
+                        scantree):
+    # Call the plot function - we expect html to be generated here, too
+    getattr(hysplit_model_result, plot_func)(tmpdir)
+
+    plot_files = [Path(entry).relative_to(tmpdir).as_posix()
+                  for entry in scantree(tmpdir) if entry.is_file()]
+
+    assert set(plot_files) == set(expected)
+
+
+@pytest.mark.parametrize('plot_func', [
+    'plot_air_concentration',
+    'plot_total_column',
+    'plot_total_deposition'
+    ])
+def test_plot_functions_no_data(hysplit_model_result, tmpdir, plot_func):
+    # Remove cubes from data so that none are found
+    hysplit_model_result.cubes = iris.cube.CubeList()
+    with pytest.raises(AshModelResultError):
+        getattr(hysplit_model_result, plot_func)(tmpdir)
