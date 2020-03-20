@@ -75,7 +75,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs)
     for i, timestamp in enumerate(cube.coord('time')):
         timestamp = _format_timestamp_string(cube[i, :, :])
 
-        fig, title = draw_2d_cube(cube[i, :, :], vaac_colours=False, **kwargs)
+        fig, title = draw_2d_cube(cube[i, :, :], vaac_colours=vaac_colours, **kwargs)
         filename = output_dir / f"{title}.{file_ext}"
         fig.savefig(filename, **kwargs)
         plt.close(fig)
