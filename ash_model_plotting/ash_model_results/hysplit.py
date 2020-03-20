@@ -58,13 +58,15 @@ class HysplitAshModelResult(AshModelResult):
     @property
     def total_column(self):
         """
-        Cube containing total_column loading data.  For Hysplit data, the total column loading must be calculated
+        Cube containing total_column loading data.
+        For Hysplit data, the total column loading must be calculated
         on-the-fly by summing the mass of volcanic ash at each zlevel.
         :return: iris.cube.Cube
         """
         if self.air_concentration:
             cube = self._calculate_total_column(self.air_concentration)
             cube.attributes['quantity'] = 'Total Column Mass'
+            cube.rename("VOLCANIC_ASH_DOSAGE")
             return cube
         else:
             # Return None if no cubes present
