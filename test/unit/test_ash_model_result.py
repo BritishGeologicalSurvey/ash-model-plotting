@@ -1,7 +1,8 @@
 """Tests for AshModelResult abstract base class"""
-# pylint: disable=missing-docstring
 import pytest
 from ash_model_plotting import AshModelResult
+
+# pylint: disable=unused-argument, missing-docstring
 
 
 def test_base_class_cannot_be_instantiated():

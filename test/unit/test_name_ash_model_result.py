@@ -9,6 +9,8 @@ from ash_model_plotting.ash_model_results import (
     AshModelResultError,
 )
 
+# pylint: disable=unused-argument, missing-docstring
+
 
 def test_name_ash_model_result_init_happy_path_netcdf(data_dir):
     source_file = data_dir / 'VA_Tutorial_NAME_output.nc'

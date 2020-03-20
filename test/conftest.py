@@ -9,6 +9,7 @@ import matplotlib
 matplotlib.use('Agg')
 
 from ash_model_plotting import (NameAshModelResult,  # noqa: E402
+                                HysplitAshModelResult,
                                 Fall3DAshModelResult)
 
 
@@ -41,6 +42,12 @@ def refir_result(data_dir):
 def fall3d_model_result(data_dir):
     """An Fall3DAshModelResult based on test data."""
     return Fall3DAshModelResult(data_dir.joinpath('fall3d_realistic_res_clip.nc'))
+
+
+@pytest.fixture(scope='function')
+def hysplit_model_result(data_dir):
+    """A HysplitAshModelResult based on test data."""
+    return HysplitAshModelResult(data_dir.joinpath('hysplit_cdump.nc'))
 
 
 @pytest.fixture(scope='module')

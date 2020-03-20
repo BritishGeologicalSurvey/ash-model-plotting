@@ -83,12 +83,17 @@ IPython terminal or Jupyter notebook).
 
 ```python
 from glob import glob
-from ash_model_plotting import NameAshModelResult, Fall3DAshModelResult
+from ash_model_plotting import (
+    NameAshModelResult,
+    Fall3DAshModelResult,
+    HysplitAshModelResult
+    )
 
-# Load NAME data from text files, or Fall3D from NetCDF
+# Load NAME data from text files, or Fall3D/Hysplit from NetCDF
 name_files = glob('test/data/*.txt')
 name_result = NameAshModelResult(name_files)
 fall3d_result = Fall3DAshModelResult('test/data/fall3d_realistic_res_clip.nc')
+hysplit_result = HysplitAshModelResult('test/data/hysplit_cdump.nc')
 
 # Access subsets of data as class "properties"
 print(name_result.air_concentration)

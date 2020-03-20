@@ -6,3 +6,5 @@ from ash_model_plotting.ash_model_results.ash_model_result import (
 )
 from ash_model_plotting.ash_model_results.name import NameAshModelResult
 from ash_model_plotting.ash_model_results.fall3d import Fall3DAshModelResult
+from ash_model_plotting.ash_model_results.hysplit import HysplitAshModelResult
+

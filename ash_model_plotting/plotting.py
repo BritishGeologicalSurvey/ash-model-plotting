@@ -75,7 +75,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs)
     for i, timestamp in enumerate(cube.coord('time')):
         timestamp = _format_timestamp_string(cube[i, :, :])
 
-        fig, title = draw_2d_cube(cube[i, :, :], vaac_colours=False, **kwargs)
+        fig, title = draw_2d_cube(cube[i, :, :], vaac_colours=vaac_colours, **kwargs)
         filename = output_dir / f"{title}.{file_ext}"
         fig.savefig(filename, **kwargs)
         plt.close(fig)
@@ -233,10 +233,14 @@ def _format_zlevel_string(cube):
     elif 'alt' in coord_types:
         zlevel = cube.coord('alt').points[0]
         zlevel = f"{zlevel:05.0f}"
+    elif 'Top height of each layer' in coord_types:
+        zlevel = cube.coord('Top height of each layer').points[0]
+        zlevel = f"{zlevel:05.0f}"
     elif 'flight_level' in coord_types:
         zlevel = cube.coord('flight_level').points[0]
         zlevel = f"FL{zlevel:03.0f}"
     else:
+        # TODO: think about raising an exception here instead
         zlevel = ''
 
     return zlevel
@@ -258,6 +262,8 @@ def _get_zlevels(cube):
         return cube.coord('altitude').points.tolist()
     elif 'alt' in coord_types:
         return cube.coord('alt').points.tolist()
+    elif 'Top height of each level' in coord_types:
+        return cube.coord('Top height of each level').points.tolist()
     elif 'flight_level' in coord_types:
         return cube.coord('flight_level').points.tolist()
     else:
