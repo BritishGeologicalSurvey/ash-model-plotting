@@ -66,6 +66,7 @@ class HysplitAshModelResult(AshModelResult):
         """
         if self.air_concentration:
             cube = self._calculate_total_column(self.air_concentration)
+            cube.attributes['model_run_title'] = self._get_model_run_title(cube)
             cube.attributes['quantity'] = 'Total Column Mass'
             cube.rename("VOLCANIC_ASH_DOSAGE")
             return cube
@@ -98,15 +99,21 @@ class HysplitAshModelResult(AshModelResult):
         Cube containing total deposition loading data
         :return: iris.cube.Cube
         """
-        total_deposition = iris.Constraint(
-            name='VOLCANIC_ASH_TOTAL_DEPOSITION'
-        )
+        ash_data = iris.Constraint(
+            name='Concentration Array - ASH '
+            )
+
+        ground_level = iris.Constraint(
+            coord_values={'Top height of each layer': lambda cell: cell == 0})
 
         try:
-            valid_cubes = self.cubes.extract(total_deposition)
+            valid_cubes = self.cubes.extract(ash_data & ground_level)
             cube = valid_cubes.concatenate_cube()
+            cube.rename('VOLCANIC_ASH_TOTAL_DEPOSITION')
             cube.attributes['model_run_title'] = self._get_model_run_title(cube)
             cube.attributes['quantity'] = 'Total Deposition'
+            # Overwrite data to give cumulative sum (as original is per step)
+            cube.data = np.cumsum(cube.data, axis=0)
             return cube
         except ValueError:
             # Return None if no cubes present
