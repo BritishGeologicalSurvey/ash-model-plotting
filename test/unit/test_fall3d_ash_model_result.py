@@ -9,6 +9,8 @@ from ash_model_plotting.ash_model_results import (
     AshModelResultError,
 )
 
+# pylint: disable=unused-argument, missing-docstring
+
 
 def test_fall3d_ash_model_result_init_happy_path_netcdf(data_dir):
     source_file = data_dir / 'fall3d_realistic_res_clip.nc'
