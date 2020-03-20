@@ -35,7 +35,8 @@ class HysplitAshModelResult(AshModelResult):
     @property
     def air_concentration(self):
         """
-        Cube containing air concentration data.  The lowest altitude in the cube corresponds to deposition.
+        Cube containing air concentration data.
+        The lowest altitude in the cube corresponds to deposition.
         :return: iris.cube.Cube
         """
         air_concentration = iris.Constraint(
