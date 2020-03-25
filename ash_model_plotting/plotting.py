@@ -46,7 +46,7 @@ def plot_4d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs)
         for yx_slice in tyx_slice.slices(['latitude', 'longitude']):
             timestamp = _format_timestamp_string(yx_slice)
 
-            fig, title = draw_2d_cube(yx_slice, **kwargs)
+            fig, title = plot_2d_cube(yx_slice, **kwargs)
             filename = output_dir / f"{title}.{file_ext}"
             fig.savefig(filename, **kwargs)
             plt.close(fig)
@@ -64,7 +64,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs)
     :param cube: Iris cube with 3 dimensions (time, lat, lon)
     :param output_dir: str; directory to save figure
     :param file_ext, file extension suffix for data format e.g. png, pdf
-    :param kwargs: dict; extra args for draw_2d_cube and plt.savefig
+    :param kwargs: dict; extra args for plot_2d_cube and plt.savefig
     """
     metadata = {'created_by': 'plot_3d_cube',
                 'attributes': cube.attributes,
@@ -75,7 +75,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs)
     for yx_slice in cube.slices(['longitude', 'latitude']):
         timestamp = _format_timestamp_string(yx_slice)
 
-        fig, title = draw_2d_cube(yx_slice, vaac_colours=vaac_colours, **kwargs)
+        fig, title = plot_2d_cube(yx_slice, vaac_colours=vaac_colours, **kwargs)
         filename = output_dir / f"{title}.{file_ext}"
         fig.savefig(filename, **kwargs)
         plt.close(fig)
@@ -85,7 +85,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs)
     return metadata
 
 
-def draw_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8,
+def plot_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8,
                  vaac_colours=False, **kwargs):
     """
     Draw a map of a two dimensional cube.  Cube should have two spatial
