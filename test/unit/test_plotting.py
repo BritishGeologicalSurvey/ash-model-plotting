@@ -8,6 +8,8 @@ from ash_model_plotting.plotting import (
     plot_2d_cube, plot_3d_cube, plot_4d_cube
 )
 
+# pylint: disable=unused-argument, missing-docstring
+
 
 def test_plot_4d_happy_path(name_model_result, tmpdir, scantree):
     cube = name_model_result.air_concentration
