@@ -72,10 +72,10 @@ def plot_3d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs)
                 }
 
     output_dir = Path(output_dir)
-    for i, timestamp in enumerate(cube.coord('time')):
-        timestamp = _format_timestamp_string(cube[i, :, :])
+    for yx_slice in cube.slices(['longitude', 'latitude']):
+        timestamp = _format_timestamp_string(yx_slice)
 
-        fig, title = draw_2d_cube(cube[i, :, :], vaac_colours=vaac_colours, **kwargs)
+        fig, title = draw_2d_cube(yx_slice, vaac_colours=vaac_colours, **kwargs)
         filename = output_dir / f"{title}.{file_ext}"
         fig.savefig(filename, **kwargs)
         plt.close(fig)
