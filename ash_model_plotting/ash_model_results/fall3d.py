@@ -15,6 +15,18 @@ class Fall3DAshModelResult(AshModelResult):
     """
     AshModelResult for data from FALL3D model simulations.
     """
+    _air_concentration_names = {
+        'tephra_concentration on z-cut planes'
+    }
+
+    _total_deposition_names = {
+        'tephra_ground mass load'
+    }
+
+    _total_column_names = {
+        'tephra_column mass load'
+    }
+
     def __repr__(self):
         return f"Fall3DAshModelResult({self.source_data})"
 
@@ -32,8 +44,9 @@ class Fall3DAshModelResult(AshModelResult):
         Cube containing air concentration data
         :return: iris.cube.Cube
         """
+
         air_concentration = iris.Constraint(
-            name='CON'
+            cube_func=lambda c: c.name() in self._air_concentration_names
             )
 
         has_zlevel = iris.Constraint(cube_func=self._has_zlevels)
@@ -55,7 +68,7 @@ class Fall3DAshModelResult(AshModelResult):
         :return: iris.cube.Cube
         """
         total_column = iris.Constraint(
-            name='COL_MASS'
+            cube_func=lambda c: c.name() in self._total_column_names
         )
 
         try:
@@ -75,7 +88,7 @@ class Fall3DAshModelResult(AshModelResult):
         :return: iris.cube.Cube
         """
         total_deposition = iris.Constraint(
-            name='LOAD'
+            cube_func=lambda c: c.name() in self._total_deposition_names
         )
 
         try:

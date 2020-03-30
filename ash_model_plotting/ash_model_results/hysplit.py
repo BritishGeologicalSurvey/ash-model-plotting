@@ -17,6 +17,10 @@ class HysplitAshModelResult(AshModelResult):
     """
     AshModelResult for data from Hysplit model simulations.
     """
+    _air_concentration_names = {
+        'Concentration Array - AS01'
+    }
+
     def __repr__(self):
         return f"HysplitAshModelResult({self.source_data})"
 
@@ -40,7 +44,7 @@ class HysplitAshModelResult(AshModelResult):
         :return: iris.cube.Cube
         """
         air_concentration = iris.Constraint(
-            name='Concentration Array - ASH '
+            cube_func=lambda c: c.name() in self._air_concentration_names
             )
 
         above_ground = iris.Constraint(
@@ -100,7 +104,7 @@ class HysplitAshModelResult(AshModelResult):
         :return: iris.cube.Cube
         """
         ash_data = iris.Constraint(
-            name='Concentration Array - ASH '
+            cube_func=lambda c: c.name() in self._air_concentration_names
             )
 
         ground_level = iris.Constraint(

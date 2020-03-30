@@ -11,5 +11,5 @@ from ash_model_plotting import NameAshModelResult, HysplitAshModelResult, Fall3D
 from glob import glob
 
 name = NameAshModelResult(glob('test/data/*.txt'))
-fall3d = Fall3DAshModelResult('test/data/fall3d_realistic_res_clip.nc')
-hysplit = HysplitAshModelResult('test/data/hysplit_cdump.nc')
+fall3d = Fall3DAshModelResult('test/data/fall3d_operational.nc')
+hysplit = HysplitAshModelResult('test/data/hysplit_operational.nc')

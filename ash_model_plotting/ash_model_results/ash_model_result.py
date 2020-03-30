@@ -77,7 +77,8 @@ class AshModelResult(metaclass=ABCMeta):
 
         :return: bool
         """
-        zlevel_names = {'altitude', 'alt', 'flight_level'}
+        zlevel_names = {'altitude', 'alt', 'flight_level',
+                        'z coordinate of x-y plane cuts'}
         coord_names = {c.name() for c in cube.coords()}
         # is_disjoint() is True if sets don't overlap
         return not zlevel_names.isdisjoint(coord_names)

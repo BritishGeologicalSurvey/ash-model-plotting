@@ -41,13 +41,13 @@ def refir_result(data_dir):
 @pytest.fixture(scope='function')
 def fall3d_model_result(data_dir):
     """An Fall3DAshModelResult based on test data."""
-    return Fall3DAshModelResult(data_dir.joinpath('fall3d_realistic_res_clip.nc'))
+    return Fall3DAshModelResult(data_dir.joinpath('fall3d_operational.nc'))
 
 
 @pytest.fixture(scope='function')
 def hysplit_model_result(data_dir):
     """A HysplitAshModelResult based on test data."""
-    return HysplitAshModelResult(data_dir.joinpath('hysplit_cdump.nc'))
+    return HysplitAshModelResult(data_dir.joinpath('hysplit_operational.nc'))
 
 
 @pytest.fixture(scope='module')

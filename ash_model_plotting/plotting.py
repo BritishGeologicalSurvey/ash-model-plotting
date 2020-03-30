@@ -236,6 +236,9 @@ def _format_zlevel_string(cube):
     elif 'Top height of each layer' in coord_types:
         zlevel = cube.coord('Top height of each layer').points[0]
         zlevel = f"{zlevel:05.0f}"
+    elif 'z coordinate of x-y plane cuts' in coord_types:
+        zlevel = cube.coord('z coordinate of x-y plane cuts').points[0]
+        zlevel = f"{zlevel:05.0f}"
     elif 'flight_level' in coord_types:
         zlevel = cube.coord('flight_level').points[0]
         zlevel = f"FL{zlevel:03.0f}"
@@ -266,6 +269,8 @@ def _get_zlevels(cube):
         return cube.coord('Top height of each level').points.tolist()
     elif 'flight_level' in coord_types:
         return cube.coord('flight_level').points.tolist()
+    elif 'z coordinate of x-y plane cuts' in coord_types:
+        return cube.coord('z coordinate of x-y plane cuts').points.tolist()
     else:
         raise ValueError("Cube doesn't have altitude or flight_level")
 
