@@ -23,6 +23,12 @@ class AshModelResult(metaclass=ABCMeta):
     """
     Class to store ash model results with plotting methods
     """
+    _air_concentration_names = set()
+    _total_deposition_names = set()
+    _total_column_names = set()
+    _zlevel_names = {'altitude', 'alt', 'flight_level',
+                     'z coordinate of x-y plane cuts'}
+
     def __init__(self, source_data):
         self.source_data = source_data
         self._load_cubes()
@@ -70,18 +76,15 @@ class AshModelResult(metaclass=ABCMeta):
         """
         pass
 
-    @staticmethod
-    def _has_zlevels(cube):
+    def _has_zlevels(self, cube):
         """
         Determines if a cube has z-levels.
 
         :return: bool
         """
-        zlevel_names = {'altitude', 'alt', 'flight_level',
-                        'z coordinate of x-y plane cuts'}
         coord_names = {c.name() for c in cube.coords()}
         # is_disjoint() is True if sets don't overlap
-        return not zlevel_names.isdisjoint(coord_names)
+        return not self._zlevel_names.isdisjoint(coord_names)
 
     @staticmethod
     def _get_model_run_title(cube):

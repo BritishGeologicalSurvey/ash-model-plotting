@@ -92,8 +92,8 @@ from ash_model_plotting import (
 # Load NAME data from text files, or Fall3D/Hysplit from NetCDF
 name_files = glob('test/data/*.txt')
 name_result = NameAshModelResult(name_files)
-fall3d_result = Fall3DAshModelResult('test/data/fall3d_realistic_res_clip.nc')
-hysplit_result = HysplitAshModelResult('test/data/hysplit_cdump.nc')
+fall3d_result = Fall3DAshModelResult('test/data/fall3d_operational.nc')
+hysplit_result = HysplitAshModelResult('test/data/hysplit_operational.nc')
 
 # Access subsets of data as class "properties"
 print(name_result.air_concentration)
@@ -107,6 +107,37 @@ fall3d_result.plot_total_deposition('path/to/output/directory')
 ```
 
 This class uses the `plot_4d_cube`, `plot_3d_cube` and `draw_2d_cube` functions from `plotting.py` internally.
+
+
+### Custom variable names
+
+The names of the variables where the `ash-model-plotting` finds data are
+stored in the following class variables:
+
++ `_air_concentration_names`
++ `_total_column_names`
++ `_total_deposition_names`
+
+These are *set* variables that can be extended in the source code.
+Alternatively, custom sub-classes can be created and the values overridden,
+e.g.
+
+```python
+from AshModelPlotting import Fall3DAshModelResult
+
+class MyCustomFall3DAshModelResult(Fall3DAshModelResult):
+    _air_concentration_names = {'CON'}
+    _total_column_names = {'COL_MASS'}
+    _total_deposition_names = {'LOAD'}
+    _zlevel_names = {'m (a. s. l.)'}
+
+result = MyCustomFall3DAshModelResult('path/to/result/file.nc')
+```
+
+Note that some result sets mix ground and airborne values in the same file.
+For these, it may be necessary to specify the `_zlevel_names` to extract those
+correctly.
+
 
 ## Analysis scripts for earlier versions
 

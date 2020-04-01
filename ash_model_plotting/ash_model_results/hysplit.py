@@ -28,13 +28,8 @@ class HysplitAshModelResult(AshModelResult):
         """
         Load cubes from single NetCDF file
         """
-        # Load from NetCDF
-        source_data = Path(self.source_data)
-        try:
-            self.cubes = iris.load(str(source_data))
-        except OSError:
-            msg = f"{source_data.absolute()} not found"
-            raise AshModelResultError(msg)
+        self.source_data = Path(self.source_data)
+        self._load_from_netcdf()
 
     @property
     def air_concentration(self):
