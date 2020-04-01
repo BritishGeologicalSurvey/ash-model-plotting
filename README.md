@@ -65,8 +65,8 @@ python -m pip install -e .
 The `-e` flag means that changes made to files in this source directory will be
 applied without having to reinstall the module.
 
-This installation should make a number of scripts available on the `$PATH`,
-such as `plot_ash_model_results`.
+This installation method makes scripts available on the `$PATH` of the virtual
+environment, so they can be called from anywhere e.g. `plot_ash_model_results`.
 
 ## How to use ash-model-plotting
 
@@ -139,6 +139,36 @@ For these, it may be necessary to specify the `_zlevel_names` to extract those
 correctly.
 
 
+### Plot all data
+
+The `plot_ash_model_results.py` script was created to plot air_concentration,
+total column mass and total deposition from a set of model results.
+The inputs are filename, model type and output directory.
+
+Get instructions for plotting script:
+
+```bash
+python ash_model_plotting/plot_ash_model_results.py --help
+```
+
+Plot set of ash model results:
+
+```bash
+python ash_model_plotting/plot_ash_model_results.py \
+  test/data/VA_Tutorial_NAME_output.nc \
+  --model_type name --output_dir ./
+```
+
+This will create a the plots in the current directory.
+There are plots for air concentration, total column and total deposition.
+Plots for air concentration within are stored in subdirectories for each level (altitude) in the data.
+If the `output_dir` is not specified, plots are written to the data directory.
+If the `output_dir` does not exist, it will be created.
+
+If `ash-model-plotting` has been installed via `pip`, the script will be added
+to the virtual environment $PATH.
+
+
 ## Analysis scripts for earlier versions
 
 The following examples were based on earlier version of ash-model-plotting.
@@ -159,30 +189,6 @@ Convert NAME data to NetCDF4 from the command line:
 ```bash
 python ash_model_plotting/name_to_netcdf.py /path/to/ADM_outputs/NAME
 ```
-
-
-### Plot all data
-
-The plot_ash_model_results.py script was created to plot NAME data.
-
-Get instructions for plotting script:
-
-```bash
-python ash_model_plotting/plot_ash_model_results.py --help
-```
-
-Plot NAME data (after converting to NetCDF4) from the command line:
-
-```bash
-python ash_model_plotting/plot_ash_model_results.py /path/to/ADM_outputs/NAME/VA_Tutorial_NAME_output.nc --output_dir ./
-```
-
-This will create a the plots in the current directory.
-There are plots for air concentration, total column and total deposition.
-Plots for air concentration within are stored in subdirectories for each level (altitude) in the data.
-If the `output_dir` is not specified, plots are written to the data directory.
-If the `output_dir` does not exist, it will be created.
-
 
 
 ### REFIR analysis
