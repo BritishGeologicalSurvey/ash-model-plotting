@@ -28,6 +28,14 @@ def test_name_ash_model_result_init_happy_path_name_format(data_dir):
     assert isinstance(result.cubes, iris.cube.CubeList)
 
 
+def test_name_ash_model_result_single_file_input(data_dir):
+    source_file = data_dir / 'Air_Conc_grid_201004180300_trimmed.txt'
+    result = NameAshModelResult(source_file)
+
+    assert result.source_data == source_file
+    assert isinstance(result.cubes, iris.cube.CubeList)
+
+
 def test_name_ash_model_result_init_not_a_file():
     with pytest.raises(AshModelResultError):
         NameAshModelResult('not a file')
