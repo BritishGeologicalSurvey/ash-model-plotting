@@ -92,6 +92,19 @@ def test_plot_functions(name_model_result, tmpdir, plot_func, expected,
     assert set(plot_files) == set(expected)
 
 
+def test_plot_air_concentration_single_file(data_dir, tmpdir, scantree):
+    name_model_result = NameAshModelResult(
+        data_dir / "Air_Conc_grid_201004180300_trimmed.txt")
+    name_model_result.plot_air_concentration(tmpdir)
+    expected = ['VA_Tutorial_Air_Concentration_summary.html',
+                'VA_Tutorial_Air_Concentration_00500_20100418030000.png']
+
+    plot_files = [Path(entry).relative_to(tmpdir).as_posix()
+                  for entry in scantree(tmpdir) if entry.is_file()]
+
+    assert set(plot_files) == set(expected)
+
+
 @pytest.mark.parametrize('plot_func', [
     'plot_air_concentration',
     'plot_total_column',
