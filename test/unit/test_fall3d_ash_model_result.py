@@ -29,8 +29,11 @@ def test_fall3d_ash_model_air_concentration(data_dir):
     source_file = data_dir / 'fall3d_realistic_res_clip.nc'
     result = Fall3DAshModelResult(source_file)
 
-    assert isinstance(result.air_concentration, iris.cube.Cube)
-    assert result.air_concentration.name() == "CON"
+    # Current Fall3D test data has wrong units - this should raise
+    # a warning whenever calling air_concentration
+    with pytest.warns(UserWarning):
+        assert isinstance(result.air_concentration, iris.cube.Cube)
+        assert result.air_concentration.name() == "CON"
 
 
 def test_fall3d_ash_model_total_deposition(data_dir):
