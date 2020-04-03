@@ -51,7 +51,7 @@ class NameAshModelResult(AshModelResult):
                 self.cubes = iris.load(str(source_data))
             except OSError:
                 msg = f"{source_data.absolute()} not found"
-            raise AshModelResultError(msg)
+                raise AshModelResultError(msg)
 
     @property
     def air_concentration(self):

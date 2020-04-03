@@ -2,7 +2,9 @@
 import os
 from pathlib import Path
 
+import iris
 from matplotlib.figure import Figure  # noqa
+import numpy as np
 
 from ash_model_plotting.plotting import (
     plot_2d_cube, plot_3d_cube, plot_4d_cube
@@ -139,3 +141,42 @@ def test_plot_2d_no_altitude(name_model_result):
 
     assert isinstance(fig, Figure)
     assert title == 'VA_Tutorial_Total_Deposition_20100418030000'
+
+
+def test_zlevel_names(name_model_result):
+    # Prepare dummy cube
+    test_cube = iris.cube.Cube(np.zeros((3, 41, 41)))
+    lonlat_cs = iris.coord_systems.GeogCS(6371229)
+    fl = iris.coords.DimCoord(
+        np.array([100., 275., 450.]),
+        bounds=np.array([[0., 200.],
+                         [200., 350.],
+                         [350., 550.]]),
+        long_name='flight_level')
+    test_cube.add_dim_coord(fl, 0)
+    lon_points = -180 + 4.5 * np.arange(41, dtype=np.float32)
+    lat_points = -90 + 4.5 * np.arange(41, dtype=np.float32)
+    test_cube.add_dim_coord(
+        iris.coords.DimCoord(
+            lon_points, "longitude", units="degrees", coord_system=lonlat_cs,
+        ),
+        1,
+    )
+    test_cube.add_dim_coord(
+        iris.coords.DimCoord(
+            lat_points, "latitude", units="degrees", coord_system=lonlat_cs
+        ),
+        2,
+    )
+    test_cube.attributes.update(dict(
+        model_run_title='Test Cube',
+        quantity='my quantity'
+    ))
+
+    # Act - plot the first slice
+    cube = next(test_cube.slices_over("flight_level"))
+    fig, title = plot_2d_cube(cube)
+
+    # Assert
+    assert isinstance(fig, Figure)
+    assert title == 'Test_Cube_my_quantity_FL000-200'
