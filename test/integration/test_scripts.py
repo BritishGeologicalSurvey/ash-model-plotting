@@ -4,9 +4,53 @@ from pathlib import Path
 import subprocess
 
 from netCDF4 import Dataset
+import pytest
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.DEBUG)
+
+# pylint: disable=unused-argument, missing-docstring
+
+
+@pytest.mark.parametrize(
+    'results_file, model_type, expected', [
+        ('VA_Tutorial_NAME_output.nc', 'name', {
+            'VA_Tutorial_Air_Concentration_summary.html',
+            'VA_Tutorial_Total_Column_Mass_summary.html',
+            'VA_Tutorial_Total_Deposition_summary.html'}),
+        ('fall3d_operational.nc', 'fall3d', {
+            'Air_Concentration_summary.html',
+            'Total_Column_Mass_summary.html',
+            'Total_Deposition_summary.html'}),
+        ('hysplit_operational.nc', 'hysplit', {
+            'Air_Concentration_summary.html',
+            'Total_Column_Mass_summary.html',
+            'Total_Deposition_summary.html'}),
+        ])
+def test_plot_ash_model_results_model_types(tmpdir, data_dir, script_dir,
+                                            results_file, model_type, expected,
+                                            scantree):
+    """Test that plotting script works for all data types."""
+    # Use set for output files to make order unimportant
+    # only check HTML files - assume rest is correct from unit tests
+    # Arrange
+    script_path = script_dir / 'plot_ash_model_results.py'
+    input_file = data_dir / results_file
+    model_type = model_type
+
+    # Act
+    exit_code = subprocess.check_call(
+        ['python', script_path, input_file, '--model_type', model_type,
+         '--output_dir', tmpdir])
+    output_files = {Path(entry).relative_to(tmpdir).as_posix()
+                    for entry in scantree(tmpdir) if entry.is_file()}
+
+    # Copy out results for inspection
+    logger.debug(f"Test plots in {tmpdir}")
+
+    # Assert
+    assert exit_code == 0
+    assert expected.issubset(output_files)
 
 
 def test_plot_ash_model_results_happy_path(tmpdir, data_dir, script_dir,

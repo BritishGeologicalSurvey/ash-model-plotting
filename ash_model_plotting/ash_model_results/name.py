@@ -16,6 +16,18 @@ class NameAshModelResult(AshModelResult):
     """
     AshModelResult for data from NAME model simulations.
     """
+    _air_concentration_names = {
+        'VOLCANIC_ASH_AIR_CONCENTRATION'
+    }
+
+    _total_column_names = {
+        'VOLCANIC_ASH_DOSAGE'
+    }
+
+    _total_deposition_names = {
+        'VOLCANIC_ASH_TOTAL_DEPOSITION'
+    }
+
     def __repr__(self):
         return f"NameAshModelResult({self.source_data})"
 
@@ -48,7 +60,7 @@ class NameAshModelResult(AshModelResult):
         :return: iris.cube.Cube
         """
         air_concentration = iris.Constraint(
-            name='VOLCANIC_ASH_AIR_CONCENTRATION'
+            cube_func=lambda c: c.name() in self._air_concentration_names
             )
 
         has_zlevel = iris.Constraint(cube_func=self._has_zlevels)
@@ -70,7 +82,7 @@ class NameAshModelResult(AshModelResult):
         :return: iris.cube.Cube
         """
         total_column = iris.Constraint(
-            name='VOLCANIC_ASH_DOSAGE'
+            cube_func=lambda c: c.name() in self._total_column_names
         )
 
         try:
@@ -90,7 +102,7 @@ class NameAshModelResult(AshModelResult):
         :return: iris.cube.Cube
         """
         total_deposition = iris.Constraint(
-            name='VOLCANIC_ASH_TOTAL_DEPOSITION'
+            cube_func=lambda c: c.name() in self._total_deposition_names
         )
 
         try:

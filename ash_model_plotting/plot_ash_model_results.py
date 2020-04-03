@@ -9,6 +9,8 @@ from pathlib import Path
 
 from ash_model_plotting import (
     NameAshModelResult,
+    Fall3DAshModelResult,
+    HysplitAshModelResult,
     AshModelResultError,
 )
 
@@ -16,19 +18,27 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-def plot_name_files(input_files, output_dir=None):
+MODEL_TYPES = {
+    'name': NameAshModelResult,
+    'fall3d': Fall3DAshModelResult,
+    'hysplit': HysplitAshModelResult
+}
+
+
+def plot_results(results, model_type, output_dir=None):
     """
     Plot ash model results the layers in the input_files.  Plots are made
     for air_concentration, total_column and total_deposition for each
     timestamp and altitude.
 
     :param input_files: list of str, paths to source file (netCDF4)
+    :param model_type: str, type of ash model result
     :param output_dir: str, directory for plot output (will be created if does
         not exist.
     """
     # Prepare output directory
     if not output_dir:
-        first_file = input_files[0]
+        first_file = results[0]
         output_dir = Path(first_file).parent
     else:
         output_dir = Path(output_dir)
@@ -37,10 +47,13 @@ def plot_name_files(input_files, output_dir=None):
         os.mkdir(output_dir)
 
     # Load data
-    result = NameAshModelResult(input_files)
+    # Extract filename as string if only one provided
+    if len(results) == 1:
+        results = results[0]
+    result = MODEL_TYPES[model_type](results)
 
     # Make plots
-    logger.info(f'Writing plots from {input_files} to {output_dir}')
+    logger.info(f'Writing plots from {results} to {output_dir}')
     for attribute in ('air_concentration', 'total_column', 'total_deposition'):
         try:
             logger.info(f'Plotting {attribute}')
@@ -55,16 +68,21 @@ def main():
     parser = argparse.ArgumentParser(
         description='Generate plots from NAME data .txt files')
     parser.add_argument(
-        'input_files',
-        help="Input file path(s)",
+        'results',
+        help="Result file path(s)",
         nargs='+')
+    parser.add_argument(
+        '--model_type',
+        help="Type of model",
+        choices=MODEL_TYPES.keys(),
+        default='name', type=str)
     parser.add_argument(
         '--output_dir',
         help=("Path to directory to store plots (defaults to source_dir), "
               "creates directory if doesn't exist"),
         default=None)
     args = parser.parse_args()
-    plot_name_files(args.input_files, args.output_dir)
+    plot_results(args.results, args.model_type, args.output_dir)
 
 
 if __name__ == '__main__':

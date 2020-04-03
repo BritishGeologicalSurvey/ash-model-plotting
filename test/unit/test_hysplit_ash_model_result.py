@@ -14,7 +14,7 @@ from ash_model_plotting.ash_model_results import (
 
 
 def test_hysplit_ash_model_result_init_happy_path_netcdf(data_dir):
-    source_file = data_dir / 'hysplit_cdump.nc'
+    source_file = data_dir / 'hysplit_operational.nc'
     result = HysplitAshModelResult(source_file)
 
     assert result.source_data == source_file
@@ -27,15 +27,15 @@ def test_hysplit_ash_model_result_init_not_a_file():
 
 
 def test_hysplit_ash_model_air_concentration(data_dir):
-    source_file = data_dir / 'hysplit_cdump.nc'
+    source_file = data_dir / 'hysplit_operational.nc'
     result = HysplitAshModelResult(source_file)
 
     assert isinstance(result.air_concentration, iris.cube.Cube)
-    assert result.air_concentration.name() == "Concentration Array - ASH "
+    assert result.air_concentration.name() == "Concentration Array - AS01"
 
 
 def test_hysplit_ash_model_total_deposition(data_dir):
-    source_file = data_dir / 'hysplit_cdump.nc'
+    source_file = data_dir / 'hysplit_operational.nc'
     result = HysplitAshModelResult(source_file)
 
     assert isinstance(result.total_deposition, iris.cube.Cube)
@@ -43,7 +43,7 @@ def test_hysplit_ash_model_total_deposition(data_dir):
 
 
 def test_hysplit_ash_model_total_column(data_dir):
-    source_file = data_dir / 'hysplit_cdump.nc'
+    source_file = data_dir / 'hysplit_operational.nc'
     result = HysplitAshModelResult(source_file)
 
     assert isinstance(result.total_column, iris.cube.Cube)
@@ -53,18 +53,18 @@ def test_hysplit_ash_model_total_column(data_dir):
 # TODO: find where 00750 comes from. and also 00000.
 @pytest.mark.parametrize('plot_func, expected', [
     ('plot_air_concentration',
-     ['01000/Air_Concentration_01000_20100418030000.png',
-      '01000/Air_Concentration_01000_20100418060000.png',
-      '00500/Air_Concentration_00500_20100418030000.png',
-      '00500/Air_Concentration_00500_20100418060000.png',
+     ['01000/Air_Concentration_01000_20200331000000.png',
+      '01000/Air_Concentration_01000_20200331060000.png',
+      '02000/Air_Concentration_02000_20200331000000.png',
+      '02000/Air_Concentration_02000_20200331060000.png',
       'Air_Concentration_summary.html']),
     ('plot_total_column',
-     ['Total_Column_Mass_00750_20100418030000.png',
-      'Total_Column_Mass_00750_20100418060000.png',
+     ['Total_Column_Mass_01500_20200331000000.png',
+      'Total_Column_Mass_01500_20200331060000.png',
       'Total_Column_Mass_summary.html']),
     ('plot_total_deposition',
-     ['Total_Deposition_00000_20100418030000.png',
-      'Total_Deposition_00000_20100418060000.png',
+     ['Total_Deposition_00000_20200331000000.png',
+      'Total_Deposition_00000_20200331060000.png',
       'Total_Deposition_summary.html'])
     ])
 def test_plot_functions(hysplit_model_result, tmpdir, plot_func, expected,
@@ -94,8 +94,8 @@ def test_calculate_total_column(hysplit_model_result):
     # Arrange
     air_concentration = hysplit_model_result.air_concentration
     air_concentration.data = np.ones(air_concentration.data.shape)
-    # Collapse two layers 500 m thick to get time, lat, lon
-    expected = np.ones(air_concentration.data.shape)[:, 0, :, :] * 2 * 500
+    # Collapse two layers 1000 m thick to get time, lat, lon
+    expected = np.ones(air_concentration.data.shape)[:, 0, :, :] * 2 * 1000
 
     # Act
     total_column = HysplitAshModelResult._calculate_total_column(air_concentration)
