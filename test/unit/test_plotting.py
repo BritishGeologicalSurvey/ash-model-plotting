@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 
 from matplotlib.figure import Figure  # noqa
+import pytest
 
 from ash_model_plotting.plotting import (
     plot_2d_cube, plot_3d_cube, plot_4d_cube
@@ -139,3 +140,22 @@ def test_plot_2d_no_altitude(name_model_result):
 
     assert isinstance(fig, Figure)
     assert title == 'VA_Tutorial_Total_Deposition_20100418030000'
+
+
+@pytest.mark.parametrize('bbox, kwargs, expected_limits', [
+    (None, {}, (-80.0, 20.0, 40.0, 80.0)),
+    ((-20, 20, 30, 70), {}, (-20, 20, 30, 70)),
+    ((-20, 20, 30, 70), {'bbox': (-10, 10, 40, 50)}, (-10, 10, 40, 50))
+    ])
+def test_plot_2d_bbox(name_model_result, bbox, kwargs, expected_limits):
+    # Arrange
+    cube = name_model_result.air_concentration[0, 0, :, :]
+
+    # Act
+    fig, title = plot_2d_cube(cube, bbox=bbox, **kwargs)
+    geoax = fig.axes[0]
+    xlim, ylim = geoax.get_xlim(), geoax.get_ylim()
+    limits = (xlim[0], ylim[0], xlim[1], ylim[1])
+
+    # Assert
+    assert limits == expected_limits
