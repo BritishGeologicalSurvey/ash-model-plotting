@@ -29,11 +29,8 @@ def test_fall3d_ash_model_air_concentration(data_dir):
     source_file = data_dir / 'fall3d_operational.nc'
     result = Fall3DAshModelResult(source_file)
 
-    # Current Fall3D test data has wrong units - this should raise
-    # a warning whenever calling air_concentration
-    with pytest.warns(UserWarning):
-        assert isinstance(result.air_concentration, iris.cube.Cube)
-        assert result.air_concentration.name() == "tephra_concentration on z-cut planes"
+    assert isinstance(result.air_concentration, iris.cube.Cube)
+    assert result.air_concentration.name() == "tephra_concentration on z-cut planes"
 
 
 def test_fall3d_ash_model_total_deposition(data_dir):
