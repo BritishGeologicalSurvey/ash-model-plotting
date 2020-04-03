@@ -17,7 +17,8 @@ class Fall3DAshModelResult(AshModelResult):
     AshModelResult for data from FALL3D model simulations.
     """
     _air_concentration_names = {
-        'tephra_concentration on z-cut planes'
+        'tephra_concentration on z-cut planes',
+        'CON'
     }
 
     _total_deposition_names = {

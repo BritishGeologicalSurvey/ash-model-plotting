@@ -33,6 +33,16 @@ def test_fall3d_ash_model_air_concentration(data_dir):
     assert result.air_concentration.name() == "tephra_concentration on z-cut planes"
 
 
+def test_fall3d_ash_model_air_concentration_units_warning(data_dir):
+    source_file = data_dir / 'fall3d_realistic_res_clip.nc'
+    result = Fall3DAshModelResult(source_file)
+
+    # realistic_res file contains data with bad units
+    with pytest.warns(UserWarning):
+        assert isinstance(result.air_concentration, iris.cube.Cube)
+        assert result.air_concentration.name() == "CON"
+
+
 def test_fall3d_ash_model_total_deposition(data_dir):
     source_file = data_dir / 'fall3d_operational.nc'
     result = Fall3DAshModelResult(source_file)
