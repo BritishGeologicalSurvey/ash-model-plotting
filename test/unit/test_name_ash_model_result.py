@@ -97,6 +97,7 @@ def test_plot_air_concentration_single_file(data_dir, tmpdir, scantree):
         data_dir / "Air_Conc_grid_201004180300_trimmed.txt")
     name_model_result.plot_air_concentration(tmpdir)
     expected = ['VA_Tutorial_Air_Concentration_summary.html',
+                'VA_Tutorial_Air_Concentration_01000_20100418030000.png',
                 'VA_Tutorial_Air_Concentration_00500_20100418030000.png']
 
     plot_files = [Path(entry).relative_to(tmpdir).as_posix()
