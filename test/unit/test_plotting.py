@@ -142,17 +142,16 @@ def test_plot_2d_no_altitude(name_model_result):
     assert title == 'VA_Tutorial_Total_Deposition_20100418030000'
 
 
-@pytest.mark.parametrize('bbox, kwargs, expected_limits', [
-    (None, {}, (-80.0, 20.0, 40.0, 80.0)),
-    ((-20, 20, 30, 70), {}, (-20, 20, 30, 70)),
-    ((-20, 20, 30, 70), {'bbox': (-10, 10, 40, 50)}, (-10, 10, 40, 50))
+@pytest.mark.parametrize('bbox, expected_limits', [
+    (None, (-80.0, 20.0, 40.0, 80.0)),
+    ((-20, 20, 30, 70), (-20, 20, 30, 70)),
     ])
-def test_plot_2d_bbox(name_model_result, bbox, kwargs, expected_limits):
+def test_plot_2d_bbox(name_model_result, bbox, expected_limits):
     # Arrange
     cube = name_model_result.air_concentration[0, 0, :, :]
 
     # Act
-    fig, title = plot_2d_cube(cube, bbox=bbox, **kwargs)
+    fig, title = plot_2d_cube(cube, bbox=bbox)
     geoax = fig.axes[0]
     xlim, ylim = geoax.get_xlim(), geoax.get_ylim()
     limits = (xlim[0], ylim[0], xlim[1], ylim[1])
