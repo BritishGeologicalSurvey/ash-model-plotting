@@ -41,7 +41,7 @@ def test_plot_ash_model_results_model_types(tmpdir, data_dir, script_dir,
     # Act
     exit_code = subprocess.check_call(
         ['python', script_path, input_file, '--model_type', model_type,
-         '--output_dir', tmpdir])
+         '--limits', '-10', '55', '1.1', '70', '--output_dir', tmpdir])
     output_files = {Path(entry).relative_to(tmpdir).as_posix()
                     for entry in scantree(tmpdir) if entry.is_file()}
 

@@ -25,7 +25,7 @@ MODEL_TYPES = {
 }
 
 
-def plot_results(results, model_type, output_dir=None):
+def plot_results(results, model_type, limits, output_dir=None):
     """
     Plot ash model results the layers in the input_files.  Plots are made
     for air_concentration, total_column and total_deposition for each
@@ -58,6 +58,7 @@ def plot_results(results, model_type, output_dir=None):
         try:
             logger.info(f'Plotting {attribute}')
             getattr(result, f'plot_{attribute}')(output_dir,
+                                                 limits=limits,
                                                  bbox_inches='tight')
         except AshModelResultError:
             logger.info(f'No {attribute} data found')
@@ -77,12 +78,17 @@ def main():
         choices=MODEL_TYPES.keys(),
         default='name', type=str)
     parser.add_argument(
+        '--limits',
+        help="Plot axes limits: xmin ymin xmax ymax",
+        default=None, type=float,
+        nargs=4)
+    parser.add_argument(
         '--output_dir',
         help=("Path to directory to store plots (defaults to source_dir), "
               "creates directory if doesn't exist"),
         default=None)
     args = parser.parse_args()
-    plot_results(args.results, args.model_type, args.output_dir)
+    plot_results(args.results, args.model_type, args.limits, args.output_dir)
 
 
 if __name__ == '__main__':
