@@ -204,8 +204,6 @@ def test_render_html_3d():
 
     # Act
     html = render_html(source, metadata)
-    with open('htmltest3d.html', 'w') as f:
-        f.write(html)
 
     # Assert
     assert _remove_whitespace(html) == _remove_whitespace(EXPECTED_3D)
@@ -243,8 +241,6 @@ def test_render_html_4d():
 
     # Act
     html = render_html(source, metadata)
-    with open('htmltest4d.html', 'w') as f:
-        f.write(html)
 
     # Assert
     assert _remove_whitespace(html) == _remove_whitespace(EXPECTED_4D)
