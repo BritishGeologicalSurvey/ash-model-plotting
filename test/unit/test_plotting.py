@@ -58,7 +58,7 @@ def test_plot_4d_happy_path(name_model_result, tmpdir, scantree):
     assert set(plot_files) == set(expected)
 
 
-def test_plot_4d_vmax_and_bbox_inches(name_model_result, tmpdir, scantree):
+def test_plot_4d_vmax_and_kwargs(name_model_result, tmpdir, scantree):
     """
     Check that **kwargs are passed to called functions. Only check that they
     haven't caused a crash - visual check determines if they worked
@@ -71,7 +71,8 @@ def test_plot_4d_vmax_and_bbox_inches(name_model_result, tmpdir, scantree):
         '00500/VA_Tutorial_Air_Concentration_00500_20100418060000.png',
     ]
 
-    plot_4d_cube(cube, tmpdir, vmax=cube.data.max(), bbox_inches='tight')
+    plot_4d_cube(cube, tmpdir, vmax=cube.data.max(), bbox_inches='tight',
+                 vaac_colours=True)
 
     plot_files = [Path(entry).relative_to(tmpdir).as_posix()
                   for entry in scantree(tmpdir) if entry.is_file()]
@@ -79,7 +80,7 @@ def test_plot_4d_vmax_and_bbox_inches(name_model_result, tmpdir, scantree):
     assert set(plot_files) == set(expected)
 
 
-def test_plot_3d_vmax_and_bbox_inches(name_model_result, tmpdir):
+def test_plot_3d_vmax_and_kwargs(name_model_result, tmpdir):
     """
     Check that **kwargs are passed to called functions. Only check that they
     haven't caused a crash - visual check determines if they worked
@@ -88,7 +89,8 @@ def test_plot_3d_vmax_and_bbox_inches(name_model_result, tmpdir):
     expected = ['VA_Tutorial_Total_Deposition_20100418030000.png',
                 'VA_Tutorial_Total_Deposition_20100418060000.png']
 
-    plot_3d_cube(cube, tmpdir, vmax=cube.data.max(), bbox_inches='tight')
+    plot_3d_cube(cube, tmpdir, vmax=cube.data.max(), bbox_inches='tight',
+                 vaac_colours=False)
     plot_files = os.listdir(tmpdir)
 
     assert set(plot_files) == set(expected)
