@@ -2,6 +2,7 @@
 import os
 from pathlib import Path
 
+import matplotlib
 from matplotlib.figure import Figure  # noqa
 import pytest
 
@@ -140,6 +141,24 @@ def test_plot_2d_no_altitude(name_model_result):
 
     assert isinstance(fig, Figure)
     assert title == 'VA_Tutorial_Total_Deposition_20100418030000'
+
+
+@pytest.mark.parametrize('vaac_colours, expected_cmap', [
+    (True, 'from_list'),  # from_list is name for manually defined cmap
+    (False, 'viridis'),
+    ])
+def test_plot_2d_vaac_colours(name_model_result, vaac_colours, expected_cmap):
+    # Arrange
+    cube = name_model_result.air_concentration[0, 0, :, :]
+
+    # Act
+    fig, title = plot_2d_cube(cube, vaac_colours=vaac_colours)
+    mesh = [c for c in fig.axes[0].get_children()
+            if isinstance(c, matplotlib.collections.QuadMesh)][0]
+    cmap = mesh.get_cmap().name
+
+    # Assert
+    assert cmap == expected_cmap
 
 
 @pytest.mark.parametrize('limits, expected_limits', [
