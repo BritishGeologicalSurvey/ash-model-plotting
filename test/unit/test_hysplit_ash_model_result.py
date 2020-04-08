@@ -31,7 +31,8 @@ def test_hysplit_ash_model_air_concentration(data_dir):
     result = HysplitAshModelResult(source_file)
 
     assert isinstance(result.air_concentration, iris.cube.Cube)
-    assert result.air_concentration.name() == "Concentration Array - AS01"
+    assert (result.air_concentration.name() ==
+            "mass_concentration_of_volcanic_ash_in_air")
 
 
 def test_hysplit_ash_model_total_deposition(data_dir):
@@ -39,7 +40,8 @@ def test_hysplit_ash_model_total_deposition(data_dir):
     result = HysplitAshModelResult(source_file)
 
     assert isinstance(result.total_deposition, iris.cube.Cube)
-    assert result.total_deposition.name() == "VOLCANIC_ASH_TOTAL_DEPOSITION"
+    assert (result.total_deposition.name() ==
+            "surface_volcanic_ash_amount")
 
 
 def test_hysplit_ash_model_total_column(data_dir):
@@ -47,7 +49,8 @@ def test_hysplit_ash_model_total_column(data_dir):
     result = HysplitAshModelResult(source_file)
 
     assert isinstance(result.total_column, iris.cube.Cube)
-    assert result.total_column.name() == "VOLCANIC_ASH_DOSAGE"
+    assert (result.total_column.name() ==
+            "atmosphere_mass_content_of_volcanic_ash")
 
 
 # TODO: find where 00750 comes from. and also 00000.

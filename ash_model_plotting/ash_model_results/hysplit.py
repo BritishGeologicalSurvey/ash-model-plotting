@@ -9,7 +9,6 @@ import numpy as np
 
 from ash_model_plotting.ash_model_results import (
     AshModelResult,
-    AshModelResultError,
 )
 
 
@@ -50,6 +49,9 @@ class HysplitAshModelResult(AshModelResult):
             cube = valid_cubes.concatenate_cube()
             cube.attributes['model_run_title'] = self._get_model_run_title(cube)
             cube.attributes['quantity'] = 'Air Concentration'
+            cube.attributes['CF Standard Name'] = (
+                "mass_concentration_of_volcanic_ash_in_air")
+            cube.rename("mass_concentration_of_volcanic_ash_in_air")
             return cube
         except ValueError:
             # Return None if no cubes present
@@ -67,7 +69,9 @@ class HysplitAshModelResult(AshModelResult):
             cube = self._calculate_total_column(self.air_concentration)
             cube.attributes['model_run_title'] = self._get_model_run_title(cube)
             cube.attributes['quantity'] = 'Total Column Mass'
-            cube.rename("VOLCANIC_ASH_DOSAGE")
+            cube.attributes['CF Standard Name'] = (
+                "atmosphere_mass_content_of_volcanic_ash")
+            cube.rename("atmosphere_mass_content_of_volcanic_ash")
             return cube
         else:
             # Return None if no cubes present
@@ -108,9 +112,10 @@ class HysplitAshModelResult(AshModelResult):
         try:
             valid_cubes = self.cubes.extract(ash_data & ground_level)
             cube = valid_cubes.concatenate_cube()
-            cube.rename('VOLCANIC_ASH_TOTAL_DEPOSITION')
             cube.attributes['model_run_title'] = self._get_model_run_title(cube)
             cube.attributes['quantity'] = 'Total Deposition'
+            cube.attributes['CF Standard Name'] = "surface_volcanic_ash_amount"
+            cube.rename("surface_volcanic_ash_amount")
             # Overwrite data to give cumulative sum (as original is per step)
             cube.data = np.cumsum(cube.data, axis=0)
             return cube
