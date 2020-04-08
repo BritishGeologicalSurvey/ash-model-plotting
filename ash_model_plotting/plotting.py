@@ -181,7 +181,9 @@ def render_html(source, metadata):
     params = dict(source=source, metadata=metadata, title=title)
 
     # Load template
-    with open('ash_model_plotting/templates/ash_model_results.html') as f:
+    here = Path(__file__).parent
+    template_file = here / 'templates' / 'ash_model_results.html'
+    with open(template_file) as f:
         template = Template(f.read())
 
     return template.render(**params)
