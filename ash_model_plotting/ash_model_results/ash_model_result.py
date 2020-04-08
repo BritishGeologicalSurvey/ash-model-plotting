@@ -120,7 +120,7 @@ class AshModelResult(metaclass=ABCMeta):
         self.cubes = iris.load(str(self.source_data))
 
     def plot_air_concentration(self, output_dir, file_ext='png',
-                               html=True, vaac_colours=True, **kwargs):
+                               html=True, vaac_colours=False, **kwargs):
         """
         Plot air concentration data to output directory.
 

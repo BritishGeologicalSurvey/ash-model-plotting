@@ -25,7 +25,7 @@ MODEL_TYPES = {
 }
 
 
-def plot_results(results, model_type, limits, output_dir=None):
+def plot_results(results, model_type, limits, vaac_colours, output_dir):
     """
     Plot ash model results the layers in the input_files.  Plots are made
     for air_concentration, total_column and total_deposition for each
@@ -33,6 +33,9 @@ def plot_results(results, model_type, limits, output_dir=None):
 
     :param input_files: list of str, paths to source file (netCDF4)
     :param model_type: str, type of ash model result
+    :param limits: list of float, xmin ymin xmax ymax for plot limits
+    :param vaac_colours: bool, use VAAC colours (cyan, grey, red) for air
+        concentration.
     :param output_dir: str, directory for plot output (will be created if does
         not exist.
     """
@@ -59,6 +62,7 @@ def plot_results(results, model_type, limits, output_dir=None):
             logger.info(f'Plotting {attribute}')
             getattr(result, f'plot_{attribute}')(output_dir,
                                                  limits=limits,
+                                                 vaac_colours=vaac_colours,
                                                  bbox_inches='tight')
         except AshModelResultError:
             logger.info(f'No {attribute} data found')
@@ -83,12 +87,17 @@ def main():
         default=None, type=float,
         nargs=4)
     parser.add_argument(
+        '--vaac_colours',
+        help="Use VAAC colours (cyan, grey, red) for air concentration",
+        action='store_true')
+    parser.add_argument(
         '--output_dir',
         help=("Path to directory to store plots (defaults to source_dir), "
               "creates directory if doesn't exist"),
         default=None)
     args = parser.parse_args()
-    plot_results(args.results, args.model_type, args.limits, args.output_dir)
+    plot_results(args.results, args.model_type, args.limits,
+                 args.vaac_colours, args.output_dir)
 
 
 if __name__ == '__main__':
