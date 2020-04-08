@@ -28,6 +28,14 @@ def test_name_ash_model_result_init_happy_path_name_format(data_dir):
     assert isinstance(result.cubes, iris.cube.CubeList)
 
 
+def test_name_ash_model_result_single_file_input(data_dir):
+    source_file = data_dir / 'Air_Conc_grid_201004180300_trimmed.txt'
+    result = NameAshModelResult(source_file)
+
+    assert result.source_data == source_file
+    assert isinstance(result.cubes, iris.cube.CubeList)
+
+
 def test_name_ash_model_result_init_not_a_file():
     with pytest.raises(AshModelResultError):
         NameAshModelResult('not a file')
@@ -77,6 +85,20 @@ def test_plot_functions(name_model_result, tmpdir, plot_func, expected,
                         scantree):
     # Call the plot function - we expect html to be generated here, too
     getattr(name_model_result, plot_func)(tmpdir)
+
+    plot_files = [Path(entry).relative_to(tmpdir).as_posix()
+                  for entry in scantree(tmpdir) if entry.is_file()]
+
+    assert set(plot_files) == set(expected)
+
+
+def test_plot_air_concentration_single_file(data_dir, tmpdir, scantree):
+    name_model_result = NameAshModelResult(
+        data_dir / "Air_Conc_grid_201004180300_trimmed.txt")
+    name_model_result.plot_air_concentration(tmpdir)
+    expected = ['VA_Tutorial_Air_Concentration_summary.html',
+                'VA_Tutorial_Air_Concentration_01000_20100418030000.png',
+                'VA_Tutorial_Air_Concentration_00500_20100418030000.png']
 
     plot_files = [Path(entry).relative_to(tmpdir).as_posix()
                   for entry in scantree(tmpdir) if entry.is_file()]

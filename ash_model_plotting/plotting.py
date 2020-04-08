@@ -250,8 +250,8 @@ def _format_zlevel_string(cube):
         zlevel = cube.coord('z coordinate of x-y plane cuts').points[0]
         zlevel = f"{zlevel:05.0f}"
     elif 'flight_level' in coord_types:
-        zlevel = cube.coord('flight_level').points[0]
-        zlevel = f"FL{zlevel:03.0f}"
+        lower, upper = cube.coord('flight_level').bounds[0]
+        zlevel = f"FL{lower:03.0f}-{upper:03.0f}"
     else:
         # TODO: think about raising an exception here instead
         zlevel = ''

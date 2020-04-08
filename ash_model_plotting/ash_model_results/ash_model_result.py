@@ -140,7 +140,12 @@ class AshModelResult(metaclass=ABCMeta):
             msg = 'AshModelResult has no air concentration data'
             raise AshModelResultError(msg)
 
-        metadata = plot_4d_cube(
+        if len(cube.data.shape) == 3:
+            plot_func = plot_3d_cube
+        else:
+            plot_func = plot_4d_cube
+
+        metadata = plot_func(
             cube, output_dir, file_ext=file_ext, vmin=0, vmax=cube.data.max(),
             **kwargs)
 
