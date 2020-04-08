@@ -12,6 +12,7 @@ montage \
 ```
 """
 import argparse
+import matplotlib
 import matplotlib.pyplot as plt
 from pathlib import Path
 
@@ -25,6 +26,7 @@ MODELS = ['AllModels', 'WindOnly', 'EmpOnly', 'MastinOnly']
 LABELS = ['ALL', 'WA', 'NWA', 'Mastin']
 RUNS = ['Av', 'Max', 'Min']
 
+matplotlib.use('agg')
 
 def main(data_dir, output_dir):
     # Configure directories

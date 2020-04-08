@@ -10,11 +10,13 @@ from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 from iris.exceptions import CoordinateNotFoundError
 import iris.plot as iplt
 from jinja2 import Template
+import matplotlib
 import matplotlib.colors
 import matplotlib.pyplot as plt
 import numpy as np
 import cf_units
 
+matplotlib.use('agg')
 
 def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
     """
