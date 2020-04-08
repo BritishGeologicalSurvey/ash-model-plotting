@@ -1,6 +1,7 @@
 """Tests for HysplitAshModelResult class."""
 from pathlib import Path
 
+from cf_units import Unit
 import numpy as np
 import pytest
 import iris.cube
@@ -33,6 +34,7 @@ def test_hysplit_ash_model_air_concentration(data_dir):
     assert isinstance(result.air_concentration, iris.cube.Cube)
     assert (result.air_concentration.name() ==
             "mass_concentration_of_volcanic_ash_in_air")
+    assert result.air_concentration.units == Unit('g/m3')
 
 
 def test_hysplit_ash_model_total_deposition(data_dir):
@@ -42,6 +44,7 @@ def test_hysplit_ash_model_total_deposition(data_dir):
     assert isinstance(result.total_deposition, iris.cube.Cube)
     assert (result.total_deposition.name() ==
             "surface_volcanic_ash_amount")
+    assert result.total_deposition.units == Unit('g/m2')
 
 
 def test_hysplit_ash_model_total_column(data_dir):
@@ -51,6 +54,7 @@ def test_hysplit_ash_model_total_column(data_dir):
     assert isinstance(result.total_column, iris.cube.Cube)
     assert (result.total_column.name() ==
             "atmosphere_mass_content_of_volcanic_ash")
+    assert result.total_column.units == Unit('g/m2')
 
 
 # TODO: find where 00750 comes from. and also 00000.

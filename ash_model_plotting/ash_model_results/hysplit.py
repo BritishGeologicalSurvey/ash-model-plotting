@@ -3,7 +3,9 @@ Class to store ash model results.
 """
 # coding: utf-8
 from pathlib import Path
+from warnings import warn
 
+from cf_units import Unit
 import iris
 import numpy as np
 
@@ -47,15 +49,24 @@ class HysplitAshModelResult(AshModelResult):
         try:
             valid_cubes = self.cubes.extract(air_concentration & above_ground)
             cube = valid_cubes.concatenate_cube()
-            cube.attributes['model_run_title'] = self._get_model_run_title(cube)
-            cube.attributes['quantity'] = 'Air Concentration'
-            cube.attributes['CF Standard Name'] = (
-                "mass_concentration_of_volcanic_ash_in_air")
-            cube.rename("mass_concentration_of_volcanic_ash_in_air")
-            return cube
         except ValueError:
             # Return None if no cubes present
             return
+
+        # Set attributes
+        cube.attributes['model_run_title'] = self._get_model_run_title(cube)
+        cube.attributes['quantity'] = 'Air Concentration'
+        cube.attributes['CF Standard Name'] = (
+            "mass_concentration_of_volcanic_ash_in_air")
+        cube.rename("mass_concentration_of_volcanic_ash_in_air")
+
+        if cube.units == '1':
+            new_units = Unit('g/m3')
+            warn(f"Source data has no units for air_concentration, "
+                 f"using {new_units}.")
+            cube.units = new_units
+
+        return cube
 
     @property
     def total_column(self):
@@ -65,17 +76,21 @@ class HysplitAshModelResult(AshModelResult):
         on-the-fly by summing the mass of volcanic ash at each zlevel.
         :return: iris.cube.Cube
         """
-        if self.air_concentration:
-            cube = self._calculate_total_column(self.air_concentration)
-            cube.attributes['model_run_title'] = self._get_model_run_title(cube)
-            cube.attributes['quantity'] = 'Total Column Mass'
-            cube.attributes['CF Standard Name'] = (
-                "atmosphere_mass_content_of_volcanic_ash")
-            cube.rename("atmosphere_mass_content_of_volcanic_ash")
-            return cube
-        else:
+        if not self.air_concentration:
             # Return None if no cubes present
             return
+
+        cube = self._calculate_total_column(self.air_concentration)
+
+        cube.attributes['model_run_title'] = self._get_model_run_title(cube)
+        cube.attributes['quantity'] = 'Total Column Mass'
+        cube.attributes['CF Standard Name'] = (
+            "atmosphere_mass_content_of_volcanic_ash")
+        cube.rename("atmosphere_mass_content_of_volcanic_ash")
+
+        cube.units = self.air_concentration.units * Unit('m')
+
+        return cube
 
     @staticmethod
     def _calculate_total_column(cube):
@@ -112,13 +127,18 @@ class HysplitAshModelResult(AshModelResult):
         try:
             valid_cubes = self.cubes.extract(ash_data & ground_level)
             cube = valid_cubes.concatenate_cube()
-            cube.attributes['model_run_title'] = self._get_model_run_title(cube)
-            cube.attributes['quantity'] = 'Total Deposition'
-            cube.attributes['CF Standard Name'] = "surface_volcanic_ash_amount"
-            cube.rename("surface_volcanic_ash_amount")
-            # Overwrite data to give cumulative sum (as original is per step)
-            cube.data = np.cumsum(cube.data, axis=0)
-            return cube
         except ValueError:
             # Return None if no cubes present
             return
+
+        # Set attributes
+        cube.attributes['model_run_title'] = self._get_model_run_title(cube)
+        cube.attributes['quantity'] = 'Total Deposition'
+        cube.attributes['CF Standard Name'] = "surface_volcanic_ash_amount"
+        cube.rename("surface_volcanic_ash_amount")
+        # Overwrite data to give cumulative sum (as original is per step)
+        cube.data = np.cumsum(cube.data, axis=0)
+
+        cube.units = self.air_concentration.units * Unit('m')
+
+        return cube
