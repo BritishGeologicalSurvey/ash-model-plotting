@@ -16,14 +16,15 @@ import numpy as np
 import cf_units
 
 
-def plot_4d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs):
+def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
     """
     Plot multiple figures of 2D slices from a 4D cube in output directory.
 
     :param cube: Iris cube with 3 dimensions (time, lat, lon)
     :param output_dir: str; directory to save figure
     :param file_ext, file extension suffix for data format e.g. png, pdf
-    :param kwargs: dict; extra arguments to pass to plt.savefig
+    :param kwargs: dict; extra arguments to pass to plot_2d_cube and
+        plt.savefig e.g. limits, vaac_colours, dpi, bbox_inches
     """
     metadata = {'created_by': 'plot_4d_cube',
                 'attributes': cube.attributes,
@@ -31,6 +32,8 @@ def plot_4d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs)
                 }
 
     base_output_dir = Path(output_dir)
+    vaac_colours = kwargs.get('vaac_colours', False)
+    limits = kwargs.get('limits', None)
 
     for tyx_slice in cube.slices(['time', 'latitude', 'longitude']):
         zlevel_str = _format_zlevel_string(tyx_slice)
@@ -45,8 +48,8 @@ def plot_4d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs)
         # Plot all the slices for that zlevel
         for yx_slice in tyx_slice.slices(['latitude', 'longitude']):
             timestamp = _format_timestamp_string(yx_slice)
-
-            fig, title = plot_2d_cube(yx_slice, **kwargs)
+            fig, title = plot_2d_cube(yx_slice, vaac_colours=vaac_colours,
+                                      limits=limits)
             filename = output_dir / f"{title}.{file_ext}"
             fig.savefig(filename, **kwargs)
             plt.close(fig)
@@ -57,7 +60,7 @@ def plot_4d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs)
     return metadata
 
 
-def plot_3d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs):
+def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
     """
     Plot multiple figures of 2D slices from a cube in output directory.
 
@@ -65,17 +68,21 @@ def plot_3d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs)
     :param output_dir: str; directory to save figure
     :param file_ext, file extension suffix for data format e.g. png, pdf
     :param kwargs: dict; extra args for plot_2d_cube and plt.savefig
+        e.g. limits, vaac_colours, dpi, bbox_inches
     """
     metadata = {'created_by': 'plot_3d_cube',
                 'attributes': cube.attributes,
                 'plots': {}
                 }
+    vaac_colours = kwargs.get('vaac_colours', False)
+    limits = kwargs.get('limits', None)
 
     output_dir = Path(output_dir)
     for yx_slice in cube.slices(['longitude', 'latitude']):
         timestamp = _format_timestamp_string(yx_slice)
 
-        fig, title = plot_2d_cube(yx_slice, vaac_colours=vaac_colours, **kwargs)
+        fig, title = plot_2d_cube(yx_slice, vaac_colours=vaac_colours,
+                                  limits=limits)
         filename = output_dir / f"{title}.{file_ext}"
         fig.savefig(filename, **kwargs)
         plt.close(fig)
@@ -86,7 +93,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', vaac_colours=False, **kwargs)
 
 
 def plot_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8,
-                 vaac_colours=False, **kwargs):
+                 vaac_colours=False, limits=None):
     """
     Draw a map of a two dimensional cube.  Cube should have two spatial
     dimensions (e.g. latitude, longitude).  All other dimensions (time,
@@ -98,12 +105,11 @@ def plot_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8,
     :param vmin: Optional minimum value for scale
     :param vmax: Optional maximum value for scale
     :param mask_less: float, values beneath this are masked out
+    :param vaac_colours: bool, use cyan, grey, red aviation zones
+    :param limits: tuple (xmin, ymin, xmax, ymax), bounding box for plot
     :return fig: handle to Matplotlib figure
     :return title: str; title of plot generated from cube attributes
     """
-    # Note **kwargs is used to catch extra arguments that may be passed
-    # as a result of unpacking **kwargs into calling functions
-
     # Mask out data below threshold
     cube.data = np.ma.masked_less(cube.data, mask_less)
 
@@ -137,9 +143,13 @@ def plot_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8,
                             extend='max', extendfrac='auto')
     colorbar.set_label(f'{cube.units}')
 
+    # Set axis limits
+    if limits:
+        xmin, ymin, xmax, ymax = limits
+        ax.set_xlim(xmin, xmax)
+        ax.set_ylim(ymin, ymax)
+
     # Add tick marks
-    ax.set_xlim(-35, 25)
-    ax.set_ylim(35, 70)
     ax.set_xticks(ax.get_xticks(), crs=ccrs.PlateCarree())
     ax.set_yticks(ax.get_yticks(), crs=ccrs.PlateCarree())
     lon_formatter = LongitudeFormatter(zero_direction_label=True)

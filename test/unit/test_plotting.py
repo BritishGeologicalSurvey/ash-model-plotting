@@ -3,8 +3,10 @@ import os
 from pathlib import Path
 
 import iris
+import matplotlib
 from matplotlib.figure import Figure  # noqa
 import numpy as np
+import pytest
 
 from ash_model_plotting.plotting import (
     plot_2d_cube, plot_3d_cube, plot_4d_cube
@@ -58,7 +60,7 @@ def test_plot_4d_happy_path(name_model_result, tmpdir, scantree):
     assert set(plot_files) == set(expected)
 
 
-def test_plot_4d_vmax_and_bbox_inches(name_model_result, tmpdir, scantree):
+def test_plot_4d_vmax_and_kwargs(name_model_result, tmpdir, scantree):
     """
     Check that **kwargs are passed to called functions. Only check that they
     haven't caused a crash - visual check determines if they worked
@@ -71,7 +73,8 @@ def test_plot_4d_vmax_and_bbox_inches(name_model_result, tmpdir, scantree):
         '00500/VA_Tutorial_Air_Concentration_00500_20100418060000.png',
     ]
 
-    plot_4d_cube(cube, tmpdir, vmax=cube.data.max(), bbox_inches='tight')
+    plot_4d_cube(cube, tmpdir, vmax=cube.data.max(), bbox_inches='tight',
+                 vaac_colours=True)
 
     plot_files = [Path(entry).relative_to(tmpdir).as_posix()
                   for entry in scantree(tmpdir) if entry.is_file()]
@@ -79,7 +82,7 @@ def test_plot_4d_vmax_and_bbox_inches(name_model_result, tmpdir, scantree):
     assert set(plot_files) == set(expected)
 
 
-def test_plot_3d_vmax_and_bbox_inches(name_model_result, tmpdir):
+def test_plot_3d_vmax_and_kwargs(name_model_result, tmpdir):
     """
     Check that **kwargs are passed to called functions. Only check that they
     haven't caused a crash - visual check determines if they worked
@@ -88,7 +91,8 @@ def test_plot_3d_vmax_and_bbox_inches(name_model_result, tmpdir):
     expected = ['VA_Tutorial_Total_Deposition_20100418030000.png',
                 'VA_Tutorial_Total_Deposition_20100418060000.png']
 
-    plot_3d_cube(cube, tmpdir, vmax=cube.data.max(), bbox_inches='tight')
+    plot_3d_cube(cube, tmpdir, vmax=cube.data.max(), bbox_inches='tight',
+                 vaac_colours=False)
     plot_files = os.listdir(tmpdir)
 
     assert set(plot_files) == set(expected)
@@ -141,6 +145,42 @@ def test_plot_2d_no_altitude(name_model_result):
 
     assert isinstance(fig, Figure)
     assert title == 'VA_Tutorial_Total_Deposition_20100418030000'
+
+
+@pytest.mark.parametrize('vaac_colours, expected_cmap', [
+    (True, 'from_list'),  # from_list is name for manually defined cmap
+    (False, 'viridis'),
+    ])
+def test_plot_2d_vaac_colours(name_model_result, vaac_colours, expected_cmap):
+    # Arrange
+    cube = name_model_result.air_concentration[0, 0, :, :]
+
+    # Act
+    fig, title = plot_2d_cube(cube, vaac_colours=vaac_colours)
+    mesh = [c for c in fig.axes[0].get_children()
+            if isinstance(c, matplotlib.collections.QuadMesh)][0]
+    cmap = mesh.get_cmap().name
+
+    # Assert
+    assert cmap == expected_cmap
+
+
+@pytest.mark.parametrize('limits, expected_limits', [
+    (None, (-80.0, 20.0, 40.0, 80.0)),
+    ((-20, 20, 30, 70), (-20, 20, 30, 70)),
+    ])
+def test_plot_2d_limits(name_model_result, limits, expected_limits):
+    # Arrange
+    cube = name_model_result.air_concentration[0, 0, :, :]
+
+    # Act
+    fig, title = plot_2d_cube(cube, limits=limits)
+    geoax = fig.axes[0]
+    xlim, ylim = geoax.get_xlim(), geoax.get_ylim()
+    limits = (xlim[0], ylim[0], xlim[1], ylim[1])
+
+    # Assert
+    assert limits == expected_limits
 
 
 def test_zlevel_names(name_model_result):

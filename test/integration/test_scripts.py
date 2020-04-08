@@ -30,7 +30,7 @@ logger.setLevel(level=logging.DEBUG)
 def test_plot_ash_model_results_model_types(tmpdir, data_dir, script_dir,
                                             results_file, model_type, expected,
                                             scantree):
-    """Test that plotting script works for all data types."""
+    """Test that plotting script works for all data types and options."""
     # Use set for output files to make order unimportant
     # only check HTML files - assume rest is correct from unit tests
     # Arrange
@@ -41,6 +41,7 @@ def test_plot_ash_model_results_model_types(tmpdir, data_dir, script_dir,
     # Act
     exit_code = subprocess.check_call(
         ['python', script_path, input_file, '--model_type', model_type,
+         '--limits', '-10', '55', '1.1', '70', '--vaac_colours',
          '--output_dir', tmpdir])
     output_files = {Path(entry).relative_to(tmpdir).as_posix()
                     for entry in scantree(tmpdir) if entry.is_file()}
@@ -55,6 +56,7 @@ def test_plot_ash_model_results_model_types(tmpdir, data_dir, script_dir,
 
 def test_plot_ash_model_results_happy_path(tmpdir, data_dir, script_dir,
                                            scantree):
+    """Test basic plotting works with no options."""
     # Arrange
     script_path = script_dir / 'plot_ash_model_results.py'
     input_file = data_dir / 'VA_Tutorial_NAME_output.nc'

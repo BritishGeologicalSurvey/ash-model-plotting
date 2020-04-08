@@ -120,7 +120,7 @@ class AshModelResult(metaclass=ABCMeta):
         self.cubes = iris.load(str(self.source_data))
 
     def plot_air_concentration(self, output_dir, file_ext='png',
-                               html=True, vaac_colours=True, **kwargs):
+                               html=True, vaac_colours=False, **kwargs):
         """
         Plot air concentration data to output directory.
 
@@ -130,6 +130,8 @@ class AshModelResult(metaclass=ABCMeta):
         :param file_ext: File extension
         :param html: bool, set whether html page is created or not
         :param vaac_colors: bool, use vaac_colors for plot
+        :param kwargs: dict; extra arguments to pass to plot_2d_cube and
+            plt.savefig e.g. limits, vaac_colours, dpi, bbox_inches
         """
         kwargs.update(vaac_colours=vaac_colours)
         cube = self.air_concentration
@@ -160,6 +162,8 @@ class AshModelResult(metaclass=ABCMeta):
         :param output_dir: Target directory for plots
         :param file_ext: File extension
         :param html: bool, set whether html page is created or not
+        :param kwargs: dict; extra arguments to pass to plot_2d_cube and
+            plt.savefig e.g. limits, vaac_colours, dpi, bbox_inches
         """
         cube = self.total_column
 
@@ -184,6 +188,8 @@ class AshModelResult(metaclass=ABCMeta):
         :param output_dir: Target directory for plots
         :param file_ext: File extension
         :param html: bool, set whether html page is created or not
+        :param kwargs: dict; extra arguments to pass to plot_2d_cube and
+            plt.savefig e.g. limits, vaac_colours, dpi, bbox_inches
         """
         cube = self.total_deposition
 

@@ -161,6 +161,8 @@ python ash_model_plotting/plot_ash_model_results.py \
 
 This will create a the plots in the current directory.
 There are plots for air concentration, total column and total deposition.
+It is also possible to pass a keyword to set plot limits e.g. `--limits -30 30
+10 70`.
 Plots for air concentration within are stored in subdirectories for each level (altitude) in the data.
 If the `output_dir` is not specified, plots are written to the data directory.
 If the `output_dir` does not exist, it will be created.
