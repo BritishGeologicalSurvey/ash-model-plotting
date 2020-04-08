@@ -58,6 +58,8 @@ class Fall3DAshModelResult(AshModelResult):
             cube = valid_cubes.concatenate_cube()
             cube.attributes['model_run_title'] = self._get_model_run_title(cube)
             cube.attributes['quantity'] = 'Air Concentration'
+            cube.attributes['CF Standard Name'] = (
+                "mass_concentration_of_volcanic_ash_in_air")
             if cube.units == "gr/m3":
                 warn("Air concentration reports units of"
                      "\"gr/m3\", which represents *grains* in"
@@ -86,6 +88,8 @@ class Fall3DAshModelResult(AshModelResult):
             cube = valid_cubes.concatenate_cube()
             cube.attributes['model_run_title'] = self._get_model_run_title(cube)
             cube.attributes['quantity'] = 'Total Column Mass'
+            cube.attributes['CF Standard Name'] = (
+                "atmosphere_mass_content_of_volcanic_ash")
             return cube
         except ValueError:
             # Return None if no cubes present
@@ -106,6 +110,7 @@ class Fall3DAshModelResult(AshModelResult):
             cube = valid_cubes.concatenate_cube()
             cube.attributes['model_run_title'] = self._get_model_run_title(cube)
             cube.attributes['quantity'] = 'Total Deposition'
+            cube.attributes['CF Standard Name'] = "surface_volcanic_ash_amount"
             return cube
         except ValueError:
             # Return None if no cubes present
