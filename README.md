@@ -48,10 +48,22 @@ conda deactivate
 
 ### Install ash-model-plotting
 
+#### If you just want to plot results
+
+Pip can be used to install `ash-model-plotting` directly from GitHub.
+
+```bash
+pip install
+git+https://github.com/BritishGeologicalSurvey/ash-model-plotting.git
+```
+
+
+#### If you want to modify the code
+
 Checkout the code from Git:
 
 ```
-git clone git@bitbucket.org:jsteven5/ash-model-plotting.git
+git clone git@github.com:BritishGeologicalSurvey/ash-model-plotting.git
 cd ash-model-plotting
 ```
 
