@@ -2,6 +2,7 @@
 Class to store ash model results.
 """
 # coding: utf-8
+from functools import lru_cache
 from pathlib import Path
 
 import iris
@@ -53,7 +54,8 @@ class NameAshModelResult(AshModelResult):
                 msg = f"{source_data.absolute()} not found"
                 raise AshModelResultError(msg)
 
-    @property
+    @property  # type: ignore
+    @lru_cache(maxsize=1)
     def air_concentration(self):
         """
         Cube containing air concentration data
@@ -77,7 +79,8 @@ class NameAshModelResult(AshModelResult):
             # Return None if no cubes present
             return
 
-    @property
+    @property  # type: ignore
+    @lru_cache(maxsize=1)
     def total_column(self):
         """
         Cube containing total_column loading data
@@ -99,7 +102,8 @@ class NameAshModelResult(AshModelResult):
             # Return None if no cubes present
             return
 
-    @property
+    @property  # type: ignore
+    @lru_cache(maxsize=1)
     def total_deposition(self):
         """
         Cube containing total deposition loading data
