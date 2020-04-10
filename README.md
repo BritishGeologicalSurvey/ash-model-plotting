@@ -124,7 +124,7 @@ These can be used individually, too.
 from ash_model_plotting.plotting import plot_2d_cube
 
 map_slices = name.air_concentration.slices(['latitude', 'longitude'])
-fig, title = plot_2d_cube(next(map_slices, vaac_colours=True)
+fig, title = plot_2d_cube(next(map_slices), vaac_colours=True)
 ```
 
 
