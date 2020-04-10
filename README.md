@@ -53,8 +53,7 @@ conda deactivate
 Pip can be used to install `ash-model-plotting` directly from GitHub.
 
 ```bash
-pip install
-git+https://github.com/BritishGeologicalSurvey/ash-model-plotting.git
+pip install git+https://github.com/BritishGeologicalSurvey/ash-model-plotting.git
 ```
 
 
