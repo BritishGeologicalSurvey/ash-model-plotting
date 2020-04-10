@@ -2,6 +2,7 @@
 Class to store ash model results.
 """
 # coding: utf-8
+from functools import lru_cache
 from pathlib import Path
 from warnings import warn
 
@@ -40,7 +41,8 @@ class Fall3DAshModelResult(AshModelResult):
         self.source_data = Path(self.source_data)
         self._load_from_netcdf()
 
-    @property
+    @property  # type: ignore
+    @lru_cache(maxsize=1)
     def air_concentration(self):
         """
         Cube containing air concentration data
@@ -73,7 +75,8 @@ class Fall3DAshModelResult(AshModelResult):
             # A warning might be useful here?
             return
 
-    @property
+    @property  # type: ignore
+    @lru_cache(maxsize=1)
     def total_column(self):
         """
         Cube containing total_column loading data
@@ -95,7 +98,8 @@ class Fall3DAshModelResult(AshModelResult):
             # Return None if no cubes present
             return
 
-    @property
+    @property  # type: ignore
+    @lru_cache(maxsize=1)
     def total_deposition(self):
         """
         Cube containing total deposition loading data

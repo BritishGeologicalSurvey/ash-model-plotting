@@ -48,10 +48,21 @@ conda deactivate
 
 ### Install ash-model-plotting
 
+#### If you just want to plot results
+
+Pip can be used to install `ash-model-plotting` directly from GitHub.
+
+```bash
+pip install git+https://github.com/BritishGeologicalSurvey/ash-model-plotting.git
+```
+
+
+#### If you want to modify the code
+
 Checkout the code from Git:
 
 ```
-git clone git@bitbucket.org:jsteven5/ash-model-plotting.git
+git clone git@github.com:BritishGeologicalSurvey/ash-model-plotting.git
 cd ash-model-plotting
 ```
 
@@ -107,6 +118,14 @@ fall3d_result.plot_total_deposition('path/to/output/directory')
 ```
 
 This class uses the `plot_4d_cube`, `plot_3d_cube` and `draw_2d_cube` functions from `plotting.py` internally.
+These can be used individually, too.
+
+```python
+from ash_model_plotting.plotting import plot_2d_cube
+
+map_slices = name.air_concentration.slices(['latitude', 'longitude'])
+fig, title = plot_2d_cube(next(map_slices), vaac_colours=True)
+```
 
 
 ### Custom variable names
@@ -141,7 +160,7 @@ correctly.
 
 ### Plot all data
 
-The `plot_ash_model_results.py` script was created to plot air_concentration,
+The `plot_ash_model_results.py` script was created to plot air concentration,
 total column mass and total deposition from a set of model results.
 The inputs are filename, model type and output directory.
 
@@ -162,7 +181,7 @@ python ash_model_plotting/plot_ash_model_results.py \
 This will create a the plots in the current directory.
 There are plots for air concentration, total column and total deposition.
 It is also possible to pass a keyword to set plot limits e.g. `--limits -30 30
-10 70`.
+10 70`, and to use VAAC colours for air concentration plots.
 Plots for air concentration within are stored in subdirectories for each level (altitude) in the data.
 If the `output_dir` is not specified, plots are written to the data directory.
 If the `output_dir` does not exist, it will be created.
@@ -212,6 +231,23 @@ different models.
 Maps can be plotted for each model run with:
 
 ```bash
-python ash_model_plotting/plot_ash_model_results /path/to/name_results/Fields_grid88*.txt --output_dir /path/to/outputs
+python ash_model_plotting/plot_ash_model_results /path/to/name_results/Fields_grid88*.txt --output_dir /path/to/outputs --limits -35 35 25 70
 ```
+
+### Development
+
+#### Maintainers
+
+`ash-model-plotting` was created by and is maintained by British Geological Survey
+Informatics and Volcanology groups.
+
++ John A Stevenson ([volcan01010](https://github.com/volcan01010))
++ Declan Valters ([dvalters](https://github.com/dvalters))
++ Fabio Dioguardi
+
+
+### Licence
+
+`ash-model-plotting` is distributed under the [LGPL v3.0 licence](LICENSE).
+Copyright: © BGS / UKRI 2019
 

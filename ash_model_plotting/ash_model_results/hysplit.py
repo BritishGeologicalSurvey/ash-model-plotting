@@ -2,6 +2,7 @@
 Class to store ash model results.
 """
 # coding: utf-8
+from functools import lru_cache
 from pathlib import Path
 from warnings import warn
 
@@ -32,7 +33,8 @@ class HysplitAshModelResult(AshModelResult):
         self.source_data = Path(self.source_data)
         self._load_from_netcdf()
 
-    @property
+    @property  # type: ignore
+    @lru_cache(maxsize=1)
     def air_concentration(self):
         """
         Cube containing air concentration data.
@@ -68,7 +70,8 @@ class HysplitAshModelResult(AshModelResult):
 
         return cube
 
-    @property
+    @property  # type: ignore
+    @lru_cache(maxsize=1)
     def total_column(self):
         """
         Cube containing total_column loading data.
@@ -111,7 +114,8 @@ class HysplitAshModelResult(AshModelResult):
         return cube.collapsed('Top height of each layer', iris.analysis.SUM,
                               weights=weights)
 
-    @property
+    @property  # type: ignore
+    @lru_cache(maxsize=1)
     def total_deposition(self):
         """
         Cube containing total deposition loading data
