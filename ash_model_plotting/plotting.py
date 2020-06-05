@@ -128,13 +128,98 @@ def plot_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8,
         warnings.warn("The VAAC colour scheme option (vaac_colours=True)"
                       " is only compatible with air concentration data."
                       " Falling back to use the default colour scheme...")
-        cmap = "viridis"
-        norm = None
+        colours = [[255, 255, 255],
+                   [255, 230, 230],
+                   [255, 224, 255],
+                   [255, 204, 255],
+                   [255, 194, 255],
+                   [204, 153, 255],
+                   [153, 153, 255],
+                   [102, 102, 255],
+                   [51, 102, 255],
+                   [0, 153, 255],
+                   [0, 153, 153],
+                   [0, 204, 153],
+                   [0, 204, 102],
+                   [0, 204, 0],
+                   [71, 178, 36],
+                   [204, 255, 51],
+                   [255, 255, 0],
+                   [255, 204, 0],
+                   [255, 153, 0],
+                   [255, 0, 0],
+                   [153, 0, 51],
+                   [0, 0, 0],
+                   [128, 128, 128]]
 
+        colours = np.array(colours) / 255.
+        cmap =  matplotlib.colors.ListedColormap(colours)
+        levels = [0.2, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 20.0, 100.0, 10000.0]
+        norm = matplotlib.colors.BoundaryNorm(levels, cmap.N, clip=False)
+        #cmap = "viridis"
+        #norm = None
+    elif _vaac_compatible(cube) and not vaac_colours:
+        colours = [[255, 255, 255],
+                   [255, 230, 230],
+                   [255, 224, 255],
+                   [255, 204, 255],
+                   [255, 194, 255],
+                   [204, 153, 255],
+                   [153, 153, 255],
+                   [102, 102, 255],
+                   [51, 102, 255],
+                   [0, 153, 255],
+                   [0, 153, 153],
+                   [0, 204, 153],
+                   [0, 204, 102],
+                   [0, 204, 0],
+                   [71, 178, 36],
+                   [204, 255, 51],
+                   [255, 255, 0],
+                   [255, 204, 0],
+                   [255, 153, 0],
+                   [255, 0, 0],
+                   [153, 0, 51]]
+
+        colours = np.array(colours) / 255.
+        cmap =  matplotlib.colors.ListedColormap(colours)
+        levels = [0.000001, 0.000005, 0.00001, 0.00005, 0.0001, 0.0005, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.5, 1, 2, 5.0, 10, 20, 50, 100.0, 10000.0]
+        norm = matplotlib.colors.BoundaryNorm(levels, cmap.N, clip=False)
+        #cmap = "viridis"
+        #norm = None
     else:
-        cmap = "viridis"
-        norm = None
+        # Raise a warning but continue with default colour scheme
+        warnings.warn("The VAAC colour scheme option (vaac_colours=True)"
+                      " is only compatible with air concentration data."
+                      " Falling back to use the default colour scheme...")
+        colours = [[255, 255, 255],
+                   [255, 230, 230],
+                   [255, 224, 255],
+                   [255, 204, 255],
+                   [255, 194, 255],
+                   [204, 153, 255],
+                   [153, 153, 255],
+                   [102, 102, 255],
+                   [51, 102, 255],
+                   [0, 153, 255],
+                   [0, 153, 153],
+                   [0, 204, 153],
+                   [0, 204, 102],
+                   [0, 204, 0],
+                   [71, 178, 36],
+                   [204, 255, 51],
+                   [255, 255, 0],
+                   [255, 204, 0],
+                   [255, 153, 0],
+                   [255, 0, 0],
+                   [153, 0, 51],
+                   [0, 0, 0],
+                   [128, 128, 128]]
 
+        colours = np.array(colours) / 255.
+        cmap =  matplotlib.colors.ListedColormap(colours)
+        levels = [0.2, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 20.0, 100.0, 10000.0]
+        norm = matplotlib.colors.BoundaryNorm(levels, cmap.N, clip=False)
     # Plot data
     fig = plt.figure()
     mesh_plot = iplt.pcolormesh(cube, vmin=vmin, vmax=vmax,
@@ -143,6 +228,7 @@ def plot_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8,
     ax.coastlines(resolution='50m', color='grey')
     colorbar = fig.colorbar(mesh_plot, orientation='horizontal',
                             extend='max', extendfrac='auto')
+    colorbar.ax.set_xticklabels(["{0:.1e}".format(i) for i in colorbar.get_ticks()], fontsize=8)
     colorbar.set_label(f'{cube.units}')
 
     # Set axis limits
@@ -153,7 +239,9 @@ def plot_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8,
 
     # Add tick marks
     ax.set_xticks(ax.get_xticks(), crs=ccrs.PlateCarree())
+    ax.set_xticklabels(ax.get_xticks(),fontsize=8)
     ax.set_yticks(ax.get_yticks(), crs=ccrs.PlateCarree())
+    ax.set_yticklabels(ax.get_yticks(),fontsize=8)
     lon_formatter = LongitudeFormatter(zero_direction_label=True)
     lat_formatter = LatitudeFormatter()
     ax.xaxis.set_major_formatter(lon_formatter)
