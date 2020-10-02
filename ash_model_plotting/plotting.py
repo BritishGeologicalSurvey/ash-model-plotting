@@ -6,6 +6,7 @@ from pathlib import Path
 import logging
 import warnings
 
+from itertools import repeat
 from multiprocessing import Pool, Manager
 
 import cartopy.crs as ccrs
@@ -86,18 +87,17 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
     manager = Manager()
     fig_paths = manager.dict()
 
-    # Create a plotting function with most variables pre-entered
-    def multi_plot_yx_slice(yx_slice, **kwargs):
-        logging.debug("Plotting %s on process %s", yx_slice, os.getpid())
-        _save_yx_slice_figure(yx_slice, fig_paths, output_dir, file_ext, limits,
-                              vaac_colours, **kwargs)
+    # Create a list of arguments for plotting
+    args = zip(cube.slices(['longitude', 'latitude']),
+               repeat(fig_paths), repeat(output_dir), repeat(file_ext),
+               repeat(limits), repeat(vaac_colours), repeat(kwargs))
 
     #  Plot slices in parallel
     with Pool() as pool:
-        pool.map(multi_plot_yx_slice, cube.slices(['longitude', 'latitude']))
+        # starmap takes an iterable of iterables with the arguments
+        pool.starmap(_save_yx_slice_figure, args)
 
     # Create metadata, including sorted list of fig_paths
-    import ipdb; ipdb.set_trace()
     fig_paths = {key: fig_paths[key] for key in sorted(fig_paths.keys())}
     metadata = {'created_by': 'plot_3d_cube',
                 'attributes': cube.attributes,
@@ -108,7 +108,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
 
 
 def _save_yx_slice_figure(yx_slice, fig_paths, output_dir, file_ext, limits,
-                          vaac_colours, **kwargs):
+                          vaac_colours, kwargs):
     """
     Call plot_2d_cube and save result in output_dir with name based on slice
     metadata.  This function is used by plot_3d_cube and plot_4d_cube functions
@@ -131,6 +131,7 @@ def _save_yx_slice_figure(yx_slice, fig_paths, output_dir, file_ext, limits,
     filename = output_dir / f"{title}.{file_ext}"
     fig.savefig(filename, **kwargs)
     plt.close(fig)
+    logging.debug("Plotted %s on process %s", title, os.getpid())
 
     # Update shared dictionary of timestamps
     fig_paths[timestamp] = str(filename.relative_to(output_dir))
