@@ -2,7 +2,11 @@
 Messing around with multiprocessing
 """
 import logging
+
 from pathlib import Path
+from itertools import repeat
+from multiprocessing import Pool
+from random import random
 
 import matplotlib
 matplotlib.use('Agg')
@@ -14,21 +18,23 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 def plot_many():
-    all_x = [range(x + 1) for x in range(PLOT_COUNT)]
-    all_y = [range(y + 1) for y in range(PLOT_COUNT)]
+    # Prepare inputs
+    all_x = [[random() for x in range(PLOT_COUNT)] for x in range(PLOT_COUNT)]
+    all_y = [[random() for y in range(PLOT_COUNT)] for x in range(PLOT_COUNT)]
     titles = [f'plot_{x}' for x in range(PLOT_COUNT)]
     directory = Path('/tmp') / 'multi'
     if not directory.is_dir():
         directory.mkdir()
 
-    for i, title in enumerate(titles):
-        plot_fig(all_x[i], all_y[i], title, directory)
+    args = zip(all_x, all_y, titles, repeat(directory))
+    with Pool() as pool:
+        pool.starmap(plot_fig, args)
 
 
 def plot_fig(x, y, title, directory):
     logging.debug("Plotting %s", title)
     fig, ax = plt.subplots()
-    ax.plot(x, y)
+    ax.scatter(x, y)
     ax.set_title(title)
     plt.savefig(Path(directory) / f"{title}.png")
 
