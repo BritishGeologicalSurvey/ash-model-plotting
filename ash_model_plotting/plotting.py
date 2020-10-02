@@ -3,7 +3,10 @@ Plotting functions that draw and save figures from multi-dimensional cubes.
 """
 import os
 from pathlib import Path
+import logging
 import warnings
+
+from multiprocessing import Pool, Manager
 
 import cartopy.crs as ccrs
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
@@ -11,12 +14,15 @@ from iris.exceptions import CoordinateNotFoundError
 import iris.plot as iplt
 from jinja2 import Template
 import matplotlib
+matplotlib.use('agg')
 import matplotlib.colors
 import matplotlib.pyplot as plt
 import numpy as np
 import cf_units
 
-matplotlib.use('agg')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
 
 def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
     """
@@ -72,26 +78,62 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
     :param kwargs: dict; extra args for plot_2d_cube and plt.savefig
         e.g. limits, vaac_colours, dpi, bbox_inches
     """
-    metadata = {'created_by': 'plot_3d_cube',
-                'attributes': cube.attributes,
-                'plots': {}
-                }
     vaac_colours = kwargs.get('vaac_colours', False)
     limits = kwargs.get('limits', None)
-
     output_dir = Path(output_dir)
-    for yx_slice in cube.slices(['longitude', 'latitude']):
-        timestamp = _format_timestamp_string(yx_slice)
 
-        fig, title = plot_2d_cube(yx_slice, vaac_colours=vaac_colours,
-                                  limits=limits)
-        filename = output_dir / f"{title}.{file_ext}"
-        fig.savefig(filename, **kwargs)
-        plt.close(fig)
+    # Create a dictionary that can be shared between processes
+    manager = Manager()
+    fig_paths = manager.dict()
 
-        metadata['plots'][timestamp] = str(filename.relative_to(output_dir))
+    # Create a plotting function with most variables pre-entered
+    def multi_plot_yx_slice(yx_slice, **kwargs):
+        logging.debug("Plotting %s on process %s", yx_slice, os.getpid())
+        _save_yx_slice_figure(yx_slice, fig_paths, output_dir, file_ext, limits,
+                              vaac_colours, **kwargs)
+
+    #  Plot slices in parallel
+    with Pool() as pool:
+        pool.map(multi_plot_yx_slice, cube.slices(['longitude', 'latitude']))
+
+    # Create metadata, including sorted list of fig_paths
+    import ipdb; ipdb.set_trace()
+    fig_paths = {key: fig_paths[key] for key in sorted(fig_paths.keys())}
+    metadata = {'created_by': 'plot_3d_cube',
+                'attributes': cube.attributes,
+                'plots': fig_paths
+                }
 
     return metadata
+
+
+def _save_yx_slice_figure(yx_slice, fig_paths, output_dir, file_ext, limits,
+                          vaac_colours, **kwargs):
+    """
+    Call plot_2d_cube and save result in output_dir with name based on slice
+    metadata.  This function is used by plot_3d_cube and plot_4d_cube functions
+    and intended for use within multiprocessing.
+
+    The fig_paths Manager dictionary is updated independently be each running
+    process.
+
+    :param yx_slice: 2d Iris cube (slice of larger cube)
+    :param fig_paths: dict; filenames for figures for each timestamp
+    :param output_dir: str; directory to save figure
+    :param file_ext, file extension suffix for data format e.g. png, pdf
+    :param kwargs: dict; extra args for plot_2d_cube and plt.savefig
+        e.g. limits, vaac_colours, dpi, bbox_inches
+    """
+    timestamp = _format_timestamp_string(yx_slice)
+
+    fig, title = plot_2d_cube(yx_slice, vaac_colours=vaac_colours,
+                              limits=limits)
+    filename = output_dir / f"{title}.{file_ext}"
+    fig.savefig(filename, **kwargs)
+    plt.close(fig)
+
+    # Update shared dictionary of timestamps
+    fig_paths[timestamp] = str(filename.relative_to(output_dir))
 
 
 def plot_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8,
