@@ -9,13 +9,15 @@ import warnings
 from itertools import repeat
 from multiprocessing import Pool, Manager
 
+# Import matplotlib before Iris
+import matplotlib
+matplotlib.use('agg')
+
 import cartopy.crs as ccrs
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 from iris.exceptions import CoordinateNotFoundError
 import iris.plot as iplt
 from jinja2 import Template
-import matplotlib
-matplotlib.use('agg')
 import matplotlib.colors
 import matplotlib.pyplot as plt
 import numpy as np

@@ -5,15 +5,16 @@ Class to store ash model results.
 from abc import ABCMeta, abstractmethod
 from pathlib import Path
 
-import iris
 from netCDF4 import Dataset
 
+# Import matplotlib-based code before Iris to allow backend setting
 from ash_model_plotting.plotting import (
     plot_3d_cube,
     plot_4d_cube,
     render_html,
 )
 
+import iris
 
 class AshModelResultError(Exception):
     pass
