@@ -9,7 +9,7 @@ import warnings
 from itertools import repeat
 from multiprocessing import Pool, Manager
 
-# Import matplotlib before Iris
+# Import matplotlib before Iris to allow backend setting
 import matplotlib
 matplotlib.use('agg')
 

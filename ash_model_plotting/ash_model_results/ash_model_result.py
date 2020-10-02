@@ -7,7 +7,7 @@ from pathlib import Path
 
 from netCDF4 import Dataset
 
-# Import matplotlib-based code before Iris to allow backend setting
+# Import matplotlib-based code before iris to allow backend setting
 from ash_model_plotting.plotting import (
     plot_3d_cube,
     plot_4d_cube,
