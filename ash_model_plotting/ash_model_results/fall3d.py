@@ -115,6 +115,7 @@ class Fall3DAshModelResult(AshModelResult):
             cube.attributes['model_run_title'] = self._get_model_run_title(cube)
             cube.attributes['quantity'] = 'Total Deposition'
             cube.attributes['CF Standard Name'] = "surface_volcanic_ash_amount"
+            cube.convert_units('g/m2')
             return cube
         except ValueError:
             # Return None if no cubes present
