@@ -144,5 +144,6 @@ class HysplitAshModelResult(AshModelResult):
         cube.data = np.cumsum(cube.data, axis=0)
 
         cube.units = self.air_concentration.units * Unit('m')
+        cube.convert_units('g/m2')
 
         return cube
