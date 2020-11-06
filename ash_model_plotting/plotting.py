@@ -96,7 +96,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
 
     #  Plot slices in parallel
     processes = len(os.sched_getaffinity(0))
-    processes = 10
+    processes = 1
     logger.debug('plot_3d with %s processes', processes)
     with Pool(processes) as pool:
         # starmap takes an iterable of iterables with the arguments
@@ -136,7 +136,7 @@ def _save_yx_slice_figure(yx_slice, fig_paths, output_dir, file_ext, limits,
     filename = output_dir / f"{title}.{file_ext}"
     fig.savefig(filename, **kwargs)
     plt.close(fig)
-    logger.exception("Plotted %s on process %s", title, os.getpid())
+    logger.debug("Plotted %s on process %s", title, os.getpid())
 
     # Update shared dictionary of timestamps
     fig_paths[timestamp] = str(filename.relative_to(output_dir))
