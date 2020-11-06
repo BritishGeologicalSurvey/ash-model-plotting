@@ -24,7 +24,6 @@ import numpy as np
 import cf_units
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
@@ -45,6 +44,7 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
     base_output_dir = Path(output_dir)
     vaac_colours = kwargs.get('vaac_colours', False)
     limits = kwargs.get('limits', None)
+    logger.debug('plot_4d')
 
     for tyx_slice in cube.slices(['time', 'latitude', 'longitude']):
         zlevel_str = _format_zlevel_string(tyx_slice)
@@ -95,7 +95,10 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
                repeat(limits), repeat(vaac_colours), repeat(kwargs))
 
     #  Plot slices in parallel
-    with Pool() as pool:
+    processes = len(os.sched_getaffinity(0))
+    processes = 10
+    logger.debug('plot_3d with %s processes', processes)
+    with Pool(processes) as pool:
         # starmap takes an iterable of iterables with the arguments
         pool.starmap(_save_yx_slice_figure, args)
 
@@ -133,7 +136,7 @@ def _save_yx_slice_figure(yx_slice, fig_paths, output_dir, file_ext, limits,
     filename = output_dir / f"{title}.{file_ext}"
     fig.savefig(filename, **kwargs)
     plt.close(fig)
-    logging.debug("Plotted %s on process %s", title, os.getpid())
+    logger.exception("Plotted %s on process %s", title, os.getpid())
 
     # Update shared dictionary of timestamps
     fig_paths[timestamp] = str(filename.relative_to(output_dir))
