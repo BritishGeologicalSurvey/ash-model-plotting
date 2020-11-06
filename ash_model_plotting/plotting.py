@@ -7,7 +7,7 @@ import logging
 import warnings
 
 from itertools import repeat
-from multiprocessing import Pool, Manager
+from multiprocessing import Manager, get_context
 
 # Import matplotlib before Iris to allow backend setting
 import matplotlib
@@ -96,9 +96,10 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
 
     #  Plot slices in parallel
     processes = len(os.sched_getaffinity(0))
-    processes = 1
     logger.debug('plot_3d with %s processes', processes)
-    with Pool(processes) as pool:
+    with get_context('spawn').Pool() as pool:
+        # 'spawn' is required to ensure each task gets fresh interpreter and
+        # avoid issues with hanging caused by items shared across threads
         # starmap takes an iterable of iterables with the arguments
         pool.starmap(_save_yx_slice_figure, args)
 
@@ -134,6 +135,7 @@ def _save_yx_slice_figure(yx_slice, fig_paths, output_dir, file_ext, limits,
     fig, title = plot_2d_cube(yx_slice, vaac_colours=vaac_colours,
                               limits=limits)
     filename = output_dir / f"{title}.{file_ext}"
+
     fig.savefig(filename, **kwargs)
     plt.close(fig)
     logger.debug("Plotted %s on process %s", title, os.getpid())
