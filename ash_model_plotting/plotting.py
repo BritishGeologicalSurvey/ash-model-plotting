@@ -24,6 +24,7 @@ import numpy as np
 import cf_units
 
 logger = logging.getLogger(__name__)
+POOL_LOGGER_LEVEL = logging.INFO
 
 
 def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
@@ -44,7 +45,6 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
     base_output_dir = Path(output_dir)
     vaac_colours = kwargs.get('vaac_colours', False)
     limits = kwargs.get('limits', None)
-    logger.debug('plot_4d')
 
     for tyx_slice in cube.slices_over(_get_zlevel_name(cube)):
         # Create new directory for each altitude level
@@ -65,7 +65,9 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
         #  Plot slices in parallel
         processes = len(os.sched_getaffinity(0))
         logger.debug('plot_4d for %s with %s processes', zlevel_str, processes)
-        with get_context('spawn').Pool() as pool:
+        with get_context('spawn').Pool(
+                initializer=setup_pool_logger, initargs=(POOL_LOGGER_LEVEL,)
+                ) as pool:
             # 'spawn' is required to ensure each task gets fresh interpreter and
             # avoid issues with hanging caused by items shared across threads
             # starmap takes an iterable of iterables with the arguments
@@ -76,6 +78,17 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
         metadata['plots'][zlevel_str] = fig_paths
 
     return metadata
+
+
+def setup_pool_logger(level):
+    """
+    Setup logger for use within multiprocessing pool
+    """
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter('pool process: %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(level)
 
 
 def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
@@ -105,7 +118,9 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
     #  Plot slices in parallel
     processes = len(os.sched_getaffinity(0))
     logger.debug('plot_3d with %s processes', processes)
-    with get_context('spawn').Pool() as pool:
+    with get_context('spawn').Pool(
+            initializer=setup_pool_logger, initargs=(POOL_LOGGER_LEVEL,)
+            ) as pool:
         # 'spawn' is required to ensure each task gets fresh interpreter and
         # avoid issues with hanging caused by items shared across threads
         # starmap takes an iterable of iterables with the arguments
