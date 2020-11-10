@@ -298,7 +298,7 @@ def _get_zlevel_name(cube):
     """
     Return name of coordinate representing zlevel for cube.
     """
-    known_z = set(['alt', 'altitude', 'flight_level'])
+    known_z = set(['alt', 'altitude', 'flight_level', 'z coordinate of x-y plane cuts'])
     cube_coords = [c.name() for c in cube.coords()]
     return known_z.intersection(cube_coords).pop()
 
