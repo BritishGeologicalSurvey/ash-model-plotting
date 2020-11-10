@@ -58,7 +58,7 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
         fig_paths = manager.dict()
 
         # Create a list of arguments for plotting
-        args = zip(cube.slices(['longitude', 'latitude']),
+        args = zip(tyx_slice.slices(['longitude', 'latitude']),
                    repeat(fig_paths), repeat(output_dir), repeat(file_ext),
                    repeat(limits), repeat(vaac_colours), repeat(kwargs))
 
