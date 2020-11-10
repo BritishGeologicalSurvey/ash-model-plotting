@@ -46,27 +46,34 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
     limits = kwargs.get('limits', None)
     logger.debug('plot_4d')
 
-    for tyx_slice in cube.slices(['time', 'latitude', 'longitude']):
-        zlevel_str = _format_zlevel_string(tyx_slice)
+    for tyx_slice in cube.slices_over(_get_zlevel_name(cube)):
         # Create new directory for each altitude level
+        zlevel_str = _format_zlevel_string(tyx_slice)
         output_dir = base_output_dir / zlevel_str
         if not output_dir.is_dir():
             os.mkdir(output_dir)
 
-        # Create placeholder for altitude level of nesting
-        metadata['plots'][zlevel_str] = {}
+        # Create a dictionary that can be shared between processes
+        manager = Manager()
+        fig_paths = manager.dict()
 
-        # Plot all the slices for that zlevel
-        for yx_slice in tyx_slice.slices(['latitude', 'longitude']):
-            timestamp = _format_timestamp_string(yx_slice)
-            fig, title = plot_2d_cube(yx_slice, vaac_colours=vaac_colours,
-                                      limits=limits)
-            filename = output_dir / f"{title}.{file_ext}"
-            fig.savefig(filename, **kwargs)
-            plt.close(fig)
+        # Create a list of arguments for plotting
+        args = zip(cube.slices(['longitude', 'latitude']),
+                   repeat(fig_paths), repeat(output_dir), repeat(file_ext),
+                   repeat(limits), repeat(vaac_colours), repeat(kwargs))
 
-            metadata['plots'][zlevel_str][timestamp] = str(
-                filename.relative_to(output_dir))
+        #  Plot slices in parallel
+        processes = len(os.sched_getaffinity(0))
+        logger.debug('plot_4d for %s with %s processes', zlevel_str, processes)
+        with get_context('spawn').Pool() as pool:
+            # 'spawn' is required to ensure each task gets fresh interpreter and
+            # avoid issues with hanging caused by items shared across threads
+            # starmap takes an iterable of iterables with the arguments
+            pool.starmap(_save_yx_slice_figure, args)
+
+        # Update metadata
+        fig_paths = {key: fig_paths[key] for key in sorted(fig_paths.keys())}
+        metadata['plots'][zlevel_str] = fig_paths
 
     return metadata
 
@@ -90,6 +97,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
     fig_paths = manager.dict()
 
     # Create a list of arguments for plotting
+    # Slices of longitude, latitude represent different times
     args = zip(cube.slices(['longitude', 'latitude']),
                repeat(fig_paths), repeat(output_dir), repeat(file_ext),
                repeat(limits), repeat(vaac_colours), repeat(kwargs))
