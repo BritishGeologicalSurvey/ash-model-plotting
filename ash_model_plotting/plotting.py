@@ -47,6 +47,8 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
     limits = kwargs.get('limits', None)
 
     for tyx_slice in cube.slices_over(_get_zlevel_name(cube)):
+        tyx_slice.data  # Realize data to avoid lazy loading
+
         # Create new directory for each altitude level
         zlevel_str = _format_zlevel_string(tyx_slice)
         output_dir = base_output_dir / zlevel_str
@@ -101,6 +103,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
     :param kwargs: dict; extra args for plot_2d_cube and plt.savefig
         e.g. limits, vaac_colours, dpi, bbox_inches
     """
+    cube.data  # Realize data to avoid lazy loading
     vaac_colours = kwargs.get('vaac_colours', False)
     limits = kwargs.get('limits', None)
     output_dir = Path(output_dir)
