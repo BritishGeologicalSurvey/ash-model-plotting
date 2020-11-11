@@ -104,12 +104,22 @@ def main():
         log_level = logging.DEBUG
     else:
         log_level = logging.INFO
-    logging.basicConfig(level=log_level)
+    logging.getLogger().setLevel(log_level)
 
     plot_results(args.results, args.model_type, args.limits,
                  args.vaac_colours, args.output_dir)
 
 
 if __name__ == '__main__':
+    # Suppress warning messages from Matplotlib etc
     os.environ['PYTHONWARNINGS'] = 'ignore'
+
+    # Configure logger
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s')
+    handler.setFormatter(formatter)
+    root_logger = logging.getLogger()
+    root_logger.addHandler(handler)
+
+    # Run script
     main()
