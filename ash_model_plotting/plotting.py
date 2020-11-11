@@ -226,8 +226,10 @@ def plot_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8,
                    [128, 128, 128]]
 
         colours = np.array(colours) / 255.
-        cmap =  matplotlib.colors.ListedColormap(colours)
-        levels = [0.2, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 20.0, 100.0, 10000.0]
+        cmap = matplotlib.colors.ListedColormap(colours)
+        levels = [0.2, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0,
+                  5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 20.0,
+                  100.0, 10000.0]
         norm = matplotlib.colors.BoundaryNorm(levels, cmap.N, clip=False)
         #cmap = "viridis"
         #norm = None
@@ -255,8 +257,10 @@ def plot_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8,
                    [153, 0, 51]]
 
         colours = np.array(colours) / 255.
-        cmap =  matplotlib.colors.ListedColormap(colours)
-        levels = [0.000001, 0.000005, 0.00001, 0.00005, 0.0001, 0.0005, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.5, 1, 2, 5.0, 10, 20, 50, 100.0, 10000.0]
+        cmap = matplotlib.colors.ListedColormap(colours)
+        levels = [0.2, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0,
+                  5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 20.0,
+                  100.0, 10000.0]
         norm = matplotlib.colors.BoundaryNorm(levels, cmap.N, clip=False)
         #cmap = "viridis"
         #norm = None
