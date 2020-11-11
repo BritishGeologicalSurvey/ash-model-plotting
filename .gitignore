@@ -12,3 +12,4 @@ pyke-1.1.1
 ADM_outputs
 plots
 htmltest*.html
+_pytest.ini

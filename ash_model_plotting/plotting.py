@@ -3,20 +3,29 @@ Plotting functions that draw and save figures from multi-dimensional cubes.
 """
 import os
 from pathlib import Path
+import logging
 import warnings
+
+from itertools import repeat
+from multiprocessing import Manager, get_context
+
+# Import matplotlib before Iris to allow backend setting
+import matplotlib
+matplotlib.use('agg')
 
 import cartopy.crs as ccrs
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 from iris.exceptions import CoordinateNotFoundError
 import iris.plot as iplt
 from jinja2 import Template
-import matplotlib
 import matplotlib.colors
 import matplotlib.pyplot as plt
 import numpy as np
 import cf_units
 
-matplotlib.use('agg')
+logger = logging.getLogger(__name__)
+POOL_LOGGER_LEVEL = logging.INFO
+
 
 def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
     """
@@ -37,29 +46,49 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
     vaac_colours = kwargs.get('vaac_colours', False)
     limits = kwargs.get('limits', None)
 
-    for tyx_slice in cube.slices(['time', 'latitude', 'longitude']):
-        zlevel_str = _format_zlevel_string(tyx_slice)
+    for tyx_slice in cube.slices_over(_get_zlevel_name(cube)):
         # Create new directory for each altitude level
+        zlevel_str = _format_zlevel_string(tyx_slice)
         output_dir = base_output_dir / zlevel_str
         if not output_dir.is_dir():
             os.mkdir(output_dir)
 
-        # Create placeholder for altitude level of nesting
-        metadata['plots'][zlevel_str] = {}
+        # Create a dictionary that can be shared between processes
+        manager = Manager()
+        fig_paths = manager.dict()
 
-        # Plot all the slices for that zlevel
-        for yx_slice in tyx_slice.slices(['latitude', 'longitude']):
-            timestamp = _format_timestamp_string(yx_slice)
-            fig, title = plot_2d_cube(yx_slice, vaac_colours=vaac_colours,
-                                      limits=limits)
-            filename = output_dir / f"{title}.{file_ext}"
-            fig.savefig(filename, **kwargs)
-            plt.close(fig)
+        # Create a list of arguments for plotting
+        args = zip(tyx_slice.slices(['longitude', 'latitude']),
+                   repeat(fig_paths), repeat(output_dir), repeat(file_ext),
+                   repeat(limits), repeat(vaac_colours), repeat(kwargs))
 
-            metadata['plots'][zlevel_str][timestamp] = str(
-                filename.relative_to(output_dir))
+        #  Plot slices in parallel
+        processes = len(os.sched_getaffinity(0))
+        logger.debug('plot_4d for %s with %s processes', zlevel_str, processes)
+        with get_context('spawn').Pool(
+                initializer=setup_pool_logger, initargs=(POOL_LOGGER_LEVEL,)
+                ) as pool:
+            # 'spawn' is required to ensure each task gets fresh interpreter and
+            # avoid issues with hanging caused by items shared across threads
+            # starmap takes an iterable of iterables with the arguments
+            pool.starmap(_save_yx_slice_figure, args)
+
+        # Update metadata
+        fig_paths = {key: fig_paths[key] for key in sorted(fig_paths.keys())}
+        metadata['plots'][zlevel_str] = fig_paths
 
     return metadata
+
+
+def setup_pool_logger(level):
+    """
+    Setup logger for use within multiprocessing pool
+    """
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter('pool process: %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(level)
 
 
 def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
@@ -72,26 +101,70 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
     :param kwargs: dict; extra args for plot_2d_cube and plt.savefig
         e.g. limits, vaac_colours, dpi, bbox_inches
     """
-    metadata = {'created_by': 'plot_3d_cube',
-                'attributes': cube.attributes,
-                'plots': {}
-                }
     vaac_colours = kwargs.get('vaac_colours', False)
     limits = kwargs.get('limits', None)
-
     output_dir = Path(output_dir)
-    for yx_slice in cube.slices(['longitude', 'latitude']):
-        timestamp = _format_timestamp_string(yx_slice)
 
-        fig, title = plot_2d_cube(yx_slice, vaac_colours=vaac_colours,
-                                  limits=limits)
-        filename = output_dir / f"{title}.{file_ext}"
-        fig.savefig(filename, **kwargs)
-        plt.close(fig)
+    # Create a dictionary that can be shared between processes
+    manager = Manager()
+    fig_paths = manager.dict()
 
-        metadata['plots'][timestamp] = str(filename.relative_to(output_dir))
+    # Create a list of arguments for plotting
+    # Slices of longitude, latitude represent different times
+    args = zip(cube.slices(['longitude', 'latitude']),
+               repeat(fig_paths), repeat(output_dir), repeat(file_ext),
+               repeat(limits), repeat(vaac_colours), repeat(kwargs))
+
+    #  Plot slices in parallel
+    processes = len(os.sched_getaffinity(0))
+    logger.debug('plot_3d with %s processes', processes)
+    with get_context('spawn').Pool(
+            initializer=setup_pool_logger, initargs=(POOL_LOGGER_LEVEL,)
+            ) as pool:
+        # 'spawn' is required to ensure each task gets fresh interpreter and
+        # avoid issues with hanging caused by items shared across threads
+        # starmap takes an iterable of iterables with the arguments
+        pool.starmap(_save_yx_slice_figure, args)
+
+    # Create metadata, including sorted list of fig_paths
+    fig_paths = {key: fig_paths[key] for key in sorted(fig_paths.keys())}
+    metadata = {'created_by': 'plot_3d_cube',
+                'attributes': cube.attributes,
+                'plots': fig_paths
+                }
 
     return metadata
+
+
+def _save_yx_slice_figure(yx_slice, fig_paths, output_dir, file_ext, limits,
+                          vaac_colours, kwargs):
+    """
+    Call plot_2d_cube and save result in output_dir with name based on slice
+    metadata.  This function is used by plot_3d_cube and plot_4d_cube functions
+    and intended for use within multiprocessing.
+
+    The fig_paths Manager dictionary is updated independently be each running
+    process.
+
+    :param yx_slice: 2d Iris cube (slice of larger cube)
+    :param fig_paths: dict; filenames for figures for each timestamp
+    :param output_dir: str; directory to save figure
+    :param file_ext, file extension suffix for data format e.g. png, pdf
+    :param kwargs: dict; extra args for plot_2d_cube and plt.savefig
+        e.g. limits, vaac_colours, dpi, bbox_inches
+    """
+    timestamp = _format_timestamp_string(yx_slice)
+
+    fig, title = plot_2d_cube(yx_slice, vaac_colours=vaac_colours,
+                              limits=limits)
+    filename = output_dir / f"{title}.{file_ext}"
+
+    fig.savefig(filename, **kwargs)
+    plt.close(fig)
+    logger.debug("Plotted %s on process %s", title, os.getpid())
+
+    # Update shared dictionary of timestamps
+    fig_paths[timestamp] = str(filename.relative_to(output_dir))
 
 
 def plot_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8,
@@ -225,7 +298,8 @@ def _get_zlevel_name(cube):
     """
     Return name of coordinate representing zlevel for cube.
     """
-    known_z = set(['alt', 'altitude', 'flight_level'])
+    known_z = set(['alt', 'altitude', 'flight_level', 'z coordinate of x-y plane cuts',
+                   'Top height of each layer'])
     cube_coords = [c.name() for c in cube.coords()]
     return known_z.intersection(cube_coords).pop()
 
@@ -279,8 +353,8 @@ def _get_zlevels(cube):
         return cube.coord('altitude').points.tolist()
     elif 'alt' in coord_types:
         return cube.coord('alt').points.tolist()
-    elif 'Top height of each level' in coord_types:
-        return cube.coord('Top height of each level').points.tolist()
+    elif 'Top height of each layer' in coord_types:
+        return cube.coord('Top height of each layer').points.tolist()
     elif 'flight_level' in coord_types:
         return cube.coord('flight_level').points.tolist()
     elif 'z coordinate of x-y plane cuts' in coord_types:

@@ -5,9 +5,6 @@ from pathlib import Path
 import pytest
 import matplotlib
 
-# Use Agg plotting backend for tests so matplotlib doesn't open window
-matplotlib.use('Agg')
-
 from ash_model_plotting import (NameAshModelResult,  # noqa: E402
                                 HysplitAshModelResult,
                                 Fall3DAshModelResult)
