@@ -14,8 +14,7 @@ from ash_model_plotting import (
     AshModelResultError,
 )
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger = logging.getLogger('plot_ash_model_results')
 
 
 MODEL_TYPES = {
@@ -95,10 +94,22 @@ def main():
         help=("Path to directory to store plots (defaults to source_dir), "
               "creates directory if doesn't exist"),
         default=None)
+    parser.add_argument(
+        '--verbose',
+        help=("Print debugging messages in output"),
+        action='store_true')
     args = parser.parse_args()
+
+    if args.verbose:
+        log_level = logging.DEBUG
+    else:
+        log_level = logging.INFO
+    logging.basicConfig(level=log_level)
+
     plot_results(args.results, args.model_type, args.limits,
                  args.vaac_colours, args.output_dir)
 
 
 if __name__ == '__main__':
+    os.environ['PYTHONWARNINGS'] = 'ignore'
     main()
