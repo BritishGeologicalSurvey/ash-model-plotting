@@ -24,6 +24,30 @@ MODEL_TYPES = {
 }
 
 
+def main():
+    """Prepare arguments and logging then run script."""
+    # Suppress warning messages from Matplotlib etc
+    os.environ['PYTHONWARNINGS'] = 'ignore'
+
+    # Configure logger
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s')
+    handler.setFormatter(formatter)
+    root_logger = logging.getLogger()
+    root_logger.addHandler(handler)
+
+    args = parse_args()
+
+    if args.verbose:
+        log_level = logging.DEBUG
+    else:
+        log_level = logging.INFO
+    logging.getLogger().setLevel(log_level)
+
+    plot_results(args.results, args.model_type, args.limits,
+                 args.vaac_colours, args.output_dir)
+
+
 def plot_results(results, model_type, limits, vaac_colours, output_dir):
     """
     Plot ash model results the layers in the input_files.  Plots are made
@@ -67,8 +91,8 @@ def plot_results(results, model_type, limits, vaac_colours, output_dir):
             logger.info(f'No {attribute} data found')
 
 
-def main():
-    """Parse arguments and call plot_name_files."""
+def parse_args():
+    """Parse arguments"""
     parser = argparse.ArgumentParser(
         description='Generate plots from NAME data .txt files')
     parser.add_argument(
@@ -100,26 +124,8 @@ def main():
         action='store_true')
     args = parser.parse_args()
 
-    if args.verbose:
-        log_level = logging.DEBUG
-    else:
-        log_level = logging.INFO
-    logging.getLogger().setLevel(log_level)
-
-    plot_results(args.results, args.model_type, args.limits,
-                 args.vaac_colours, args.output_dir)
+    return args
 
 
 if __name__ == '__main__':
-    # Suppress warning messages from Matplotlib etc
-    os.environ['PYTHONWARNINGS'] = 'ignore'
-
-    # Configure logger
-    handler = logging.StreamHandler()
-    formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s')
-    handler.setFormatter(formatter)
-    root_logger = logging.getLogger()
-    root_logger.addHandler(handler)
-
-    # Run script
     main()
