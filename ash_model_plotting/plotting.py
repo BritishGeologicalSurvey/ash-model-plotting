@@ -25,6 +25,7 @@ import cf_units
 
 logger = logging.getLogger(__name__)
 POOL_LOGGER_LEVEL = logging.INFO
+NUM_PROCESSES = os.getenv("SLURM_JOB_CPUS_PER_NODE", None)
 
 
 def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
@@ -66,6 +67,7 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
         processes = len(os.sched_getaffinity(0))
         logger.debug('plot_4d for %s with %s processes', zlevel_str, processes)
         with get_context('spawn').Pool(
+                processes=NUM_PROCESSES,
                 initializer=setup_pool_logger, initargs=(POOL_LOGGER_LEVEL,)
                 ) as pool:
             # 'spawn' is required to ensure each task gets fresh interpreter and
@@ -96,7 +98,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
     Plot multiple figures of 2D slices from a cube in output directory.
 
     :param cube: Iris cube with 3 dimensions (time, lat, lon)
-    :param output_dir: str; directory to save figure
+     = os.getenv("SLURM...", None):param output_dir: str; directory to save figure
     :param file_ext, file extension suffix for data format e.g. png, pdf
     :param kwargs: dict; extra args for plot_2d_cube and plt.savefig
         e.g. limits, vaac_colours, dpi, bbox_inches
@@ -119,6 +121,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
     processes = len(os.sched_getaffinity(0))
     logger.debug('plot_3d with %s processes', processes)
     with get_context('spawn').Pool(
+            processes=NUM_PROCESSES,
             initializer=setup_pool_logger, initargs=(POOL_LOGGER_LEVEL,)
             ) as pool:
         # 'spawn' is required to ensure each task gets fresh interpreter and
