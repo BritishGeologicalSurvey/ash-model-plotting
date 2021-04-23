@@ -6,7 +6,7 @@ The plotting scripts are based on the following Python libraries.
 
 + [Iris](https://scitools.org.uk/iris/docs/latest): "A powerful,
   format-agnostic, and community-driven Python library for analysing and
-visualising Earth science data."
+visualising Earth science data." Require Iris version 3.
 + [Cartopy](https://scitools.org.uk/cartopy/docs/v0.16/index.html): "...a Python
   package designed for geospatial data processing in order to produce maps and other geospatial data analyses."
 + [Matplotlib](https://matplotlib.org/): "...a Python 2D plotting library which
