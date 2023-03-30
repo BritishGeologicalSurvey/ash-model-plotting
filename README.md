@@ -1,5 +1,8 @@
 # Ash Model Plotting
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7785355.svg)](https://doi.org/10.5281/zenodo.7785355)
+
+
 > Code to plot and compare the results from volcanic ash dispersion model runs.
 
 The plotting scripts are based on the following Python libraries.
