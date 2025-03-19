@@ -20,7 +20,8 @@ class HysplitAshModelResult(AshModelResult):
     AshModelResult for data from Hysplit model simulations.
     """
     _air_concentration_names = {
-        'Concentration Array - AS01'
+        'Concentration Array - AS01',
+        'Concentration Array - SUM '
     }
 
     def __repr__(self):

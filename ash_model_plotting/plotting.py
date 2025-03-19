@@ -210,6 +210,7 @@ def plot_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8,
 
     # Plot data
     fig = plt.figure()
+    #ax = plt.axes(projection=ccrs.PlateCarree())
     mesh_plot = iplt.pcolormesh(cube, vmin=vmin, vmax=vmax,
                                 cmap=cmap, norm=norm)
     ax = plt.gca()
@@ -225,13 +226,13 @@ def plot_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8,
         ax.set_ylim(ymin, ymax)
 
     # Add tick marks
-    ax.set_xticks(ax.get_xticks(), crs=ccrs.PlateCarree())
-    ax.set_yticks(ax.get_yticks(), crs=ccrs.PlateCarree())
-    lon_formatter = LongitudeFormatter(zero_direction_label=True)
-    lat_formatter = LatitudeFormatter()
-    ax.xaxis.set_major_formatter(lon_formatter)
-    ax.yaxis.set_major_formatter(lat_formatter)
-    ax.grid(linewidth=0.5, color='grey', alpha=0.25, linestyle='--')
+    # ax.set_xticks(ax.get_xticks(), crs=ccrs.PlateCarree())
+    # ax.set_yticks(ax.get_yticks(), crs=ccrs.PlateCarree())
+    # lon_formatter = LongitudeFormatter(zero_direction_label=True)
+    # lat_formatter = LatitudeFormatter()
+    # ax.xaxis.set_major_formatter(lon_formatter)
+    # ax.yaxis.set_major_formatter(lat_formatter)
+    # ax.grid(linewidth=0.5, color='grey', alpha=0.25, linestyle='--')
 
     # Get title attributes
     zlevel = _format_zlevel_string(cube)
