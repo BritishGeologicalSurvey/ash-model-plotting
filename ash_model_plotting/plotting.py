@@ -12,6 +12,8 @@ from multiprocessing import Manager, get_context
 # Import matplotlib before Iris to allow backend setting
 import matplotlib
 matplotlib.use('agg')
+mpl_logger = logging.getLogger("matplotlib")
+mpl_logger.setLevel(logging.INFO)
 
 import cartopy.crs as ccrs
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
@@ -149,6 +151,15 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
 
     return metadata
 
+def savefig_safe(fig, filename, **kwargs):
+    valid_args = {'dpi', 'facecolor', 'edgecolor', 'orientation', 'format',
+                  'transparent', 'bbox_inches', 'pad_inches', 'metadata',
+                  'pil_kwargs', 'backend'}
+
+    # Filter kwargs to keep only valid arguments for savefig
+    filtered_kwargs = {k: v for k, v in kwargs.items() if k in valid_args}
+
+    fig.savefig(filename, **filtered_kwargs)
 
 def _save_yx_slice_figure(yx_slice, fig_paths, output_dir, file_ext, limits,
                           vaac_colours, clon, kwargs):
@@ -173,7 +184,7 @@ def _save_yx_slice_figure(yx_slice, fig_paths, output_dir, file_ext, limits,
                               limits=limits, clon=clon)
     filename = output_dir / f"{title}.{file_ext}"
 
-    fig.savefig(filename, **kwargs)
+    savefig_safe(fig, filename, **kwargs)
     plt.close(fig)
     logger.debug("Plotted %s on process %s", title, os.getpid())
 
