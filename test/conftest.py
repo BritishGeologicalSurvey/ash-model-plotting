@@ -41,15 +41,15 @@ def fall3d_model_result(data_dir):
     return Fall3DAshModelResult(data_dir.joinpath('fall3d_operational.nc'))
 
 
-# @pytest.fixture(scope='function')
-# def hysplit_model_result(data_dir):
-#     """A HysplitAshModelResult based on test data."""
-#     return HysplitAshModelResult(data_dir.joinpath('hysplit_operational.nc'))
-
 @pytest.fixture(scope='function')
 def hysplit_model_result(data_dir):
     """A HysplitAshModelResult based on test data."""
-    return HysplitAshModelResult(data_dir.joinpath('cdump_sum_Ruapehu_QVA_high.nc'))
+    return HysplitAshModelResult(data_dir.joinpath('hysplit_operational.nc'))
+
+@pytest.fixture(scope='function')
+def hysplit_model_result_180(data_dir):
+    """A HysplitAshModelResult based on test data."""
+    return HysplitAshModelResult(data_dir.joinpath('cdump_sum.nc'))
 
 @pytest.fixture(scope='module')
 def scantree():

@@ -77,12 +77,38 @@ def test_hysplit_ash_model_total_column(data_dir):
 def test_plot_functions(hysplit_model_result, tmpdir, plot_func, expected,
                         scantree):
     # Call the plot function - we expect html to be generated here, too
-    getattr(hysplit_model_result, plot_func)(tmpdir)
+    getattr(hysplit_model_result, plot_func)(tmpdir, clon=0, serial=True)
 
     plot_files = [Path(entry).relative_to(tmpdir).as_posix()
                   for entry in scantree(tmpdir) if entry.is_file()]
 
     assert set(plot_files) == set(expected)
+
+
+@pytest.mark.parametrize('plot_func, expected', [
+    ('plot_air_concentration',
+     ['01524/Air_Concentration_01524_20250313070000.png',
+      '03048/Air_Concentration_03048_20250313130000.png',
+      'Air_Concentration_summary.html']),
+    ('plot_total_column',
+     ['Total_Column_Mass_09906_20250313070000.png',
+      'Total_Column_Mass_09906_20250313130000.png',
+      'Total_Column_Mass_summary.html']),
+    ('plot_total_deposition',
+     ['Total_Deposition_00000_20250313070000.png',
+      'Total_Deposition_00000_20250313130000.png',
+      'Total_Deposition_summary.html'])
+    ])
+def test_plot_functions_180(hysplit_model_result_180, tmpdir, plot_func, expected,
+                        scantree):
+    # Call the plot function - we expect html to be generated here, too
+    getattr(hysplit_model_result_180, plot_func)(tmpdir, clon=180, serial=True)
+
+    plot_files = [Path(entry).relative_to(tmpdir).as_posix()
+                  for entry in scantree(tmpdir) if entry.is_file()]
+
+    assert set(plot_files) == set(expected)
+
 
 
 @pytest.mark.parametrize('plot_func', [
