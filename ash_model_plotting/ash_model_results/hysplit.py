@@ -93,6 +93,7 @@ class HysplitAshModelResult(AshModelResult):
         cube.rename("atmosphere_mass_content_of_volcanic_ash")
 
         cube.units = self.air_concentration.units * Unit('m')
+        # cube.convert_units('g m-2')
 
         return cube
 
