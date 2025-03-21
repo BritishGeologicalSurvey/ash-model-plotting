@@ -40,7 +40,7 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
         plt.savefig e.g. limits, vaac_colours, dpi, bbox_inches
     """
     metadata = {'created_by': 'plot_4d_cube',
-                'attributes': cube.attributes,
+                'attributes': dict(cube.attributes),
                 'plots': {}
                 }
 
@@ -145,7 +145,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
     # Create metadata, including sorted list of fig_paths
     fig_paths = {key: fig_paths[key] for key in sorted(fig_paths.keys())}
     metadata = {'created_by': 'plot_3d_cube',
-                'attributes': cube.attributes,
+                'attributes': dict(cube.attributes),
                 'plots': fig_paths
                 }
 

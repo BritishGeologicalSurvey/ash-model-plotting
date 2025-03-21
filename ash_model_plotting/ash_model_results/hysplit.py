@@ -64,7 +64,7 @@ class HysplitAshModelResult(AshModelResult):
             "mass_concentration_of_volcanic_ash_in_air")
         cube.rename("mass_concentration_of_volcanic_ash_in_air")
 
-        if cube.units == '1':
+        if cube.units == '1' or cube.units == 'unknown':
             new_units = Unit('g/m3')
             warn(f"Source data has no units for air_concentration, "
                  f"using {new_units}.")

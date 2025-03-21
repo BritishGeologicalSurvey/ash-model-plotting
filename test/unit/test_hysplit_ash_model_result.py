@@ -36,6 +36,14 @@ def test_hysplit_ash_model_air_concentration(data_dir):
             "mass_concentration_of_volcanic_ash_in_air")
     assert result.air_concentration.units == Unit('g/m3')
 
+def test_hysplit_ash_model_air_concentration_180(data_dir):
+    source_file = data_dir / 'cdump_sum.nc'
+    result = HysplitAshModelResult(source_file)
+
+    assert isinstance(result.air_concentration, iris.cube.Cube)
+    assert (result.air_concentration.name() ==
+            "mass_concentration_of_volcanic_ash_in_air")
+    assert result.air_concentration.units == Unit('g/m3')
 
 def test_hysplit_ash_model_total_deposition(data_dir):
     source_file = data_dir / 'hysplit_operational.nc'
@@ -88,15 +96,21 @@ def test_plot_functions(hysplit_model_result, tmpdir, plot_func, expected,
 @pytest.mark.parametrize('plot_func, expected', [
     ('plot_air_concentration',
      ['01524/Air_Concentration_01524_20250313070000.png',
+      '01524/Air_Concentration_01524_20250313100000.png',
+      '01524/Air_Concentration_01524_20250313130000.png',
+      '03048/Air_Concentration_03048_20250313070000.png',
+      '03048/Air_Concentration_03048_20250313100000.png',
       '03048/Air_Concentration_03048_20250313130000.png',
       'Air_Concentration_summary.html']),
     ('plot_total_column',
-     ['Total_Column_Mass_09906_20250313070000.png',
-      'Total_Column_Mass_09906_20250313130000.png',
+     ['Total_Column_Mass_02286_20250313070000.png',
+      'Total_Column_Mass_02286_20250313100000.png',
+      'Total_Column_Mass_02286_20250313130000.png',
       'Total_Column_Mass_summary.html']),
     ('plot_total_deposition',
      ['Total_Deposition_00000_20250313070000.png',
-      'Total_Deposition_00000_20250313130000.png',
+      'Total_Deposition_00000_20250313100000.png',
+       'Total_Deposition_00000_20250313130000.png',
       'Total_Deposition_summary.html'])
     ])
 def test_plot_functions_180(hysplit_model_result_180, tmpdir, plot_func, expected,
