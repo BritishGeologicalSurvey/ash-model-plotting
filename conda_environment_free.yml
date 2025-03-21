@@ -1,0 +1,9 @@
+name: ash-model-plotting-free
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - iris
+  - matplotlib
+  - pandas
+
