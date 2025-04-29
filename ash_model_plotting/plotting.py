@@ -48,7 +48,7 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
     base_output_dir = Path(output_dir)
     vaac_colours = kwargs.get('vaac_colours', False)
     limits = kwargs.get('limits', None)
-    clon = kwargs.get('clon', 0)
+    central_longitude = kwargs.get('central_longitude', 0)
     serial = kwargs.get('serial', False)
 
     for tyx_slice in cube.slices_over(_get_zlevel_name(cube)):
@@ -65,7 +65,7 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
         # Create a list of arguments for plotting
         args = zip(tyx_slice.slices(['latitude', 'longitude']),
                    repeat(fig_paths), repeat(output_dir), repeat(file_ext),
-                   repeat(limits), repeat(vaac_colours), repeat(clon), repeat(kwargs))
+                   repeat(limits), repeat(vaac_colours), repeat(central_longitude), repeat(kwargs))
 
         if serial:
             for arg in args:
@@ -113,7 +113,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
     """
     vaac_colours = kwargs.get('vaac_colours', False)
     limits = kwargs.get('limits', None)
-    clon = kwargs.get('clon', 0)
+    central_longitude = kwargs.get('central_longitude', 0)
     serial = kwargs.get('serial', False)
 
     output_dir = Path(output_dir)
@@ -126,7 +126,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
     # Slices of longitude, latitude represent different times
     args = zip(cube.slices(['latitude', 'longitude']),
                repeat(fig_paths), repeat(output_dir), repeat(file_ext),
-               repeat(limits), repeat(vaac_colours), repeat(clon), repeat(kwargs))
+               repeat(limits), repeat(vaac_colours), repeat(central_longitude), repeat(kwargs))
 
     if serial:
         for arg in args:
@@ -165,7 +165,7 @@ def savefig_safe(fig, filename, **kwargs):
 
 
 def _save_yx_slice_figure(yx_slice, fig_paths, output_dir, file_ext, limits,
-                          vaac_colours, clon, kwargs):
+                          vaac_colours, central_longitude, kwargs):
     """
     Call plot_2d_cube and save result in output_dir with name based on slice
     metadata.  This function is used by plot_3d_cube and plot_4d_cube functions
@@ -184,7 +184,7 @@ def _save_yx_slice_figure(yx_slice, fig_paths, output_dir, file_ext, limits,
     timestamp = _format_timestamp_string(yx_slice)
 
     fig, title = plot_2d_cube(yx_slice, vaac_colours=vaac_colours,
-                              limits=limits, clon=clon)
+                              limits=limits, central_longitude=central_longitude)
     filename = output_dir / f"{title}.{file_ext}"
 
     savefig_safe(fig, filename, **kwargs)
@@ -196,7 +196,7 @@ def _save_yx_slice_figure(yx_slice, fig_paths, output_dir, file_ext, limits,
 
 
 def plot_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8,
-                 vaac_colours=False, limits=None, clon=0):
+                 vaac_colours=False, limits=None, central_longitude=0):
     """
     Draw a map of a two dimensional cube.  Cube should have two spatial
     dimensions (e.g. latitude, longitude).  All other dimensions (time,
@@ -237,7 +237,7 @@ def plot_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8,
 
     # Plot data
     fig = plt.figure()
-    ax = plt.axes(projection=ccrs.PlateCarree(clon))
+    ax = plt.axes(projection=ccrs.PlateCarree(central_longitude))
     mesh_plot = ax.pcolormesh(cube.coord('longitude').points, cube.coord('latitude').points,
                               cube.data, transform=ccrs.PlateCarree(),
                               vmin=vmin, vmax=vmax, cmap=cmap, norm=norm)
@@ -256,7 +256,7 @@ def plot_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8,
     # # cant make gridlines work with crossing the dateline!
     xticks = ax.get_xticks()
     # print(f'xticks: {xticks}')
-    _ = ax.set_xticks(xticks, crs=ccrs.PlateCarree(clon))
+    _ = ax.set_xticks(xticks, crs=ccrs.PlateCarree(central_longitude))
 
     # x2 = (xticks + 180)
     # x2[x2>180] += -360
@@ -268,7 +268,7 @@ def plot_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8,
     yticks[0] = max(yticks[0], -90)
     yticks[-1] = min(yticks[-1], 90)
     # print(f'yticks: {yticks}')
-    _ = ax.set_yticks(yticks, crs=ccrs.PlateCarree(clon))
+    _ = ax.set_yticks(yticks, crs=ccrs.PlateCarree(central_longitude))
 
     lon_formatter = LongitudeFormatter()
     lat_formatter = LatitudeFormatter()

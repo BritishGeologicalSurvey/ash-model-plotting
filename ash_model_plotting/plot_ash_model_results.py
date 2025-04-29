@@ -48,7 +48,7 @@ def main():
     plot_results(**vars(args))
 
 
-def plot_results(results, model_type, limits, vaac_colours, output_dir, clon, serial, **kwargs):
+def plot_results(results, model_type, limits, vaac_colours, output_dir, central_longitude, serial, **kwargs):
     """
     Plot ash model results the layers in the input_files.  Plots are made
     for air_concentration, total_column and total_deposition for each
@@ -86,7 +86,7 @@ def plot_results(results, model_type, limits, vaac_colours, output_dir, clon, se
             getattr(result, f'plot_{attribute}')(output_dir,
                                                  limits=limits,
                                                  vaac_colours=vaac_colours,
-                                                 clon=clon,
+                                                 central_longitude=central_longitude,
                                                  serial=serial,
                                                  bbox_inches='tight')
         except AshModelResultError:
@@ -116,7 +116,7 @@ def parse_args():
         help="Use VAAC colours (cyan, grey, red) for air concentration",
         action='store_true')
     parser.add_argument(
-        '--clon',
+        '--central_longitude',
         help="Projection central longitude",
         default=0, type=float)
     parser.add_argument(

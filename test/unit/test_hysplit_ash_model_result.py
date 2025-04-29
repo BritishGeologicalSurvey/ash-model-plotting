@@ -87,7 +87,7 @@ def test_hysplit_ash_model_total_column(data_dir):
 def test_plot_functions(hysplit_model_result, tmpdir, plot_func, expected,
                         scantree):
     # Call the plot function - we expect html to be generated here, too
-    getattr(hysplit_model_result, plot_func)(tmpdir, clon=0, serial=True)
+    getattr(hysplit_model_result, plot_func)(tmpdir, central_longitude=0, serial=True)
 
     plot_files = [Path(entry).relative_to(tmpdir).as_posix()
                   for entry in scantree(tmpdir) if entry.is_file()]
@@ -118,7 +118,7 @@ def test_plot_functions(hysplit_model_result, tmpdir, plot_func, expected,
 def test_plot_functions_180(hysplit_model_result_180, tmpdir, plot_func, expected,
                             scantree):
     # Call the plot function - we expect html to be generated here, too
-    getattr(hysplit_model_result_180, plot_func)(tmpdir, clon=180, serial=True)
+    getattr(hysplit_model_result_180, plot_func)(tmpdir, central_longitude=180, serial=True)
 
     plot_files = [Path(entry).relative_to(tmpdir).as_posix()
                   for entry in scantree(tmpdir) if entry.is_file()]

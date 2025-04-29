@@ -169,10 +169,15 @@ If the `output_dir` does not exist, it will be created.
 If `ash-model-plotting` has been installed via `pip`, the script will be added
 to the virtual environment $PATH.
 
-#### plotting across the dateline
+#### Plotting across the dateline
+
+Use the `central_longitude` argument to plot across the dateline.
 
 ```bash
-plot_ash_model_results test/data/cdump_sum.nc --model hysplit --output_dir tmp3_cdump_sum --verbose --clon 180 --serial
+python ash_model_plotting/plot_ash_model_results.py \
+  test/data/cdump_sum.nc \
+  --model hysplit --output_dir tmp3_cdump_sum \
+  --verbose --central_longitude 180
 ```
 
 ## Analysis scripts for earlier versions
