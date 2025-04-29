@@ -44,11 +44,11 @@ def main():
         log_level = logging.INFO
     logging.getLogger().setLevel(log_level)
 
-    plot_results(args.results, args.model_type, args.limits,
-                 args.vaac_colours, args.output_dir)
+    # Unpack args into keyword argument dictionary to pass to plot_results()
+    plot_results(**vars(args))
 
 
-def plot_results(results, model_type, limits, vaac_colours, output_dir):
+def plot_results(results, model_type, limits, vaac_colours, output_dir, central_longitude, serial, **kwargs):
     """
     Plot ash model results the layers in the input_files.  Plots are made
     for air_concentration, total_column and total_deposition for each
@@ -86,6 +86,8 @@ def plot_results(results, model_type, limits, vaac_colours, output_dir):
             getattr(result, f'plot_{attribute}')(output_dir,
                                                  limits=limits,
                                                  vaac_colours=vaac_colours,
+                                                 central_longitude=central_longitude,
+                                                 serial=serial,
                                                  bbox_inches='tight')
         except AshModelResultError:
             logger.info(f'No {attribute} data found')
@@ -114,6 +116,10 @@ def parse_args():
         help="Use VAAC colours (cyan, grey, red) for air concentration",
         action='store_true')
     parser.add_argument(
+        '--central_longitude',
+        help="Projection central longitude",
+        default=0, type=float)
+    parser.add_argument(
         '--output_dir',
         help=("Path to directory to store plots (defaults to source_dir), "
               "creates directory if doesn't exist"),
@@ -122,8 +128,12 @@ def parse_args():
         '--verbose',
         help=("Print debugging messages in output"),
         action='store_true')
-    args = parser.parse_args()
+    parser.add_argument(
+        '--serial',
+        help=("Run in serial mode (no parallel processing)"),
+        action='store_true')
 
+    args = parser.parse_args()
     return args
 
 

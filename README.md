@@ -30,8 +30,7 @@ Download and run the Miniconda3 installer for Linux, Mac or Windows from the [Co
 Create an 'environment' and install Iris and other Python packages:
 
 ```bash
-conda create -y -c conda-forge -n ash-model-plotting \
-  iris ipython numpy matplotlib
+conda create -f environment_unversioned.yml
 ```
 
 Activate the virtual environment:
@@ -59,28 +58,6 @@ Pip can be used to install `ash-model-plotting` directly from GitHub.
 pip install git+https://github.com/BritishGeologicalSurvey/ash-model-plotting.git
 ```
 
-
-#### If you want to modify the code
-
-Checkout the code from Git:
-
-```
-git clone git@github.com:BritishGeologicalSurvey/ash-model-plotting.git
-cd ash-model-plotting
-```
-
-The repository contains a `setup.py` file installed ash-model-plotting so it can be used within the virtual environment from anywhere on the system.
-Install is as follows.
-
-```bash
-python -m pip install -e .
-```
-
-The `-e` flag means that changes made to files in this source directory will be
-applied without having to reinstall the module.
-
-This installation method makes scripts available on the `$PATH` of the virtual
-environment, so they can be called from anywhere e.g. `plot_ash_model_results`.
 
 ## How to use ash-model-plotting
 
@@ -192,6 +169,16 @@ If the `output_dir` does not exist, it will be created.
 If `ash-model-plotting` has been installed via `pip`, the script will be added
 to the virtual environment $PATH.
 
+#### Plotting across the dateline
+
+Use the `central_longitude` argument to plot across the dateline.
+
+```bash
+python ash_model_plotting/plot_ash_model_results.py \
+  test/data/cdump_sum.nc \
+  --model hysplit --output_dir tmp3_cdump_sum \
+  --verbose --central_longitude 180
+```
 
 ## Analysis scripts for earlier versions
 

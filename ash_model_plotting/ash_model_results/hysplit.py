@@ -14,13 +14,16 @@ from ash_model_plotting.ash_model_results import (
     AshModelResult,
 )
 
+iris.FUTURE.date_microseconds = True
+
 
 class HysplitAshModelResult(AshModelResult):
     """
     AshModelResult for data from Hysplit model simulations.
     """
     _air_concentration_names = {
-        'Concentration Array - AS01'
+        'Concentration Array - AS01',
+        'Concentration Array - SUM '
     }
 
     def __repr__(self):
@@ -62,7 +65,7 @@ class HysplitAshModelResult(AshModelResult):
             "mass_concentration_of_volcanic_ash_in_air")
         cube.rename("mass_concentration_of_volcanic_ash_in_air")
 
-        if cube.units == '1':
+        if cube.units == '1' or cube.units == 'unknown':
             new_units = Unit('g/m3')
             warn(f"Source data has no units for air_concentration, "
                  f"using {new_units}.")
@@ -92,6 +95,7 @@ class HysplitAshModelResult(AshModelResult):
         cube.rename("atmosphere_mass_content_of_volcanic_ash")
 
         cube.units = self.air_concentration.units * Unit('m')
+        # cube.convert_units('g m-2')
 
         return cube
 
