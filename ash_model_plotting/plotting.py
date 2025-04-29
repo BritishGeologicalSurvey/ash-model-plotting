@@ -69,7 +69,6 @@ def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
 
         if serial:
             for arg in args:
-                # print(f'_save_yx_slice_figure: {arg}')
                 _save_yx_slice_figure(*arg)
         else:
             #  Plot slices in parallel
@@ -258,19 +257,11 @@ def plot_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8,
 
     # # cant make gridlines work with crossing the dateline!
     xticks = ax.get_xticks()
-    # print(f'xticks: {xticks}')
     _ = ax.set_xticks(xticks, crs=ccrs.PlateCarree(central_longitude))
 
-    # x2 = (xticks + 180)
-    # x2[x2>180] += -360
-    # print(f'x2: {x2}')
-    # _ = ax.set_xticklabels(x2)
-
     yticks = ax.get_yticks()
-    # print(f'yticks: {yticks}')
     yticks[0] = max(yticks[0], -90)
     yticks[-1] = min(yticks[-1], 90)
-    # print(f'yticks: {yticks}')
     _ = ax.set_yticks(yticks, crs=ccrs.PlateCarree(central_longitude))
 
     lon_formatter = LongitudeFormatter()
