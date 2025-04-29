@@ -36,6 +36,7 @@ def test_hysplit_ash_model_air_concentration(data_dir):
             "mass_concentration_of_volcanic_ash_in_air")
     assert result.air_concentration.units == Unit('g/m3')
 
+
 def test_hysplit_ash_model_air_concentration_180(data_dir):
     source_file = data_dir / 'cdump_sum.nc'
     result = HysplitAshModelResult(source_file)
@@ -44,6 +45,7 @@ def test_hysplit_ash_model_air_concentration_180(data_dir):
     assert (result.air_concentration.name() ==
             "mass_concentration_of_volcanic_ash_in_air")
     assert result.air_concentration.units == Unit('g/m3')
+
 
 def test_hysplit_ash_model_total_deposition(data_dir):
     source_file = data_dir / 'hysplit_operational.nc'
@@ -110,11 +112,11 @@ def test_plot_functions(hysplit_model_result, tmpdir, plot_func, expected,
     ('plot_total_deposition',
      ['Total_Deposition_00000_20250313070000.png',
       'Total_Deposition_00000_20250313100000.png',
-       'Total_Deposition_00000_20250313130000.png',
+      'Total_Deposition_00000_20250313130000.png',
       'Total_Deposition_summary.html'])
     ])
 def test_plot_functions_180(hysplit_model_result_180, tmpdir, plot_func, expected,
-                        scantree):
+                            scantree):
     # Call the plot function - we expect html to be generated here, too
     getattr(hysplit_model_result_180, plot_func)(tmpdir, clon=180, serial=True)
 
@@ -122,7 +124,6 @@ def test_plot_functions_180(hysplit_model_result_180, tmpdir, plot_func, expecte
                   for entry in scantree(tmpdir) if entry.is_file()]
 
     assert set(plot_files) == set(expected)
-
 
 
 @pytest.mark.parametrize('plot_func', [

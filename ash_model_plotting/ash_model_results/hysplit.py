@@ -8,12 +8,13 @@ from warnings import warn
 
 from cf_units import Unit
 import iris
-iris.FUTURE.date_microseconds = True
 import numpy as np
 
 from ash_model_plotting.ash_model_results import (
     AshModelResult,
 )
+
+iris.FUTURE.date_microseconds = True
 
 
 class HysplitAshModelResult(AshModelResult):

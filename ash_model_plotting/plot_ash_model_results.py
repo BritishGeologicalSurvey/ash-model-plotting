@@ -44,8 +44,8 @@ def main():
         log_level = logging.INFO
     logging.getLogger().setLevel(log_level)
 
-    plot_results(**vars(args)) #args.results, args.model_type, args.limits,
-                 #args.vaac_colours, args.output_dir, args.clon)
+    # Unpack args into keyword argument dictionary to pass to plot_results()
+    plot_results(**vars(args))
 
 
 def plot_results(results, model_type, limits, vaac_colours, output_dir, clon, serial, **kwargs):

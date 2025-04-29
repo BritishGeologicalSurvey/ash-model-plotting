@@ -3,7 +3,6 @@ import os
 from pathlib import Path
 
 import pytest
-import matplotlib
 
 from ash_model_plotting import (NameAshModelResult,  # noqa: E402
                                 HysplitAshModelResult,
@@ -46,10 +45,12 @@ def hysplit_model_result(data_dir):
     """A HysplitAshModelResult based on test data."""
     return HysplitAshModelResult(data_dir.joinpath('hysplit_operational.nc'))
 
+
 @pytest.fixture(scope='function')
 def hysplit_model_result_180(data_dir):
     """A HysplitAshModelResult based on test data."""
     return HysplitAshModelResult(data_dir.joinpath('cdump_sum.nc'))
+
 
 @pytest.fixture(scope='module')
 def scantree():

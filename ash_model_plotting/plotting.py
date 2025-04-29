@@ -11,23 +11,24 @@ from multiprocessing import Manager, get_context
 
 # Import matplotlib before Iris to allow backend setting
 import matplotlib
-matplotlib.use('agg')
-mpl_logger = logging.getLogger("matplotlib")
-mpl_logger.setLevel(logging.INFO)
 
 import cartopy.crs as ccrs
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 from iris.exceptions import CoordinateNotFoundError
-import iris.plot as iplt
 from jinja2 import Template
 import matplotlib.colors
 import matplotlib.pyplot as plt
 import numpy as np
 import cf_units
 
+# Configure matplotlib
+matplotlib.use('agg')
+mpl_logger = logging.getLogger("matplotlib")
+mpl_logger.setLevel(logging.INFO)
 
 logger = logging.getLogger(__name__)
 POOL_LOGGER_LEVEL = logging.INFO
+
 
 def plot_4d_cube(cube, output_dir, file_ext='png', **kwargs):
     """
@@ -151,6 +152,7 @@ def plot_3d_cube(cube, output_dir, file_ext='png', **kwargs):
 
     return metadata
 
+
 def savefig_safe(fig, filename, **kwargs):
     valid_args = {'dpi', 'facecolor', 'edgecolor', 'orientation', 'format',
                   'transparent', 'bbox_inches', 'pad_inches', 'metadata',
@@ -160,6 +162,7 @@ def savefig_safe(fig, filename, **kwargs):
     filtered_kwargs = {k: v for k, v in kwargs.items() if k in valid_args}
 
     fig.savefig(filename, **filtered_kwargs)
+
 
 def _save_yx_slice_figure(yx_slice, fig_paths, output_dir, file_ext, limits,
                           vaac_colours, clon, kwargs):
@@ -267,7 +270,7 @@ def plot_2d_cube(cube, vmin=None, vmax=None, mask_less=1e-8,
     # print(f'yticks: {yticks}')
     _ = ax.set_yticks(yticks, crs=ccrs.PlateCarree(clon))
 
-    lon_formatter = LongitudeFormatter()#zero_direction_label=True)
+    lon_formatter = LongitudeFormatter()
     lat_formatter = LatitudeFormatter()
     ax.xaxis.set_major_formatter(lon_formatter)
     ax.yaxis.set_major_formatter(lat_formatter)

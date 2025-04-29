@@ -28,6 +28,7 @@ RUNS = ['Av', 'Max', 'Min']
 
 matplotlib.use('agg')
 
+
 def main(data_dir, output_dir):
     # Configure directories
     data_dir = Path(data_dir)
